@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ワンクリック作曲 — Melody / Chords / Bass Generator</title>
+<style>
+:root{
+  --ink:#12101a; --panel:#1b1826; --panel2:#221e30; --line:#332e45; --line2:#443c5c;
+  --accent:#7c6cff; --accent2:#a99bff; --cyan:#4fd1c5; --rose:#ff7a9c; --amber:#ffcf6b;
+  --text:#ece8f7; --muted:#a49fc0; --faint:#6f6a8c;
+  --good:#7fdca0;
+  --sans:"Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,Meiryo,system-ui,-apple-system,sans-serif;
+  --mono:"SF Mono",ui-monospace,"Roboto Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:
+    radial-gradient(1100px 560px at 12% -10%, #241b3f 0%, transparent 55%),
+    radial-gradient(900px 640px at 105% 0%, #1a2b3a 0%, transparent 52%),
+    var(--ink);
+  color:var(--text); font-family:var(--sans); line-height:1.55;
+  -webkit-font-smoothing:antialiased; min-height:100vh;
+}
+.wrap{max-width:1040px; margin:0 auto; padding:28px 20px 80px}
+header h1{font-size:26px; margin:0 0 4px; letter-spacing:.5px}
+header h1 .dot{color:var(--accent2)}
+header p{margin:0; color:var(--muted); font-size:13.5px}
+.card{background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+  border-radius:16px; padding:20px; box-shadow:0 18px 46px rgba(0,0,0,.45); margin-top:20px}
+.grid{display:grid; gap:16px}
+@media(min-width:760px){.controls{grid-template-columns:repeat(4,1fr)}}
+.controls{grid-template-columns:repeat(2,1fr)}
+label.f{display:block; font-size:12px; color:var(--muted); margin-bottom:6px; letter-spacing:.3px}
+select,input[type=number]{width:100%; background:#15121f; color:var(--text); border:1px solid var(--line2);
+  border-radius:10px; padding:10px 11px; font-family:var(--sans); font-size:14px; appearance:none}
+select:focus,input:focus{outline:none; border-color:var(--accent)}
+.moods{display:flex; flex-wrap:wrap; gap:8px; margin-top:4px}
+.mood{background:#15121f; border:1px solid var(--line2); color:var(--muted); border-radius:999px;
+  padding:8px 14px; font-size:13px; cursor:pointer; transition:.15s}
+.mood:hover{border-color:var(--accent)}
+.mood.on{background:linear-gradient(180deg,var(--accent),#6355e6); color:#fff; border-color:transparent;
+  box-shadow:0 6px 18px rgba(124,108,255,.4)}
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:16px}
+.btn{border:none; border-radius:12px; padding:13px 22px; font-size:15px; font-weight:700; cursor:pointer;
+  font-family:var(--sans); transition:.15s; display:inline-flex; align-items:center; gap:8px}
+.btn.primary{background:linear-gradient(180deg,var(--accent2),var(--accent)); color:#fff;
+  box-shadow:0 8px 22px rgba(124,108,255,.42)}
+.btn.primary:hover{transform:translateY(-1px)}
+.btn.ghost{background:#15121f; color:var(--text); border:1px solid var(--line2)}
+.btn.ghost:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.4; cursor:not-allowed; transform:none}
+.seedbox{display:flex; align-items:center; gap:8px; margin-left:auto; color:var(--faint); font-size:12px}
+.seedbox input{width:96px}
+.out{margin-top:20px; display:none}
+.out.show{display:block}
+.chips{display:flex; flex-wrap:wrap; gap:8px; margin:2px 0 14px}
+.chip{font-family:var(--mono); font-size:13px; background:#15121f; border:1px solid var(--line2);
+  border-radius:8px; padding:6px 11px; color:var(--accent2)}
+.chip .b{color:var(--faint); font-size:11px}
+.pianoroll{background:#100e18; border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-bottom:14px}
+canvas{display:block; width:100%; height:220px}
+.meta{display:flex; gap:18px; flex-wrap:wrap; color:var(--muted); font-size:12.5px; margin-bottom:6px}
+.meta b{color:var(--text); font-weight:600}
+.legend{display:flex; gap:14px; font-size:12px; color:var(--muted); margin-top:8px}
+.legend i{display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:5px; vertical-align:-1px}
+.hint{color:var(--faint); font-size:12px; margin-top:14px; line-height:1.7}
+kbd{font-family:var(--mono); background:#15121f; border:1px solid var(--line2); border-radius:5px; padding:1px 6px; font-size:11px}
+.footer{color:var(--faint); font-size:11.5px; margin-top:26px; text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ワンクリック作曲<span class="dot">.</span> <span style="color:var(--faint);font-size:14px;font-weight:400">Melody / Chords / Bass Generator</span></h1>
+    <p>キー・BPM・気分を選んで Generate。メロディ＋コード＋ベースの3トラックMIDIを生成 → Logic Pro へドラッグ。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid controls">
+      <div>
+        <label class="f">キー</label>
+        <select id="root">
+          <option>C</option><option>C#</option><option>D</option><option>D#</option><option>E</option>
+          <option>F</option><option>F#</option><option>G</option><option>G#</option><option>A</option>
+          <option>A#</option><option>B</option>
+        </select>
+      </div>
+      <div>
+        <label class="f">スケール</label>
+        <select id="mode">
+          <option value="major">メジャー</option>
+          <option value="minor">マイナー</option>
+        </select>
+      </div>
+      <div>
+        <label class="f">BPM</label>
+        <input type="number" id="bpm" value="144" min="60" max="220">
+      </div>
+      <div>
+        <label class="f">長さ（小節）</label>
+        <select id="bars">
+          <option value="4">4小節</option>
+          <option value="8" selected>8小節</option>
+          <option value="16">16小節</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:16px">
+      <label class="f">生成モード</label>
+      <div class="moods" id="modeSel">
+        <div class="mood on" data-mode="loop">ループ（<span id="loopBars">8</span>小節）</div>
+        <div class="mood" data-mode="full">フル構成（イントロ→A→B→サビ→…→アウトロ / 60小節）</div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px">
+      <label class="f">気分（プリセット）</label>
+      <div class="moods" id="moods"></div>
+    </div>
+
+    <label style="display:flex; align-items:center; gap:8px; margin-top:14px; color:var(--muted); font-size:13px; cursor:pointer">
+      <input type="checkbox" id="drumsOn" checked style="width:auto; accent-color:var(--accent)">
+      ドラムを含める（Stewart Copeland 基調 / ADx2・GMマッピング / MIDI ch10）
+    </label>
+    <div class="grid" id="drumOpts" style="grid-template-columns:1fr 1fr; gap:12px; margin-top:10px">
+      <div>
+        <label class="f">フィル量</label>
+        <select id="fillDensity"><option>控えめ</option><option selected>標準</option><option>多め</option></select>
+      </div>
+      <div>
+        <label class="f">手数（ゴースト）</label>
+        <select id="ghostAmount"><option>タイト</option><option selected>標準</option><option>手数多め</option></select>
+      </div>
+    </div>
+
+    <div class="row">
+      <button class="btn primary" id="genBtn">✨ Generate</button>
+      <button class="btn ghost" id="playBtn" disabled>▶ 試聴</button>
+      <button class="btn ghost" id="stopBtn" disabled>■ 停止</button>
+      <button class="btn ghost" id="midiBtn" disabled>⬇ MIDI書き出し</button>
+      <div class="seedbox">
+        seed <input type="number" id="seed" value="1">
+        <button class="btn ghost" id="diceBtn" style="padding:8px 12px">🎲</button>
+      </div>
+    </div>
+
+    <a id="saveLink" style="display:none; margin-top:12px; padding:11px 16px; border-radius:10px; background:#15121f; border:1px solid var(--amber); color:var(--amber); font-size:13px; text-decoration:none; align-items:center; gap:8px"></a>
+
+    <div class="out" id="out">
+      <div class="meta" id="meta"></div>
+      <div class="chips" id="chips"></div>
+      <div class="pianoroll"><canvas id="roll"></canvas></div>
+      <div class="legend">
+        <span><i style="background:var(--rose)"></i>メロディ</span>
+        <span><i style="background:var(--accent)"></i>コード</span>
+        <span><i style="background:var(--cyan)"></i>ベース</span>
+        <span><i style="background:var(--amber)"></i>ドラム</span>
+      </div>
+    </div>
+
+    <div class="hint">
+      • <b>Logic への取り込み</b>: 書き出した <kbd>.mid</kbd> を Finder から Logic のトラック上へドラッグ。Melody / Chords / Bass / Drums の各トラックが同時に配置されます（Drums は MIDI ch10・GMマッピングなので Addictive Drums 2 のトラックへ）。<br>
+      • <b>気に入らなければ</b> <kbd>🎲</kbd> で seed を変えて Generate を押すたびに別案が出ます。同じ seed なら同じ結果（再現可能）。<br>
+      • 試聴はブラウザ内の簡易音源です。実際の音は Logic の音源（Addictive Drums 2 / Vintage Bass 等）で鳴らしてください。
+    </div>
+  </div>
+
+  <div class="footer">ローカル生成・サーバー不要 / SMF Format 1 出力</div>
+</div>
+
+<script>
+"use strict";
+/* ============================ 音楽理論 ============================ */
+const PC = {C:0,"C#":1,D:2,"D#":3,E:4,F:5,"F#":6,G:7,"G#":8,A:9,"A#":10,B:11};
+const SCALE = { major:[0,2,4,5,7,9,11], minor:[0,2,3,5,7,8,10] };
+const NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+
+/* ドラム: GM準拠マッピング (Addictive Drums 2 / Logic で認識, MIDI ch10) */
+const DRUM = { KICK:36, SNARE:38, RIM:37, HHC:42, HHO:46, RIDE:51, CRASH:49, TOM1:48, TOM2:45, TOM3:43 };
+
+/* 気分プリセット: prog=度数(0-6)配列プール, extend=コード拡張, bass, dens=メロ密度, bpm推奨 */
+const MOODS = {
+  "疾走・切ない":{ mode:"minor", bpm:150, ext:"seventh", bass:"eighth", dens:"high", swing:0, drum:"copeland",
+    progs:[ [5,3,0,4],[0,4,5,3],[5,4,0,0],[0,5,3,4] ] },   // vi-IV-i-V 系 (minor度数)
+  "明るいポップ":{ mode:"major", bpm:132, ext:"plain", bass:"root", dens:"mid", swing:0, drum:"pop",
+    progs:[ [0,4,5,3],[5,3,0,4],[0,3,4,4],[3,4,5,0] ] },    // I-V-vi-IV 王道
+  "シティポップ":{ mode:"major", bpm:112, ext:"rich", bass:"walk", dens:"mid", swing:0.12, drum:"city",
+    progs:[ [1,4,0,5],[3,2,1,4],[0,5,1,4] ] },              // ii-V-I 系, テンション多め
+  "エモ・感傷":{ mode:"minor", bpm:138, ext:"seventh", bass:"root", dens:"mid", swing:0, drum:"copeland",
+    progs:[ [0,5,2,4],[5,2,3,4],[0,3,5,4] ] },
+  "バラード":{ mode:"major", bpm:76, ext:"seventh", bass:"root", dens:"low", swing:0, drum:"ballad",
+    progs:[ [0,4,5,3],[3,4,2,5],[0,5,3,4] ] },
+  "疾走ロック":{ mode:"major", bpm:168, ext:"plain", bass:"eighth", dens:"high", swing:0, drum:"rock",
+    progs:[ [0,3,4,4],[0,4,3,4],[5,3,0,4] ] }
+};
+let currentMood = "疾走・切ない";
+
+/* コード品質: 度数 + モードから三和音、拡張で7th/9th付与 */
+function diatonicChord(deg, mode, ext){
+  const S = SCALE[mode];
+  const at = i => S[((i%7)+7)%7] + 12*Math.floor(i/7);
+  const root = at(deg), third = at(deg+2), fifth = at(deg+4), sev = at(deg+6);
+  let notes = [root, third, fifth];
+  if(ext==="seventh" || ext==="rich") notes.push(sev);
+  if(ext==="rich") notes.push(at(deg+8)); // 9th
+  // 表示用の品質記号
+  const iv3 = ((third-root)%12+12)%12, iv5=((fifth-root)%12+12)%12, iv7=((sev-root)%12+12)%12;
+  let q = (iv3===3?"m":"") ;
+  if(iv5===6) q = "dim";
+  if(ext!=="plain"){ if(iv7===11) q += "M7"; else if(iv7===10) q += "7"; }
+  return { notes, q };
+}
+function chordName(deg, mode, ext, keyRoot){
+  const c = diatonicChord(deg, mode, ext);
+  const pc = (keyRoot + c.notes[0]) % 12;
+  return NAMES[pc] + c.q;
+}
+
+/* シード付き乱数 (mulberry32) */
+function rng(seed){ let a=seed>>>0; return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const pick = (r,arr)=>arr[Math.floor(r()*arr.length)];
+const lerp=(a,b,t)=>a+(b-a)*t;
+const easeInOut=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+
+/* メロディ リズムパターン (拍長の配列, null=休符) */
+const RHYTHM = {
+  low:  [[2,2],[4],[2,1,1],[3,1]],
+  mid:  [[1,1,1,1],[1,.5,.5,1,1],[.5,.5,1,1,1],[2,1,1],[1,1,.5,.5,1]],
+  high: [[.5,.5,.5,.5,.5,.5,.5,.5],[1,.5,.5,.5,.5,1],[.5,.5,1,.5,.5,1],[.25,.25,.5,1,1,1],[.5,.5,.5,.5,1,1]]
+};
+
+/* ハット刻み: 拍ごとに8分↔16分を自動選択し、Velocityで強拍/裏拍/16分ゴーストを描き分け */
+function hatBar(add, s, style, r, swing, hatUntil, opts){
+  const D=DRUM;
+  if(style==="ballad"){                                // バラード: 裏拍オープンハット
+    for(let b=0;b<4;b++){ const t=b+0.5; if(t<hatUntil) add(s+t, D.HHO, 38+r()*12, 0.16); }
+    return;
+  }
+  const g = opts.ghost;                                // 手数プリセット
+  const openProb = (style==="copeland"?0.18 : style==="city"?0.12 : 0.06) * g.openMul;
+  const busy = (style==="copeland"||style==="city");   // 16分主体か8分主体か
+  const p16 = busy ? g.p16busy : g.p16calm;            // 16分細分化の確率
+  for(let beat=0; beat<4; beat++){
+    const sub = (r()<p16 ? 4 : 2);
+    for(let k=0;k<sub;k++){
+      const frac=k/sub, t=beat+frac; if(t>=hatUntil) break;
+      const strong = (k===0), eighth = Math.abs(frac-0.5)<1e-6;
+      let vel = strong ? (beat===0?88:78) : (eighth?60:42);   // 強拍>裏拍>16分ゴースト
+      vel += (r()-0.5)*10;
+      const open = (!strong && r()<openProb);
+      const sw = (swing && !strong)? swing*(1/sub) : 0;
+      add(s+t+sw, open?D.HHO:D.HHC, vel, open?0.18:0.08);
+    }
+  }
+}
+
+/* フィル・バリエーション (4拍目=beat3を埋める) */
+const FILLS = [
+  (add,s)=>{ add(s+3,DRUM.SNARE,90); add(s+3.25,DRUM.TOM1,94); add(s+3.5,DRUM.TOM2,98); add(s+3.75,DRUM.TOM3,104); },      // 16分タム下降
+  (add,s)=>{ for(let i=0;i<4;i++) add(s+3+i*0.25,DRUM.SNARE,78+i*9); },                                                    // スネア16分クレッシェンド
+  (add,s)=>{ for(let i=0;i<8;i++) add(s+3+i*0.125,DRUM.SNARE,66+i*6); },                                                   // スネア32分ロール
+  (add,s)=>{ add(s+3,DRUM.TOM1,92); add(s+3.25,DRUM.SNARE,84); add(s+3.5,DRUM.TOM2,96); add(s+3.75,DRUM.TOM3,104); },      // タム＆スネア混在
+  (add,s)=>{ add(s+3,DRUM.SNARE,88); add(s+3.33,DRUM.TOM2,96); add(s+3.66,DRUM.TOM3,104); },                              // 3連フィール
+  (add,s)=>{ add(s+3,DRUM.SNARE,86); add(s+3.5,DRUM.SNARE,80); add(s+3.75,DRUM.SNARE,70); add(s+3.875,DRUM.SNARE,100); },  // フラム風追い込み
+];
+/* 最終小節: 2拍使う大フィル */
+function bigFill(add,s){
+  add(s+2,DRUM.SNARE,84); add(s+2.25,DRUM.SNARE,76); add(s+2.5,DRUM.TOM1,90); add(s+2.75,DRUM.TOM1,94);
+  add(s+3,DRUM.TOM2,98); add(s+3.25,DRUM.TOM2,100); add(s+3.5,DRUM.TOM3,104); add(s+3.75,DRUM.TOM3,110);
+}
+/* 2小節ごとの軽いフィル (4拍目後半) */
+function miniFill(add,s,r){
+  add(s+3.5,DRUM.SNARE,76); add(s+3.75, r()<0.5?DRUM.TOM2:DRUM.SNARE, 92);
+}
+
+/* フィル量・手数プリセット定義 */
+const FILL_PRESET = { "控えめ":{every:8,miniProb:0}, "標準":{every:4,miniProb:0.5}, "多め":{every:2,miniProb:0.8} };
+const GHOST_PRESET = {
+  "タイト":   {p16busy:0.45, p16calm:0.10, openMul:0.6, rimMul:0.3, extraGhost:false},
+  "標準":     {p16busy:0.75, p16calm:0.20, openMul:1.0, rimMul:1.0, extraGhost:false},
+  "手数多め": {p16busy:0.92, p16calm:0.45, openMul:1.5, rimMul:1.7, extraGhost:true}
+};
+
+/* ドラム生成: Stewart Copeland 基調 (ハット/リム主体・16分シンコペ・キック最小・Velocityにムラ) */
+function generateDrums(bars, style, r, swing, opts){
+  const D=DRUM, ev=[];
+  const fp = FILL_PRESET[opts.fill] || FILL_PRESET["標準"];
+  const g  = GHOST_PRESET[opts.ghost] || GHOST_PRESET["標準"];
+  const add=(t,midi,vel,dur=0.12)=>ev.push({t, dur, midi, vel:Math.max(20,Math.min(120,Math.round(vel)))});
+  for(let bar=0; bar<bars; bar++){
+    const s=bar*4, isLast=(bar===bars-1);
+    const fillHere = isLast || ((bar+1)%fp.every===0);      // フィル頻度(プリセット)
+    const mini = !fillHere && ((bar+1)%2===0) && r()<fp.miniProb;
+    const hatUntil = isLast?2 : fillHere?3 : mini?3.5 : 4;   // フィル区間はハットを止める
+    if(bar%4===0) add(s, D.CRASH, 96, 0.5);                  // セクション頭にクラッシュ
+
+    hatBar(add, s, style, r, swing, hatUntil, {ghost:g});
+
+    // --- スネア (バックビート 2 & 4) ---
+    add(s+1, D.SNARE, 100, 0.15);
+    if(!fillHere) add(s+3, D.SNARE, 104, 0.15);
+    if((style==="copeland"||style==="city") && !fillHere){   // ゴースト/シンコペ(手数で増減)
+      if(r()<0.6*g.rimMul) add(s+2.5, D.RIM, 54);
+      if(r()<0.3*g.rimMul) add(s+0.75, D.RIM, 50);
+      if(g.extraGhost){                                       // 手数多め: 16分ゴースト追加
+        if(r()<0.5) add(s+1.75, D.RIM, 44);
+        if(r()<0.5) add(s+3.25, D.RIM, 42);
+      }
+    }
+    // --- キック (最小限 + シンコペ) ---
+    add(s, D.KICK, 100, 0.18);
+    if(!isLast){                                             // 最終小節は大フィル優先でキック間引き
+      if(style==="rock"||style==="pop"){ add(s+2, D.KICK, 90, 0.18); if(style==="rock"&&r()<0.4) add(s+2.5, D.KICK, 78, 0.15); }
+      if(style==="copeland"){ add(s+2.5, D.KICK, 76, 0.15); if(r()<0.4) add(s+1.75, D.KICK, 68, 0.15); }
+      if(style==="city"){ add(s+2.75, D.KICK, 80, 0.15); if(r()<0.5) add(s+1.5, D.KICK, 70, 0.15); }
+    }
+    // --- フィル挿入 ---
+    if(isLast)        bigFill(add, s);
+    else if(fillHere) pick(r, FILLS)(add, s);
+    else if(mini)     miniFill(add, s, r);
+  }
+  return ev;
+}
+
+/* ============================ セクション生成 ============================ */
+/* 1セクション分の Melody / Chords / Bass を絶対時間で生成。flags で楽器の有無、arcで音域アーチ、velでダイナミクス */
+function buildSection(cfg){
+  const { degs, mode, ext, keyRoot, bassStyle, dens, r, arcLo, arcHi, vel, flags, barOffset, out } = cfg;
+  const melody=out.melody, chords=out.chords, bass=out.bass;
+  const bars=degs.length; let prevMidi=Math.round((arcLo+arcHi)/2);
+  for(let bar=0; bar<bars; bar++){
+    const deg=degs[bar];
+    const c=diatonicChord(deg,mode,ext);
+    const chordPCs=c.notes.map(n=>(n%12));
+    const barStart=(barOffset+bar)*4;
+
+    // --- コード ---
+    if(flags.chords){
+      if(flags.arp){                                   // アルペジオ（イントロ/アウトロ, Marr的分散和音）
+        const tones=c.notes.map(n=>{ let m=48+keyRoot+n; return m>74?m-12:m; }).sort((a,b)=>a-b);
+        const seq=[0,1,2,3,2,1,2,3].map(i=>tones[Math.min(i,tones.length-1)]);
+        for(let i=0;i<8;i++) chords.push({t:barStart+i*0.5, dur:0.55, midi:seq[i], vel:Math.round(56*vel)});
+      } else {
+        c.notes.forEach(n=>{ const m=48+keyRoot+n; chords.push({t:barStart, dur:3.95, midi:(m>72?m-12:m), vel:Math.round(64*vel)}); });
+      }
+    }
+    // --- ベース ---
+    if(flags.bass){
+      const rootMidi=36+keyRoot+c.notes[0];
+      const nextRoot=36+keyRoot+diatonicChord(degs[(bar+1)%bars],mode,ext).notes[0];
+      if(bassStyle==="root"){
+        bass.push({t:barStart,dur:2,midi:rootMidi,vel:Math.round(78*vel)});
+        bass.push({t:barStart+2,dur:2,midi:rootMidi,vel:Math.round(70*vel)});
+      } else if(bassStyle==="eighth"){
+        const fifth=36+keyRoot+c.notes[2];
+        const patt=[rootMidi,rootMidi,rootMidi,fifth,rootMidi,rootMidi,fifth,rootMidi];
+        for(let i=0;i<8;i++) bass.push({t:barStart+i*0.5,dur:0.45,midi:patt[i],vel:Math.round((i%2?66:80)*vel)});
+      } else {
+        const tones=[rootMidi,36+keyRoot+c.notes[1],36+keyRoot+c.notes[2]];
+        const approach=nextRoot+(nextRoot>rootMidi?-1:1);
+        const seq=[rootMidi,pick(r,tones),36+keyRoot+c.notes[2],approach];
+        for(let i=0;i<4;i++) bass.push({t:barStart+i,dur:0.9,midi:seq[i],vel:Math.round((74-(i===3?6:0))*vel)});
+      }
+    }
+    // --- メロディ ---
+    if(flags.melody){
+      const patt=pick(r,RHYTHM[dens]);
+      const p=bars>1?bar/(bars-1):0;
+      const center=lerp(arcLo,arcHi,easeInOut(Math.min(1,p*1.15)));
+      let t=barStart;
+      patt.forEach(dur=>{
+        const strong=Math.abs(t-Math.round(t))<1e-6;
+        const S=SCALE[mode];
+        const scalePCs=S.map(x=>(x+keyRoot)%12);
+        const poolPC=strong?chordPCs.map(x=>(x+keyRoot)%12):scalePCs;
+        let cand=[]; for(let m=arcLo-4;m<=arcHi+2;m++) if(poolPC.includes(((m%12)+12)%12)) cand.push(m);
+        cand.sort((a,b)=>Math.abs(a-center)-Math.abs(b-center));
+        const near=cand.slice(0,strong?2:3);
+        near.sort((a,b)=>(Math.abs(a-prevMidi))-(Math.abs(b-prevMidi))+(r()-0.5)*3);
+        const midi=near[0]??Math.round(center);
+        const rest=(!strong&&r()<0.12);
+        if(!rest){ melody.push({t,dur:dur*0.92,midi,vel:Math.round((strong?92:80)*vel)}); prevMidi=midi; }
+        t+=dur;
+      });
+    }
+  }
+  return degs.map(d=>chordName(d,mode,ext,keyRoot));
+}
+
+function readParams(){
+  return {
+    keyRoot: PC[document.getElementById("root").value],
+    mode: document.getElementById("mode").value,
+    bpm: +document.getElementById("bpm").value,
+    M: MOODS[currentMood],
+    seed: +document.getElementById("seed").value,
+    withDrums: document.getElementById("drumsOn").checked,
+    fill: document.getElementById("fillDensity").value,
+    ghost: document.getElementById("ghostAmount").value
+  };
+}
+function drumsFor(bars, M, r, seedParams, vel){        // セクション用ドラム（velでダイナミクス調整）
+  const d=generateDrums(bars, M.drum, r, M.swing, {fill:seedParams.fill, ghost:seedParams.ghost});
+  if(vel!==1) d.forEach(n=>n.vel=Math.max(18,Math.min(120,Math.round(n.vel*vel))));
+  return d;
+}
+
+/* ============================ ループ生成（現行モード） ============================ */
+function generate(){
+  const P=readParams(), {keyRoot,mode,bpm,M,seed}=P;
+  const ext=M.ext, totalBars=+document.getElementById("bars").value;
+  const r=rng(seed*2654435761 % 2147483647 + 7);
+  const base=pick(r,M.progs); const degs=[];
+  for(let b=0;b<totalBars;b++) degs.push(base[b%base.length]);
+  const out={melody:[],chords:[],bass:[]};
+  buildSection({degs,mode,ext,keyRoot,bassStyle:M.bass,dens:M.dens,r,arcLo:64,arcHi:76,vel:1,
+    flags:{melody:true,chords:true,bass:true,arp:false}, barOffset:0, out});
+  const drums=P.withDrums?drumsFor(totalBars,M,r,P,1):[];
+  return { keyRoot,mode,bpm,totalBars,ext,degs,drumStyle:M.drum,
+           melody:out.melody,chords:out.chords,bass:out.bass,drums,
+           chordNames: degs.map(d=>chordName(d,mode,ext,keyRoot)) };
+}
+
+/* ============================ フル構成生成 ============================ */
+const SECTIONS=[
+  {name:"イントロ", bars:4, role:"intro"},
+  {name:"Aメロ",   bars:8, role:"A"},
+  {name:"Bメロ",   bars:8, role:"B"},
+  {name:"サビ",    bars:8, role:"chorus"},
+  {name:"間奏",    bars:4, role:"inter"},
+  {name:"Aメロ2",  bars:8, role:"A"},
+  {name:"Bメロ2",  bars:8, role:"B"},
+  {name:"サビ2",   bars:8, role:"chorus"},
+  {name:"アウトロ", bars:4, role:"outro"}
+];
+/* 役割ごとのアレンジ: 楽器の有無・ダイナミクス(vel)・メロディ音域アーチ・使用進行(A/B/C) */
+const ROLE={
+  intro: {flags:{melody:false,chords:true,bass:false,arp:true},  vel:0.68, arcLo:67,arcHi:74, drums:false, prog:"A"},
+  A:     {flags:{melody:true, chords:true,bass:true, arp:false}, vel:0.82, arcLo:60,arcHi:69, drums:true,  prog:"A"},
+  B:     {flags:{melody:true, chords:true,bass:true, arp:false}, vel:0.90, arcLo:64,arcHi:74, drums:true,  prog:"B"},
+  chorus:{flags:{melody:true, chords:true,bass:true, arp:false}, vel:1.00, arcLo:71,arcHi:79, drums:true,  prog:"C"},
+  inter: {flags:{melody:false,chords:true,bass:true, arp:false}, vel:0.90, arcLo:64,arcHi:72, drums:true,  prog:"B"},
+  outro: {flags:{melody:false,chords:true,bass:true, arp:true},  vel:0.66, arcLo:64,arcHi:72, drums:false, prog:"A"}
+};
+function generateSong(){
+  const P=readParams(), {keyRoot,mode,bpm,M,seed}=P; const ext=M.ext;
+  const r=rng(seed*2654435761 % 2147483647 + 7);
+  // 進行を3種確保（A/B/サビでコントラスト）
+  const pool=M.progs;
+  const progMap={ A:pool[0], B:pool[1%pool.length], C:pool[2%pool.length] };
+  const out={melody:[],chords:[],bass:[]}; const drums=[];
+  const sections=[]; let barCursor=0;
+  for(const sec of SECTIONS){
+    const R=ROLE[sec.role];
+    const base=progMap[R.prog];
+    const degs=[]; for(let b=0;b<sec.bars;b++) degs.push(base[b%base.length]);
+    const chNames=buildSection({degs,mode,ext,keyRoot,bassStyle:M.bass,dens:M.dens,r,
+      arcLo:R.arcLo,arcHi:R.arcHi,vel:R.vel,flags:R.flags,barOffset:barCursor,out});
+    if(P.withDrums && R.drums){
+      const sd=drumsFor(sec.bars,M,r,P,R.vel);
+      sd.forEach(n=>drums.push({...n, t:n.t+barCursor*4}));
+    }
+    sections.push({name:sec.name, startBar:barCursor, bars:sec.bars, chordNames:chNames});
+    barCursor+=sec.bars;
+  }
+  return { keyRoot,mode,bpm,totalBars:barCursor,ext,drumStyle:M.drum, sections,
+           melody:out.melody,chords:out.chords,bass:out.bass,drums,
+           chordNames:[] };
+}
+
+/* ============================ MIDI 書き出し (SMF Fmt1) ============================ */
+const PPQ = 480;
+function vlq(n){ const b=[n&0x7f]; n>>=7; while(n>0){ b.unshift((n&0x7f)|0x80); n>>=7;} return b; }
+function trackChunk(events){ // events: {tick, data:[...]}
+  events.sort((a,b)=>a.tick-b.tick || (a.off?0:1)-(b.off?0:1));
+  let out=[], last=0;
+  for(const e of events){ const d=e.tick-last; last=e.tick; out.push(...vlq(d), ...e.data); }
+  out.push(0x00,0xff,0x2f,0x00); // end of track
+  const len=out.length;
+  return [0x4d,0x54,0x72,0x6b, (len>>>24)&255,(len>>>16)&255,(len>>>8)&255,len&255, ...out];
+}
+function partEvents(part, ch){
+  const ev=[];
+  for(const n of part){
+    const on = Math.round(n.t*PPQ), off = Math.round((n.t+n.dur)*PPQ);
+    ev.push({tick:on, off:false, data:[0x90|ch, n.midi&127, n.vel&127]});
+    ev.push({tick:off, off:true, data:[0x80|ch, n.midi&127, 0]});
+  }
+  return ev;
+}
+function metaName(str){ const bytes=[...str].map(c=>c.charCodeAt(0)); return [0xff,0x03,...vlq(bytes.length),...bytes]; }
+function buildMIDI(song){
+  const usPerBeat = Math.round(60000000/song.bpm);
+  const tempoTrk = trackChunk([
+    {tick:0,off:false,data:[0xff,0x51,0x03,(usPerBeat>>>16)&255,(usPerBeat>>>8)&255,usPerBeat&255]},
+    {tick:0,off:false,data:[0xff,0x58,0x04,4,2,24,8]},
+    {tick:0,off:false,data:metaName("Song Info")}
+  ]);
+  const melTrk  = trackChunk([{tick:0,off:false,data:metaName("Melody")}, ...partEvents(song.melody,0)]);
+  const chTrk   = trackChunk([{tick:0,off:false,data:metaName("Chords")}, ...partEvents(song.chords,1)]);
+  const bsTrk   = trackChunk([{tick:0,off:false,data:metaName("Bass")}, ...partEvents(song.bass,2)]);
+  const tracks=[tempoTrk, melTrk, chTrk, bsTrk];
+  if(song.drums && song.drums.length){                 // ドラムは MIDI ch10 (index 9)
+    tracks.push(trackChunk([{tick:0,off:false,data:metaName("Drums")}, ...partEvents(song.drums,9)]));
+  }
+  const nTrk=tracks.length;
+  const header=[0x4d,0x54,0x68,0x64,0,0,0,6, 0,1, (nTrk>>8)&255,nTrk&255, (PPQ>>8)&255,PPQ&255];
+  return new Uint8Array([...header, ...tracks.flat()]);
+}
+function download(bytes,name){
+  const blob=new Blob([bytes],{type:"audio/midi"});
+  const url=URL.createObjectURL(blob);
+  // 1) 標準の自動ダウンロード（PC/対応ブラウザ）
+  const a=document.createElement("a");
+  a.href=url; a.download=name; a.style.display="none"; document.body.appendChild(a); a.click(); a.remove();
+  // 2) フォールバック: スマホ/サンドボックスで自動DLが弾かれた場合のタップ保存リンク
+  const link=document.getElementById("saveLink");
+  link.href=url; link.download=name; link.target="_blank"; link.rel="noopener";
+  link.style.display="inline-flex";
+  link.textContent=`⬇ 保存されない場合はここをタップ： ${name}`;
+  setTimeout(()=>URL.revokeObjectURL(url), 120000); // スマホ保存操作のため長め
+}
+
+/* ============================ ピアノロール描画 ============================ */
+function drawRoll(song){
+  const cv=document.getElementById("roll"); const dpr=window.devicePixelRatio||1;
+  const hasDrums = song.drums && song.drums.length;
+  const H=hasDrums?264:220, drumH=hasDrums?54:0, melH=H-drumH;
+  const W=cv.clientWidth; cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+"px";
+  const g=cv.getContext("2d"); g.scale(dpr,dpr); g.clearRect(0,0,W,H);
+  const beats=song.totalBars*4;
+  const all=[...song.melody,...song.chords,...song.bass];
+  let lo=127,hi=0; all.forEach(n=>{lo=Math.min(lo,n.midi);hi=Math.max(hi,n.midi);});
+  lo-=1; hi+=1; const span=Math.max(12,hi-lo);
+  const x=t=>t/beats*W, y=m=>melH-((m-lo)/span)*melH, hgt=Math.max(3,melH/span-1);
+  // 小節グリッド
+  g.strokeStyle="#251f34";
+  for(let b=0;b<=song.totalBars;b++){ const px=b*4/beats*W; g.beginPath(); g.moveTo(px,0); g.lineTo(px,H); g.stroke(); }
+  const draw=(part,color)=>{ g.fillStyle=color; part.forEach(n=>{ const w=Math.max(2,x(n.t+n.dur)-x(n.t)-1); g.globalAlpha=.85; g.fillRect(x(n.t),y(n.midi),w,hgt); }); g.globalAlpha=1; };
+  draw(song.chords, getCss("--accent"));
+  draw(song.bass, getCss("--cyan"));
+  draw(song.melody, getCss("--rose"));
+  // --- セクション区切り + ラベル ---
+  if(song.sections){
+    g.font="10px sans-serif";
+    song.sections.forEach((sec,i)=>{
+      const px=sec.startBar*4/beats*W;
+      g.strokeStyle="rgba(169,155,255,.55)"; g.setLineDash([3,3]);
+      g.beginPath(); g.moveTo(px,0); g.lineTo(px,melH); g.stroke(); g.setLineDash([]);
+      g.fillStyle=getCss("--accent2"); g.fillText(sec.name, px+3, 11);
+    });
+  }
+  // --- ドラムレーン (Hat / Snare / Kick の3行) ---
+  if(hasDrums){
+    g.strokeStyle="#332e45"; g.beginPath(); g.moveTo(0,melH); g.lineTo(W,melH); g.stroke();
+    const rowOf=m=>{ if(m===DRUM.KICK) return 2; if(m===DRUM.SNARE||m===DRUM.RIM) return 1; return 0; }; // 0=hat,1=snare,2=kick
+    const amber=getCss("--amber");
+    song.drums.forEach(n=>{
+      const row=rowOf(n.midi), cy=melH+8+row*((drumH-16)/2);
+      g.globalAlpha=Math.max(.35, n.vel/120); g.fillStyle=amber;
+      g.fillRect(x(n.t), cy, Math.max(3, n.midi===DRUM.HHO?6:4), 8);
+    });
+    g.globalAlpha=1;
+  }
+}
+function getCss(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+/* ============================ Web Audio 試聴 ============================ */
+let actx=null, playing=false, scheduled=[];
+function stopAudio(){ playing=false; scheduled.forEach(o=>{try{o.stop();}catch(e){}}); scheduled=[]; document.getElementById("stopBtn").disabled=true; }
+function playSong(song){
+  stopAudio(); actx = actx||new (window.AudioContext||window.webkitAudioContext)(); actx.resume();
+  playing=true; document.getElementById("stopBtn").disabled=false;
+  const spb=60/song.bpm, t0=actx.currentTime+0.1;
+  const master=actx.createGain(); master.gain.value=0.9; master.connect(actx.destination);
+  const rev=actx.createGain(); rev.gain.value=0.18; rev.connect(master);
+  const mtof=m=>440*Math.pow(2,(m-69)/12);
+  const voice=(part,type,gain,dst)=>part.forEach(n=>{
+    const o=actx.createOscillator(), e=actx.createGain();
+    o.type=type; o.frequency.value=mtof(n.midi);
+    const st=t0+n.t*spb, dur=Math.max(0.08,n.dur*spb);
+    const v=gain*(n.vel/127);
+    e.gain.setValueAtTime(0.0001,st); e.gain.exponentialRampToValueAtTime(v,st+0.012);
+    e.gain.exponentialRampToValueAtTime(0.0001,st+dur);
+    o.connect(e); e.connect(dst); o.start(st); o.stop(st+dur+0.05); scheduled.push(o);
+  });
+  voice(song.chords,"sine",0.10,rev);
+  voice(song.bass,"triangle",0.30,master);
+  voice(song.melody,"square",0.16,master);
+  // --- ドラム (ノイズ合成) ---
+  if(song.drums && song.drums.length){
+    const nb=actx.createBuffer(1, actx.sampleRate*0.4, actx.sampleRate);
+    const nd=nb.getChannelData(0); for(let i=0;i<nd.length;i++) nd[i]=Math.random()*2-1;
+    song.drums.forEach(n=>{
+      const st=t0+n.t*spb, v=(n.vel/127);
+      if(n.midi===DRUM.KICK){
+        const o=actx.createOscillator(), e=actx.createGain(); o.type="sine";
+        o.frequency.setValueAtTime(150,st); o.frequency.exponentialRampToValueAtTime(46,st+0.11);
+        e.gain.setValueAtTime(v*0.9,st); e.gain.exponentialRampToValueAtTime(0.001,st+0.16);
+        o.connect(e); e.connect(master); o.start(st); o.stop(st+0.18); scheduled.push(o);
+      } else if(n.midi===DRUM.SNARE||n.midi===DRUM.RIM){
+        const s=actx.createBufferSource(), bp=actx.createBiquadFilter(), e=actx.createGain();
+        s.buffer=nb; bp.type="bandpass"; bp.frequency.value=n.midi===DRUM.RIM?2600:1800;
+        const dur=n.midi===DRUM.RIM?0.06:0.14;
+        e.gain.setValueAtTime(v*(n.midi===DRUM.RIM?0.4:0.6),st); e.gain.exponentialRampToValueAtTime(0.001,st+dur);
+        s.connect(bp); bp.connect(e); e.connect(master); s.start(st); s.stop(st+dur+0.02); scheduled.push(s);
+      } else if(n.midi>=DRUM.TOM3 && n.midi<=DRUM.TOM1){
+        const o=actx.createOscillator(), e=actx.createGain(); o.type="sine";
+        const f=n.midi===DRUM.TOM1?200:n.midi===DRUM.TOM2?150:110;
+        o.frequency.setValueAtTime(f,st); o.frequency.exponentialRampToValueAtTime(f*0.6,st+0.14);
+        e.gain.setValueAtTime(v*0.7,st); e.gain.exponentialRampToValueAtTime(0.001,st+0.18);
+        o.connect(e); e.connect(master); o.start(st); o.stop(st+0.2); scheduled.push(o);
+      } else { // hats / cymbals
+        const s=actx.createBufferSource(), hp=actx.createBiquadFilter(), e=actx.createGain();
+        s.buffer=nb; hp.type="highpass"; hp.frequency.value=n.midi===DRUM.CRASH?5000:8000;
+        const dur=(n.midi===DRUM.HHO?0.16:n.midi===DRUM.CRASH?0.5:n.midi===DRUM.RIDE?0.2:0.04);
+        e.gain.setValueAtTime(v*0.35,st); e.gain.exponentialRampToValueAtTime(0.001,st+dur);
+        s.connect(hp); hp.connect(e); e.connect(master); s.start(st); s.stop(st+dur+0.02); scheduled.push(s);
+      }
+    });
+  }
+  const end=t0+song.totalBars*4*spb+0.5;
+  const timer=setTimeout(()=>{ if(playing) stopAudio(); }, (end-actx.currentTime)*1000);
+  scheduled.push({stop:()=>clearTimeout(timer)});
+}
+
+/* ============================ UI ============================ */
+let SONG=null;
+function renderMoods(){
+  const box=document.getElementById("moods"); box.innerHTML="";
+  Object.keys(MOODS).forEach(name=>{
+    const el=document.createElement("div"); el.className="mood"+(name===currentMood?" on":""); el.textContent=name;
+    el.onclick=()=>{ currentMood=name; renderMoods(); const M=MOODS[name];
+      document.getElementById("mode").value=M.mode; document.getElementById("bpm").value=M.bpm; };
+    box.appendChild(el);
+  });
+}
+let songMode="loop"; // "loop" | "full"
+function fmtDur(sec){ const m=Math.floor(sec/60), s=Math.round(sec%60); return `${m}:${String(s).padStart(2,"0")}`; }
+function doGenerate(){
+  SONG = songMode==="full" ? generateSong() : generate();
+  document.getElementById("out").classList.add("show");
+  const dur=fmtDur(SONG.totalBars*4*(60/SONG.bpm));
+  document.getElementById("meta").innerHTML =
+    `<span>キー <b>${NAMES[SONG.keyRoot]} ${SONG.mode==="minor"?"minor":"major"}</b></span>`+
+    `<span>BPM <b>${SONG.bpm}</b></span>`+
+    `<span>${SONG.totalBars}小節 <b>${dur}</b></span>`+
+    `<span>気分 <b>${currentMood}</b></span>`+
+    (SONG.sections?`<span>構成 <b>${SONG.sections.length}セクション</b></span>`:`<span>音符数 <b>${SONG.melody.length}</b></span>`)+
+    (SONG.drums.length?`<span>ドラム <b>${SONG.drumStyle}</b> (${SONG.drums.length}打)</span>`:`<span style="color:var(--faint)">ドラムなし</span>`);
+  const chips=document.getElementById("chips"); chips.innerHTML="";
+  if(SONG.sections){                                   // フル構成: セクションごとにコード表示
+    SONG.sections.forEach(sec=>{
+      const g=document.createElement("div"); g.style.cssText="display:flex;flex-wrap:wrap;gap:6px;align-items:center;width:100%;margin:2px 0";
+      const lb=document.createElement("span"); lb.className="chip"; lb.style.cssText="background:transparent;border-color:var(--accent);color:var(--accent2);font-weight:700";
+      lb.textContent=`${sec.name} (${sec.bars})`; g.appendChild(lb);
+      [...new Set(sec.chordNames)].forEach(cn=>{ const c=document.createElement("div"); c.className="chip"; c.textContent=cn; g.appendChild(c); });
+      chips.appendChild(g);
+    });
+  } else {
+    SONG.chordNames.forEach((cn,i)=>{ const c=document.createElement("div"); c.className="chip";
+      c.innerHTML=`<span class="b">${i+1}</span> ${cn}`; chips.appendChild(c); });
+  }
+  drawRoll(SONG);
+  ["playBtn","stopBtn","midiBtn"].forEach(id=>document.getElementById(id).disabled=false);
+  document.getElementById("stopBtn").disabled=true;
+}
+window.addEventListener("DOMContentLoaded",()=>{
+  renderMoods();
+  const M=MOODS[currentMood];
+  document.getElementById("mode").value=M.mode; document.getElementById("bpm").value=M.bpm;
+  // 生成モード切替
+  document.querySelectorAll("#modeSel .mood").forEach(el=>{
+    el.onclick=()=>{ songMode=el.dataset.mode;
+      document.querySelectorAll("#modeSel .mood").forEach(x=>x.classList.toggle("on", x===el));
+      document.getElementById("bars").disabled = (songMode==="full");
+    };
+  });
+  document.getElementById("genBtn").onclick=doGenerate;
+  document.getElementById("playBtn").onclick=()=>SONG&&playSong(SONG);
+  document.getElementById("stopBtn").onclick=stopAudio;
+  document.getElementById("diceBtn").onclick=()=>{ document.getElementById("seed").value=Math.floor(Math.random()*99999); doGenerate(); };
+  document.getElementById("midiBtn").onclick=()=>{ if(!SONG) return;
+    const tag = songMode==="full" ? "FULL構成" : `${SONG.totalBars}bars`;
+    const nm=`${NAMES[SONG.keyRoot]}${SONG.mode==="minor"?"m":""}_${currentMood}_${tag}_BPM${SONG.bpm}_seed${document.getElementById("seed").value}.mid`;
+    download(buildMIDI(SONG), nm);
+  };
+  window.addEventListener("resize",()=>SONG&&drawRoll(SONG));
+});
+</script>
+</body>
+</html>
