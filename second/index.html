@@ -1,0 +1,1657 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ワンクリック作曲 Second</title>
+<style>
+:root{
+  --ink:#12101a; --panel:#1b1826; --panel2:#221e30; --line:#332e45; --line2:#443c5c;
+  --accent:#7c6cff; --accent2:#a99bff; --cyan:#4fd1c5; --rose:#ff7a9c; --amber:#ffcf6b;
+  --green:#7fdca0; --sky:#8ec5ff; --drum:#b8b2d6;
+  --text:#ece8f7; --muted:#a49fc0; --faint:#6f6a8c; --bad:#ff6b6b;
+  --sans:"Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,Meiryo,system-ui,-apple-system,sans-serif;
+  --mono:"SF Mono",ui-monospace,"Roboto Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:
+    radial-gradient(1100px 560px at 12% -10%, #241b3f 0%, transparent 55%),
+    radial-gradient(900px 640px at 105% 0%, #1a2b3a 0%, transparent 52%),
+    var(--ink);
+  color:var(--text); font-family:var(--sans); line-height:1.55;
+  -webkit-font-smoothing:antialiased; min-height:100vh;
+}
+.wrap{max-width:1120px; margin:0 auto; padding:28px 16px 80px}
+header h1{font-size:26px; margin:0 0 4px; letter-spacing:.5px}
+header h1 .dot{color:var(--accent2)}
+header h1 small{color:var(--faint); font-size:14px; font-weight:400}
+header p{margin:0; color:var(--muted); font-size:13.5px}
+.card{background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+  border-radius:16px; padding:20px; box-shadow:0 18px 46px rgba(0,0,0,.45); margin-top:20px}
+.card h2{font-size:14px; margin:0 0 12px; color:var(--accent2); letter-spacing:.4px}
+.grid{display:grid; gap:14px}
+.controls{grid-template-columns:repeat(2,minmax(0,1fr))}
+.slots{grid-template-columns:minmax(0,1fr)}
+@media(min-width:760px){ .controls{grid-template-columns:repeat(4,minmax(0,1fr))} .slots{grid-template-columns:repeat(2,minmax(0,1fr))} }
+label.f{display:block; font-size:12px; color:var(--muted); margin-bottom:6px; letter-spacing:.3px}
+select,input[type=number]{width:100%; background:#15121f; color:var(--text); border:1px solid var(--line2);
+  border-radius:10px; padding:10px 11px; font-family:var(--sans); font-size:14px; appearance:none}
+select:focus,input:focus{outline:none; border-color:var(--accent)}
+.slot{background:#15121f; border:1px solid var(--line2); border-radius:12px; padding:12px}
+.slot .top{display:flex; align-items:center; gap:8px; margin-bottom:8px}
+.slot .tag{font-family:var(--mono); font-size:11px; color:var(--ink); background:var(--accent2); border-radius:6px; padding:2px 7px; font-weight:700}
+.slot .who{font-size:11.5px; color:var(--faint)}
+.slot .lock{margin-left:auto; background:none; border:1px solid var(--line2); color:var(--muted); border-radius:8px; padding:3px 9px; cursor:pointer; font-size:12px}
+.slot .lock.on{border-color:var(--amber); color:var(--amber)}
+.slot select{background:#1b1826}
+.slot .desc{font-size:12px; color:var(--muted); margin-top:7px; min-height:2.8em}
+.opts{display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:14px}
+.opts label{display:flex; align-items:center; gap:7px; color:var(--muted); font-size:13px; cursor:pointer}
+.opts input{accent-color:var(--accent)}
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:16px}
+.btn{border:none; border-radius:12px; padding:13px 20px; font-size:15px; font-weight:700; cursor:pointer;
+  font-family:var(--sans); transition:.15s; display:inline-flex; align-items:center; gap:8px}
+.btn.primary{background:linear-gradient(180deg,var(--accent2),var(--accent)); color:#fff; box-shadow:0 8px 22px rgba(124,108,255,.42)}
+.btn.primary:hover{transform:translateY(-1px)}
+.btn.ghost{background:#15121f; color:var(--text); border:1px solid var(--line2)}
+.btn.ghost:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.4; cursor:not-allowed; transform:none}
+.combo{font-family:var(--mono); color:var(--faint); font-size:12px; margin-left:auto}
+.combo b{color:var(--accent2)}
+.roles{display:flex; flex-wrap:wrap; gap:8px}
+.role{background:#15121f; border:1px solid var(--line2); border-radius:10px; padding:7px 11px; font-size:12px; color:var(--muted)}
+.role b{color:var(--text); font-weight:600}
+.role i{font-style:normal; display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:6px}
+.fv{display:grid; gap:14px; grid-template-columns:minmax(0,1fr)}
+@media(min-width:760px){ .fv{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.fv h3{font-size:12.5px; margin:0 0 6px; color:var(--muted); font-weight:600}
+.fv ul{margin:0; padding-left:18px; font-size:12.5px; color:var(--muted)}
+.fv li b{color:var(--text); font-weight:600}
+.out{display:none}
+.out.show{display:block}
+.meta{display:flex; gap:8px 18px; flex-wrap:wrap; color:var(--muted); font-size:12.5px; margin-bottom:12px}
+.meta b{color:var(--text); font-weight:600}
+.ok{color:var(--green)} .ng{color:var(--bad)}
+.secrow{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:3px 0}
+.chip{font-family:var(--mono); font-size:12.5px; background:#15121f; border:1px solid var(--line2);
+  border-radius:8px; padding:4px 9px; color:var(--accent2)}
+.chip.lb{background:transparent; border-color:var(--accent); font-family:var(--sans); font-weight:700; min-width:92px}
+.chip.syl{color:var(--rose); border-color:#5a3346; font-family:var(--sans)}
+.chip.odd{color:var(--amber); border-color:#6a5530}
+.theme{margin:14px 0; padding:12px 14px; border:1px dashed var(--line2); border-radius:12px; font-size:13px; color:var(--muted)}
+.theme b{color:var(--text)}
+.rollwrap{background:#100e18; border:1px solid var(--line); border-radius:12px; overflow-x:auto; margin:14px 0 8px}
+canvas{display:block; height:320px}
+.legend{display:flex; flex-wrap:wrap; gap:6px 14px; font-size:12px; color:var(--muted)}
+.legend span{cursor:pointer; user-select:none}
+.legend span.off{opacity:.35; text-decoration:line-through}
+.legend i{display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:5px; vertical-align:-1px}
+.hint{color:var(--faint); font-size:12px; margin-top:14px; line-height:1.75}
+kbd{font-family:var(--mono); background:#15121f; border:1px solid var(--line2); border-radius:5px; padding:1px 6px; font-size:11px}
+#saveLink{display:none; margin-top:12px; padding:11px 16px; border-radius:10px; background:#15121f; border:1px solid var(--amber); color:var(--amber); font-size:13px; text-decoration:none}
+.lyr{margin:14px 0; border:1px solid var(--line2); border-radius:12px; padding:12px 14px; background:#15121f}
+.lyrhead{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; margin-bottom:10px; font-size:13px}
+.btn.sm{padding:6px 11px; font-size:12px; border-radius:9px}
+.lyrbody{display:grid; gap:10px 22px; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); font-size:13.5px}
+.lyrbody h4{margin:0 0 3px; font-size:12px; color:var(--accent2)}
+.lyrbody p{margin:0; line-height:1.8}
+.lyrbody .ja{display:block; color:var(--muted); font-size:12px; line-height:1.5; margin:0 0 4px}
+.lyrbody small{color:var(--faint); font-family:var(--mono); font-size:10.5px; margin-left:6px}
+.footer{color:var(--faint); font-size:11.5px; margin-top:26px; text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ワンクリック作曲<span class="dot">.</span> Second <small>Bacharach × Max Martin モジュール作曲システム</small></h1>
+    <p>コード進行13 × Aメロ10 × Bメロ10 × サビ10 ＝ 13,000通り（× 12キー × seed）。構成・小節数・サビ設計・ドラム・ギターの役割は固定し、毎回ゼロから作らずに組み替えるだけで1曲を出します。</p>
+  </header>
+
+  <div class="card">
+    <h2>役割分担（テンプレート）</h2>
+    <div class="roles">
+      <div class="role"><i style="background:var(--accent)"></i><b>Bacharach</b> ＝ コード／和声（Piano・進行）</div>
+      <div class="role"><i style="background:var(--rose)"></i><b>Max Martin</b> ＝ フック／メロディ構造（Vocal）</div>
+      <div class="role"><i style="background:var(--amber)"></i><b>Johnny Marr</b> ＝ ギター（ルートレス分散）</div>
+      <div class="role"><i style="background:var(--sky)"></i><b>The Edge</b> ＝ 空間（付点8分ディレイの Lead）</div>
+      <div class="role"><i style="background:var(--green)"></i><b>Morricone</b> ＝ 劇伴的展開（Strings）</div>
+      <div class="role"><i style="background:var(--cyan)"></i><b>Jamerson</b> ＝ Bass</div>
+      <div class="role"><i style="background:var(--drum)"></i><b>Copeland</b> ＝ Drums</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>毎回変更するもの</h2>
+    <div class="grid controls">
+      <div>
+        <label class="f" for="key">キー（主音）</label>
+        <select id="key"></select>
+      </div>
+      <div>
+        <label class="f" for="bpm">BPM（既定 128）</label>
+        <input type="number" id="bpm" value="128" min="60" max="220">
+      </div>
+      <div>
+        <label class="f" for="seed">seed（リフ・フック・テーマ・揺らぎ）</label>
+        <input type="number" id="seed" value="1">
+      </div>
+      <div>
+        <label class="f">&nbsp;</label>
+        <button class="btn ghost" id="diceBtn" style="width:100%;justify-content:center;padding:10px">🎲 seed だけ変える</button>
+      </div>
+    </div>
+
+    <div class="grid slots" style="margin-top:16px" id="slots"></div>
+
+    <div class="grid" style="margin-top:14px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+      <div><label class="f" for="optExt">曲の長さ（拡張）</label><select id="optExt"></select></div>
+      <div><label class="f" for="optTheme">テーマ（歌詞）</label><select id="optTheme"></select></div>
+    </div>
+
+    <div class="opts">
+      <label><input type="checkbox" id="optOdd" checked> 変拍子：Bメロ最終小節を 2/4 に（Bacharach）</label>
+      <label><input type="checkbox" id="optRecycle"> メロディ・リサイクル：サビ＝Aメロの輪郭を表拍化（E.T.方式）</label>
+      <label><input type="checkbox" id="optDrums" checked> ドラムを含める</label>
+      <label><input type="checkbox" id="optCut"> イントロカット（イントロ4小節を省き、U2ブレイク1小節で即スタート）</label>
+      <label><input type="checkbox" id="optU2"> U2ブレイク（瀬谷スタイル：サビ前・間奏明け・歌い出し前に「Until The End Of The World」フィル）</label>
+    </div>
+
+    <div class="row">
+      <button class="btn primary" id="genBtn">✨ Generate</button>
+      <button class="btn ghost" id="shuffleBtn">🎰 シャッフル（🔒以外）</button>
+      <button class="btn ghost" id="playBtn" disabled>▶ 試聴</button>
+      <button class="btn ghost" id="stopBtn" disabled>■ 停止</button>
+      <button class="btn ghost" id="midiBtn" disabled>⬇ MIDI書き出し</button>
+      <button class="btn ghost" id="memoBtn" disabled>📋 設計メモ</button>
+      <button class="btn ghost" id="svpBtn" disabled>🎤 SynthV(.svp)書き出し</button>
+      <button class="btn primary" id="bundleBtn" disabled title="MIDI・.svp・歌詞メモ・Logic手順を同じ名前で1つのフォルダに書き出す">📦 Logic用に一括書き出し</button>
+      <label id="openLogicWrap" style="display:none; align-items:center; gap:6px; font-size:12.5px; color:var(--muted)"><input type="checkbox" id="optOpenLogic" checked style="accent-color:var(--accent)"> 書き出し後に Logic Pro で開く</label>
+      <span class="combo" id="combo"></span>
+    </div>
+    <a id="saveLink"></a>
+
+    <details style="margin-top:16px" open>
+      <summary style="cursor:pointer; color:var(--muted); font-size:13px">🎚 トラック音量（MIDI の CC7 として書き出し・試聴にも反映）</summary>
+      <div class="grid" id="vols" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px 18px; margin-top:12px"></div>
+      <div style="margin-top:8px"><button class="btn ghost" id="volReset" style="padding:6px 12px; font-size:12px">初期値に戻す</button></div>
+    </details>
+  </div>
+
+  <div class="card out" id="out">
+    <h2>生成結果</h2>
+    <div class="meta" id="meta"></div>
+    <div id="sections"></div>
+    <div class="theme" id="theme"></div>
+    <div class="lyr">
+      <div class="lyrhead"><b>歌詞（SynthV 用・英語 / 全単語1音節・1音符＝1単語）</b>
+        <button class="btn ghost sm" id="lyrReroll">🎲 歌詞だけ作り直す</button>
+        <button class="btn ghost sm" id="lyrCopy">📋 歌詞をコピー</button>
+        <label style="font-size:12px; color:var(--muted); display:flex; gap:6px; align-items:center"><input type="checkbox" id="optBreath" style="accent-color:var(--accent)"> フレーズ頭にブレス(br)</label>
+      </div>
+      <div id="lyrics" class="lyrbody"></div>
+    </div>
+    <div class="rollwrap" id="rollwrap"><canvas id="roll"></canvas></div>
+    <div class="legend" id="legend"></div>
+    <div class="hint">
+      • <b>Logic への取り込み</b>：書き出した <kbd>.mid</kbd> を Finder から Logic のトラックエリアへドラッグ。Drums / Bass / Guitar / Lead / Vocal / Piano / Strings の7トラックとセクションマーカー・拍子変更が入ります。音色は GM で指定済み（Drums＝ch10 ドラムキット、Bass＝Finger Bass、Guitar＝Clean Guitar、Lead＝Muted Guitar、Vocal＝Synth Voice、Piano＝Grand Piano、Strings＝String Ensemble）。読み込み後に Drums を Addictive Drums 2、Vocal を Synthesizer V に差し替えてください。<br>
+      • <b>Lead（The Edge）</b>は8分のドライ音です。Logic で <kbd>Delay Designer</kbd> か <kbd>Tape Delay</kbd> を挿し、Time 1/8 付点・Feedback 30% 前後・Mix 30% 前後にすると付点8分の空間になります（試聴では簡易ディレイを掛けています）。<br>
+      • <b>Strings</b> には CC11（Expression）でBメロ後半のスウェルとアウトロのフェードを書き込んであります。<br>
+      • <b>音節数</b>（ピンク）は歌詞の文字数の目安です。1音符＝1音節で書けば、メロディを崩さずに歌詞を載せられます。<br>
+      • 凡例をクリックすると、そのパートを試聴から外せます。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>固定するもの / 変更するもの</h2>
+    <div class="fv">
+      <div>
+        <h3>固定（テンプレート）</h3>
+        <ul>
+          <li><b>曲構成</b>：イントロ4 → A8 → B8 → サビ8 → 間奏4 → A8 → B8 → サビ8 → アウトロ4（60小節）。拡張で「ラスサビ×2」または「Dメロ → 落ちサビ → ラスサビ」をサビ2のあとに追加できる</li>
+          <li><b>サビ設計</b>：1拍目の長い音でフック → 7小節目で最高音 → 主音へ解決。2回目のサビは同じメロディ</li>
+          <li><b>Aメロは裏拍、サビは表拍</b>（Max Martin のコントラスト）。Bメロ最後の半拍は全楽器を抜く</li>
+          <li><b>ドラム</b>：Copeland 基調（ハット／リム主体・キック最小）。サビ前はフィルなしで止める（U2ブレイクを選ぶと、瀬谷スタイルと同じくサビ前・間奏明け・歌い出し前に1小節フィル）</li>
+          <li><b>ギター</b>：Marr 型のルートレス分散和音＋9th。トップノートは順次進行</li>
+          <li><b>展開</b>：イントロはギターのみ → A1は薄く → A2で Strings 追加 → 間奏で Strings がフックを再現 → サビ2で対旋律と Lead → （拡張）Dメロは Strings 主導のハーフタイム、落ちサビはドラムを抜き、ラスサビで全開</li>
+        </ul>
+      </div>
+      <div>
+        <h3>毎回変更（この画面で選ぶ）</h3>
+        <ul id="varList">
+          <li>Key / BPM / コード進行 / Aメロ / Bメロ / サビ</li>
+          <li>サビのフック（seed） / ギターリフ（seed） / テーマ（seed）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">ローカル生成・サーバー不要 / SMF Format 1 出力 / 短2度衝突の自動検査つき</div>
+</div>
+
+<script>
+"use strict";
+/* ============================ 基本定義 ============================ */
+const SHARP=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+const FLAT =["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
+const SCALE={ major:[0,2,4,5,7,9,11], minor:[0,2,3,5,7,8,10] };
+const DRUM={ KICK:36, SNARE:38, RIM:37, HHC:42, HHO:46, RIDE:51, CRASH:49, TOM1:48, TOM2:45, TOM3:43 };
+/* MIDI ch と GM音色。Drums は ch10(=index 9) でないと Logic/GM がドラムキットとして読まない。
+   音色は既存スクリプト(scripts/beyond_the_chasm_*.py)と同じ割り当て */
+const PARTS=["Drums","Bass","Guitar","Lead","Vocal","Piano","Strings"];
+const CH={ Drums:9, Bass:1, Guitar:2, Lead:3, Vocal:4, Piano:5, Strings:6 };
+const PROG={ Bass:33, Guitar:27, Lead:28, Vocal:54, Piano:0, Strings:48 };  // 0始まりGM: Finger Bass / Clean Gtr / Muted Gtr / Synth Voice / Grand Piano / String Ens.
+const RANGE={ Bass:[28,52], Piano:[52,70], Guitar:[62,86], Lead:[74,91], Strings:[60,91], Vocal:[55,77] };
+const COLOR={ Vocal:"--rose", Piano:"--accent", Guitar:"--amber", Bass:"--cyan", Strings:"--green", Lead:"--sky", Drums:"--drum" };
+const LABEL={ Vocal:"Vocal", Piano:"Piano", Guitar:"Guitar", Bass:"Bass", Strings:"Strings", Lead:"Lead (Edge)", Drums:"Drums" };
+
+/* コード品質: 半音程(13=♭9, 14=9th) */
+const QUAL={
+  "":{iv:[0,4,7],s:""}, "m":{iv:[0,3,7],s:"m"},
+  "maj7":{iv:[0,4,7,11],s:"maj7"}, "maj9":{iv:[0,4,7,11,14],s:"maj9"},
+  "m7":{iv:[0,3,7,10],s:"m7"}, "m9":{iv:[0,3,7,10,14],s:"m9"},
+  "7":{iv:[0,4,7,10],s:"7"}, "9":{iv:[0,4,7,10,14],s:"9"}, "7b9":{iv:[0,4,7,10,13],s:"7(b9)"},
+  "7sus4":{iv:[0,5,7,10],s:"7sus4"}, "sus4":{iv:[0,5,7],s:"sus4"},
+  "m7b5":{iv:[0,3,6,10],s:"m7(b5)"}, "dim7":{iv:[0,3,6,9],s:"dim7"},
+  "6":{iv:[0,4,7,9],s:"6"}, "m6":{iv:[0,3,7,9],s:"m6"}, "add9":{iv:[0,4,7,14],s:"add9"}
+};
+const ROMAN={ I:0, II:2, III:4, IV:5, V:7, VI:9, VII:11 };
+const ROMAN_RE=/^([b#]?)(VII|VI|IV|V|III|II|I)(.*?)(?:\/([b#]?)(VII|VI|IV|V|III|II|I))?$/;
+
+/* ============================ モジュール: コード進行13種 ============================
+   度数は主音からの長音階ローマ数字（マイナーキーも bIII / bVI で表記）。| で小節、空白で1小節2コード */
+const PACKS=[
+  { name:"Close to You 型", mode:"major", desc:"Imaj7→#Idim7→IIm7→V7(b9) の半音上行。IV/V（F/G型）の宙づり",
+    A:"Imaj7 | IIm7 IV/V | Imaj7 | IIm7 IV/V | IIIm7 | VI7 | IIm7 | V7sus4 V7",
+    B:"IVmaj7 | IVm6 | IIIm7 | bIIIdim7 | IIm7 | bVII9 | IVmaj7 | IV/V",
+    C:"Imaj7 | #Idim7 | IIm7 | V7b9 | IIIm7 | VI7 | IIm7 V7 | Imaj7" },
+  { name:"Walk On By 型", mode:"minor", desc:"Im7 と IV7（ドリアン）の往復。サビで IIm7(b5)→V7(b9) の哀愁",
+    A:"Im7 | IV7 | Im7 | IV7 | bVImaj7 | bVII7 | Im7 | V7sus4 V7b9",
+    B:"IVm7 | bVII7 | bIIImaj7 | bVImaj7 | IIm7b5 | V7b9 | bVImaj7 | V7sus4",
+    C:"Im7 | IVm7 | bVII7 | bIIImaj7 | bVImaj7 | IIm7b5 V7b9 | Im7 | Im7" },
+  { name:"Raindrops 型", mode:"major", desc:"I→Imaj7→I7 の内声下降。VI7 で一瞬の転調感",
+    A:"I | Imaj7 | I7 | IVmaj7 | IIIm7 | VI7 | IIm7 | V7sus4",
+    B:"IIm7 | V7 | IIIm7 | VI7 | IIm7 | #IVm7b5 | IV/V | V7",
+    C:"IVmaj7 | IIIm7 | IIm7 | Imaj7 | IVmaj7 | IIIm7 VI7 | IIm7 V7 | I" },
+  { name:"The Look of Love 型", mode:"minor", desc:"Im9 の浮遊感とナポリの bIImaj7。ボサ寄りの官能",
+    A:"Im9 | IVm7 | Im9 | IVm7 | bVImaj7 | bIImaj7 | IIm7b5 | V7b9",
+    B:"bIIImaj7 | bVImaj7 | IIm7b5 | V7b9 | Im7 | IVm7 | bVII7sus4 | bVII7",
+    C:"bIIImaj7 | bVImaj7 | IVm7 | V7sus4 V7b9 | Im7 | bVImaj7 | IIm7b5 V7b9 | Im9" },
+  { name:"Alfie 型", mode:"major", desc:"I→I/VII→VIm7→VIm7/V のベース半音下降。IVm6 の翳り",
+    A:"Imaj7 | I/VII | VIm7 | VIm7/V | IVmaj7 | IVm6 | IIIm7 | bIIIdim7",
+    B:"IVmaj7 | bVII9 | IIIm7 | VI7b9 | IIm7 | bIImaj7 | IIm7 | IV/V",
+    C:"Imaj7 | IIIm7 | IVmaj7 | #IVm7b5 | IIIm7 | VI7 | IIm7 IV/V | I6" },
+  { name:"Anyone Who Had a Heart 型", mode:"minor", desc:"V7sus4 の宙づりが多い。bVI/bVII で視界が開く",
+    A:"Im7 | V7sus4 | Im7 | V7sus4 | bVImaj7 | IVm7 | IIm7b5 | V7sus4 V7b9",
+    B:"bVImaj7 | bVI/bVII | bIIImaj7 | bVImaj7 | IVm7 | bVII7 | bIIImaj7 | V7sus4",
+    C:"bVImaj7 | bVII7 | Im7 | IVm7 | bVImaj7 | bVI/bVII | IIm7b5 V7b9 | Im7" },
+  { name:"San Jose 型", mode:"major", desc:"明るい IIm7→V7 の循環。サビ終盤に bVII9（バックドア）",
+    A:"Imaj7 | VIm7 | IIm7 | V7 | Imaj7 | VIm7 | IIm7 | V7sus4 V7",
+    B:"IIIm7 | VI7 | IIm7 | V7 | IIIm7 | VI7b9 | IV/V | V7b9",
+    C:"IVmaj7 | V7 | IIIm7 | VIm7 | IIm7 | bVII9 | IV/V | Imaj7" },
+  { name:"Say a Little Prayer 型", mode:"major", desc:"IIm7→V7sus4 から始まる浮いたA。III7(b9) で相対短調へ引っ張る",
+    A:"IIm7 | V7sus4 | Imaj7 | VIm7 | IIm7 | V7sus4 | Imaj7 | III7b9",
+    B:"VIm7 | IIm7 | V7 | Imaj7 | IVmaj7 | IVm6 | IIIm7 | VI7",
+    C:"IIm7 | V7 | IIIm7 | VIm7 | IIm7 | V7sus4 | IIm7 V7b9 | Imaj7" },
+  { name:"Make It Easy 型", mode:"major", desc:"Imaj7⇄IVmaj7 の揺れ。Bメロで bIIIdim7 を経由して沈む",
+    A:"Imaj7 | IVmaj7 | Imaj7 | IVmaj7 | IIm7 | IIIm7 | IVmaj7 | IVm6",
+    B:"IIIm7 | bIIIdim7 | IIm7 | V7 | IIIm7 | VI7 | IIm7 | V7sus4",
+    C:"IVmaj7 | IVm6 | IIIm7 | VI7b9 | IIm7 | V7sus4 V7 | Imaj7 | Imaj7" },
+  { name:"ポストパンク × バカラック", mode:"minor", desc:"Im7→bVImaj7→bIIImaj7 の疾走マイナー。Bで bIImaj7 のひねり",
+    A:"Im7 | bVImaj7 | bIIImaj7 | bVII7sus4 | Im7 | bVImaj7 | IVm7 | V7sus4",
+    B:"IVm7 | bVII7 | bIIImaj7 | bVImaj7 | IIm7b5 | bIImaj7 | V7sus4 | V7b9",
+    C:"bVImaj7 | bVII7 | Im7 | bIIImaj7 | bVImaj7 | bVII7 | IIm7b5 V7b9 | Im7" },
+  /* 瀬谷スタイルの定番2種（J-POP の土台）。和声は maj7 / 7th で Bacharach 寄りに色付け */
+  { name:"王道進行", mode:"major", desc:"IVmaj7→V7→IIIm7→VIm7（C なら Fmaj7-G7-Em7-Am7）。サビで王道、最後は IV→V→I で解決",
+    A:"Imaj7 | VIm7 | IVmaj7 | V7 | IIIm7 | VIm7 | IIm7 | V7sus4 V7",
+    B:"IIm7 | IIIm7 | IVmaj7 | V7 | IIm7 | IIIm7 | IVmaj7 | IV/V",
+    C:"IVmaj7 | V7 | IIIm7 | VIm7 | IIm7 | V7 | IVmaj7 V7 | Imaj7" },
+  { name:"丸サ進行", mode:"major", desc:"IVmaj7→III7→VIm7→Vm7 I7（Just the Two of Us 進行。F なら Bbmaj7-A7-Dm7-Cm7 F7）",
+    A:"IVmaj7 | III7 | VIm7 | Vm7 I7 | IVmaj7 | III7 | VIm7 | Vm7 I7",
+    B:"IIm7 | V7 | IIIm7 | VIm7 | IIm7 | bVII9 | IVmaj7 | III7",
+    C:"IVmaj7 | III7 | VIm7 | Vm7 I7 | IVmaj7 | III7 | IIm7 V7 | Imaj7" },
+  { name:"ヨコハマ進行", mode:"minor", desc:"Im→bVI→bIII→bVII（Cm なら Cm7-Abmaj7-Ebmaj7-Bb）。夜景の哀感。サビは平行長調の王道（bVI-bVII-Vm-Im）へ持ち上げる",
+    A:"Im7 | bVImaj7 | bIIImaj7 | bVIIadd9 | Im7 | bVImaj7 | bIIImaj7 | bVIIadd9",
+    B:"IVm7 | bVII7 | bIIImaj7 | bVImaj7 | IVm7 | bVII7 | bVImaj7 | V7sus4 V7b9",
+    C:"bVImaj7 | bVII7 | Vm7 | Im7 | bVImaj7 | bVII7 | bIIImaj7 V7sus4 | Im7" }
+];
+
+/* ============================ モジュール: メロディ 各10種 ============================
+   cells: 1小節=16文字(16分)。x=発音 -=伸ばし .=休符。phrases=フレーズの小節数（計8）
+   shape=輪郭, amp=振れ幅(音階度数), shifts=フレーズごとの移高(シーケンス), leapy=跳躍を許す */
+const A_TPL=[
+  { name:"裏拍スタート語り", desc:"全フレーズが「&」から入る Shake It Off 型。低めで語る",
+    phrases:[2,2,2,2], cells:["..x-x-x-x-x-...."], end:"..x-x-x-x-----..", shape:"wave", amp:2, shifts:[0,0,1,-1] },
+  { name:"16分シンコペ", desc:"Police 的な16分の食い。短い音で跳ねる",
+    phrases:[2,2,2,2], cells:["...x-.x-..x-x---","..x-..x-x-x-...."], end:"...x-.x-x-------", shape:"zigzag", amp:2, shifts:[0,1,0,-1] },
+  { name:"ささやき反復", desc:"同じ音の反復＋隣接音。サビとの落差を最大化する",
+    phrases:[2,2,2,2], cells:["..x-x-x-..x-x-.."], end:"..x-x-x-x-------", shape:"flat", amp:1, shifts:[0,0,2,0] },
+  { name:"下降つぶやき", desc:"各フレーズが下行して着地。切なさ寄り",
+    phrases:[2,2,2,2], cells:["....x-x-x-x-x-..","..x-x-x-..x-x-.."], end:"..x-x-x-----....", shape:"fall", amp:3, shifts:[1,1,0,2] },
+  { name:"4小節ロング", desc:"4+4 の長い息。アーチ型で物語を運ぶ",
+    phrases:[4,4], cells:["..x-x-x-x---....","x-x-..x-x-x-....","..x-x-x-x-x-x-.."], end:"..x-x-x-x-------", shape:"arch", amp:3, shifts:[0,1] },
+  { name:"ボサ浮遊", desc:"4分3連に近い長めの裏拍。The Look of Love の浮遊",
+    phrases:[2,2,2,2], cells:["..x---x---x-....","x---..x---x-...."], end:"..x---x-------..", shape:"wave", amp:2, shifts:[0,-1,1,0] },
+  { name:"モータウン会話", desc:"8分の畳みかけ。問いかけ→返答",
+    phrases:[2,2,2,2], cells:["..x-x-x-x-..x-x-","..x-x-..x-x-x-.."], end:"x-x-x---........", shape:"arch", amp:2, shifts:[0,1,0,2] },
+  { name:"トレシーロ", desc:"3+3+2 のアクセントを裏から。Bacharach のリズムずらし",
+    phrases:[2,2,2,2], cells:["..x---x-----x-..","..x-x-x-----x-.."], end:"..x-x-x---------", shape:"rise", amp:2, shifts:[0,1,0,-1] },
+  { name:"1小節問答", desc:"1+1+1+1+2+2。短い息で間を作る",
+    phrases:[1,1,1,1,2,2], cells:["..x-x-x-x-x-x-.."], end:"..x-x-x-x---....", shape:"fall", amp:2, shifts:[0,1,0,2,0,-1] },
+  { name:"上行シーケンス", desc:"同じ型を1度ずつ上げていき、最後に戻す",
+    phrases:[2,2,2,2], cells:["..x-x-x-x-x-...."], end:"..x-x-x---------", shape:"rise", amp:2, shifts:[0,1,2,-1] }
+];
+const B_TPL=[
+  { name:"3+3+2 跳躍", desc:"Bacharach の変則フレーズ。跳躍して順次で戻る",
+    phrases:[3,3,2], cells:["x-----x-----x---","x---x---x-x-x---"], end:"x-----------....", shape:"leap", amp:4, shifts:[0,1,2], leapy:true },
+  { name:"4+4 上昇シーケンス", desc:"同型を2度上げて緊張を積む",
+    phrases:[4,4], cells:["x---x-x-x---x-..","..x-x-x-x---x---","x-x-x-x-x-x-x-.."], end:"x-----------....", shape:"rise", amp:3, shifts:[0,2] },
+  { name:"弦と掛け合い", desc:"2拍ずつ空けて Strings が応答する（Bacharach のオケ）",
+    phrases:[2,2,2,2], cells:["x-x-x-x-x---...."], end:"x---x---........", shape:"arch", amp:2, shifts:[0,1,2,3] },
+  { name:"3+3+2 せり上がり", desc:"変則フレーズで下行→次で持ち上げる",
+    phrases:[3,3,2], cells:["x-x-x-x-x---x---","x---x---x-x-x-.."], end:"x-----------....", shape:"fall", amp:3, shifts:[0,1,3] },
+  { name:"5+3 長呼吸", desc:"5小節の長いフレーズ＋3小節。拍子感をぼかす",
+    phrases:[5,3], cells:["x---x---x---x---","..x-x-x-x-x-x---"], end:"x-----------....", shape:"arch", amp:4, shifts:[0,2], leapy:true },
+  { name:"3拍子感", desc:"付点4分の連続で4/4の上に3拍子を重ねる",
+    phrases:[2,2,2,2], cells:["x-----x-----x---"], end:"x-----x---------", shape:"wave", amp:3, shifts:[0,1,2,3] },
+  { name:"2+2+4 ためて放つ", desc:"短い2つで溜め、4小節で一気に上る",
+    phrases:[2,2,4], cells:["x---....x-x-x---","..x-x-x-x-x-x---","x-x-x-x-x-------"], end:"x---x---x-x-....", shape:"rise", amp:3, shifts:[0,1,2] },
+  { name:"アルペジオ跳躍", desc:"Alfie 型。和音を跨ぐ大跳躍を順次で解決",
+    phrases:[2,2,2,2], cells:["x---x---x-------"], end:"x---x-------....", shape:"leap", amp:5, shifts:[0,1,0,2], leapy:true },
+  { name:"16分駆け上がり", desc:"3+3+2。16分のあおりでサビへ加速",
+    phrases:[3,3,2], cells:["..x-x-x-x-x-x-..","xxx-x-x-x-x-x-.."], end:"x-x-x-x-x-------", shape:"rise", amp:3, shifts:[0,1,3] },
+  { name:"保続シーケンス", desc:"長い音を1度ずつ上げる Walk On By 型",
+    phrases:[2,2,2,2], cells:["x-------x---x---"], end:"x-----------....", shape:"flat", amp:1, shifts:[0,1,2,3] }
+];
+const C_TPL=[
+  { name:"頭打ちロングトーン", desc:"1拍目の長音がフック。王道のアーチ",
+    phrases:[2,2,2,2], cells:["x-------x---x---","x---x---x---x---"], end:"x-----------....", shape:"arch", amp:2, shifts:[0,1,0,2] },
+  { name:"4分連呼", desc:"4分音符で言葉を叩く Max Martin 型",
+    phrases:[2,2,2,2], cells:["x---x---x---x---","x-x-x-x-x-------"], end:"x---x---x-------", shape:"flat", amp:1, shifts:[0,0,1,2] },
+  { name:"3+3+2 フック", desc:"トレシーロを表拍から。覚えやすいリズムの芯",
+    phrases:[2,2,2,2], cells:["x-----x-----x---"], end:"x-----x---------", shape:"rise", amp:2, shifts:[0,0,1,2] },
+  { name:"問いと答え", desc:"2小節の問い→2小節の答え",
+    phrases:[2,2,2,2], cells:["x---x-x-x---....","x-x-x-x-x---...."], end:"x-----------....", shape:"fall", amp:3, shifts:[2,1,2,0] },
+  { name:"4+4 ロング", desc:"長いフレーズで一気に歌い上げる",
+    phrases:[4,4], cells:["x-------x---x---","x---x---x-------","x-x-x-x-x---x---"], end:"x-----------....", shape:"arch", amp:3, shifts:[0,1] },
+  { name:"アンセム上昇", desc:"8分→4分で段階的に上がるスタジアム型",
+    phrases:[2,2,2,2], cells:["x---x---x-x-x---"], end:"x-------x-------", shape:"rise", amp:3, shifts:[0,1,1,2] },
+  { name:"跳ねるフック", desc:"3+3+2+2+3+3 の食い気味リズム",
+    phrases:[2,2,2,2], cells:["x--x--x-x--x--x-"], end:"x--x--x---------", shape:"wave", amp:2, shifts:[0,1,0,2] },
+  { name:"跳躍フック", desc:"Bacharach×Martin。最初の音程跳躍そのものがフック",
+    phrases:[2,2,2,2], cells:["x-------x-------","x---x---x---x---"], end:"x-----------....", shape:"leap", amp:5, shifts:[0,1,0,1], leapy:true },
+  { name:"2小節リピート", desc:"同じ2小節を3回繰り返し、4回目で変える",
+    phrases:[2,2,2,2], cells:["x---x-x-x-x-x---","x-------x-------"], end:"x-------x-------", shape:"arch", amp:2, shifts:[0,0,0,1] },
+  { name:"階段上昇→解決", desc:"4分音符で1段ずつ上がり、最後に主音へ",
+    phrases:[4,4], cells:["x---x---x---x---"], end:"x-----------....", shape:"rise", amp:4, shifts:[0,1] }
+];
+const SHAPES={
+  rise:p=>-1+2*p, fall:p=>1-2*p, arch:p=>Math.sin(Math.PI*p)*2-1, wave:p=>Math.sin(2*Math.PI*p),
+  flat:(p,k)=>(k%3===2?0.6:0), zigzag:(p,k)=>(k%2?0.5:-0.5)+p*0.6,
+  leap:(p,k)=>k===0?-0.6:(k===1?1:1-1.5*p)
+};
+/* Marr 型ギターリフ（16分16ステップ。数字=ルートレス・ヴォイシングの低い方からの番号, c=カッティング） */
+const RIFFS=["0.1.2.3.2.1.2.3.","0.2.1.3.0.2.1.3.","3.2.1.0.3.2.1.2.","0.2.3.2.1.2.3.2.","0.3.1.3.2.3.1.3.",
+             "0.2.c.2.1.3.c.3.","1.3.0.3.2.3.0.2.","0.1.3.1.2.1.3.1.","3.1.2.0.3.1.2.1.","0.2.1.2.3.2.c.2."];
+const LEADPAT=["0121","2101","0212","1020","2120"];
+
+/* ============================ ユーティリティ ============================ */
+function rng(seed){ let a=seed>>>0; return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const pick=(r,arr)=>arr[Math.floor(r()*arr.length)];
+const pcOf=m=>((m%12)+12)%12;
+const clampV=v=>Math.max(1,Math.min(127,Math.round(v)));
+function isFlatKey(tonic,mode){ return mode==="major" ? [5,10,3,8,1].includes(tonic) : [2,7,0,5,10,3].includes(tonic); }
+function cellNotes(c){ const out=[]; for(let i=0;i<16;i++){ if(c[i]==="x"){ let j=i+1; while(j<16&&c[j]==="-") j++; out.push([i/4,(j-i)/4]); } } return out; }
+
+function parseChord(tok,tonic,flatKey){
+  const m=tok.match(ROMAN_RE); if(!m||!(m[3] in QUAL)) throw new Error("chord parse: "+tok);
+  const acc=m[1]==="b"?-1:m[1]==="#"?1:0;
+  const Q=QUAL[m[3]], root=(tonic+ROMAN[m[2]]+acc+12)%12;
+  const names=m[1]==="#"?SHARP:m[1]==="b"?FLAT:(flatKey?FLAT:SHARP);
+  let bass=root, slash="";
+  if(m[5]){ const a2=m[4]==="b"?-1:m[4]==="#"?1:0; bass=(tonic+ROMAN[m[5]]+a2+12)%12; slash="/"+(m[4]==="#"?SHARP:m[4]==="b"?FLAT:(flatKey?FLAT:SHARP))[bass]; }
+  const tonesAll=[...new Set(Q.iv.map(i=>(root+i)%12))];
+  const tonesMel=[...new Set(Q.iv.filter(i=>i!==13).map(i=>(root+i)%12))]; // メロディの着地音（♭9は使わない）
+  return { tok, root, bass, iv:Q.iv, q:m[3], slash:!!m[5], tonesAll, tonesMel, name:names[root]+Q.s+slash };
+}
+/* コード・スケール: キーの音階を基本に、キー外のコード音に半音で隣接する音階音を置き換える */
+function chordScale(ch,keyPcs){
+  const out=keyPcs.filter(p=>{
+    if(ch.tonesAll.includes(p)) return true;
+    for(const c of ch.tonesAll){ if(!keyPcs.includes(c)){ const d=Math.abs(p-c)%12; if(d===1||d===11) return false; } }
+    return true;
+  });
+  ch.tonesAll.forEach(c=>{ if(!out.includes(c)) out.push(c); });
+  return out;
+}
+
+/* 同時発音の衝突判定（実音で1半音 or ♭9=13半音を衝突とみなす） */
+class Scene{
+  constructor(){ this.b=new Map(); }
+  add(n){ const s=Math.floor(n.t), e=Math.floor(n.t+n.dur-1e-6); for(let k=s;k<=e;k++){ if(!this.b.has(k)) this.b.set(k,[]); this.b.get(k).push(n); } }
+  over(t,dur){ const res=new Set(), s=Math.floor(t), e=Math.floor(t+dur-1e-6);
+    for(let k=s;k<=e;k++){ const arr=this.b.get(k); if(!arr) continue; for(const n of arr) if(n.t<t+dur-1e-6 && n.t+n.dur>t+1e-6) res.add(n); }
+    return res; }
+  clashList(m,t,dur){ const out=[]; for(const n of this.over(t,dur)){ const d=Math.abs(n.midi-m); if(d===1||d===13) out.push(n); } return out; }
+  clash(m,t,dur){ return this.clashList(m,t,dur).length; }
+}
+
+/* ============================ 固定構成 ============================ */
+const STRUCT=[
+  {id:"intro",name:"イントロ",en:"Intro",bars:4,role:"intro"},
+  {id:"A1",name:"Aメロ",en:"Verse 1",bars:8,role:"A",n:1},
+  {id:"B1",name:"Bメロ",en:"Pre-Chorus 1",bars:8,role:"B",n:1},
+  {id:"C1",name:"サビ",en:"Chorus 1",bars:8,role:"C",n:1},
+  {id:"inter",name:"間奏",en:"Interlude",bars:4,role:"inter"},
+  {id:"A2",name:"Aメロ2",en:"Verse 2",bars:8,role:"A",n:2},
+  {id:"B2",name:"Bメロ2",en:"Pre-Chorus 2",bars:8,role:"B",n:2},
+  {id:"C2",name:"サビ2",en:"Chorus 2",bars:8,role:"C",n:2},
+  {id:"outro",name:"アウトロ",en:"Outro",bars:4,role:"outro"}
+];
+/* 拡張: サビ2 とアウトロの間に差し込む
+   last  = ラスサビ（サビ×2回し。2回し目で Lead・対旋律を全開）
+   dmelo = Dメロ（Morricone 的な劇伴ブリッジ）→ 落ちサビ（ドラム抜き）→ ラスサビ */
+const EXT={
+  none: [],
+  last: [ {id:"C3",name:"ラスサビ",en:"Last Chorus",bars:8,role:"C",n:3},
+          {id:"C4",name:"ラスサビ×2",en:"Last Chorus x2",bars:8,role:"C",n:3,full:true} ],
+  dmelo:[ {id:"D",name:"Dメロ",en:"Bridge",bars:8,role:"D"},
+          {id:"C3",name:"落ちサビ",en:"Drop Chorus",bars:8,role:"C",n:3,drop:true},
+          {id:"C4",name:"ラスサビ",en:"Last Chorus",bars:8,role:"C",n:3,full:true} ],
+  full: [ {id:"D",name:"Dメロ",en:"Bridge",bars:8,role:"D"},
+          {id:"C3",name:"落ちサビ",en:"Drop Chorus",bars:8,role:"C",n:3,drop:true},
+          {id:"C4",name:"ラスサビ",en:"Last Chorus",bars:8,role:"C",n:3,full:true},
+          {id:"C5",name:"ラスサビ×2",en:"Last Chorus x2",bars:8,role:"C",n:3,full:true} ]
+};
+/* 3分構成はアウトロを8小節に伸ばして 96小節（BPM128 で 96×1.875s = 180.0s） */
+const OUTRO_BARS={ none:4, last:4, dmelo:4, full:8 };
+const EXT_LABEL={ none:"標準（60小節）", last:"ラスサビ追加（サビ×2回し / 76小節）", dmelo:"Dメロ＋落ちサビ＋ラスサビ（84小節）", full:"3分構成：Dメロ＋落ちサビ＋ラスサビ×2＋アウトロ8（96小節）" };
+const VOCAL_RANGE={ A:[55,67], B:[57,70], C:[60,76], D:[57,71] };   // Karen Carpenter の中低域 → サビで開く
+const D_TPL={ name:"Dメロ 劇伴ロングトーン", phrases:[4,4], cells:["x-------x---x---","x---x---x-------","..x-x-x-x-------"],
+              end:"x---------------", shape:"arch", amp:3, shifts:[0,2], leapy:true };
+const D_PROG={ major:"bVImaj7 | bVII9 | Imaj7 | VIm7 | IVmaj7 | IVm6 | IIm7 | V7sus4 V7",
+               minor:"IVm7 | bVII7 | bIIImaj7 | bVImaj7 | bIImaj7 | IIm7b5 | V7sus4 | V7b9" };
+
+function buildTimeline(oddMeter,ext,introCut){
+  let t=0; const bars=[], secs=[];
+  let list=[...STRUCT.slice(0,-1), ...(EXT[ext]||[]), {...STRUCT[STRUCT.length-1], bars:OUTRO_BARS[ext]||4}];
+  // イントロカット: 4小節のイントロを、ドラムだけの U2ブレイク1小節（カウント代わり）に置き換える
+  if(introCut) list=[{id:"intro",name:"カウント",en:"Count-in (U2 break)",bars:1,role:"intro",cut:true}, ...list.slice(1)];
+  for(const s of list){
+    const sec={...s, startBar:bars.length, t0:t, bars:[]};
+    for(let i=0;i<s.bars;i++){
+      const beats=(oddMeter && s.role==="B" && i===s.bars-1)?2:4;
+      const b={t, beats, sec:s.id, idx:i}; bars.push(b); sec.bars.push(b); t+=beats;
+    }
+    sec.t1=t; secs.push(sec);
+  }
+  // 次がサビ頭（サビ→サビの続きは除く）なら、直前の半拍を抜く対象
+  secs.forEach((s,i)=>{ const nx=secs[i+1]; s.preChorus=!!nx && nx.role==="C" && (s.role!=="C" || !!s.drop); });
+  return {bars, secs, total:t};
+}
+function sectionTokens(pack,sec){
+  const split=s=>s.split("|").map(x=>x.trim().split(/\s+/));
+  const A=split(pack.A), B=split(pack.B), C=split(pack.C);
+  const tonic=pack.mode==="minor"?["Im9"]:["Imaj9"];
+  switch(sec.role){
+    case "intro": return A.slice(0,4);
+    case "A": return A; case "B": return B; case "C": return C;
+    case "inter": return C.slice(0,4);
+    case "D": return split(D_PROG[pack.mode]);
+    case "outro": return [A[0],A[1],A[2],tonic];
+  }
+}
+
+/* ============================ 生成本体 ============================ */
+function generateSong(P){
+  const pack=PACKS[P.pack], TA=A_TPL[P.a], TB=B_TPL[P.b];
+  let TC=C_TPL[P.c];
+  const r=rng((P.seed*2654435761)%2147483647+P.pack*101+P.a*13+P.b*7+P.c*3+P.key*17+11);
+  const mode=pack.mode, tonic=P.key, flatKey=isFlatKey(tonic,mode);
+  const keyPcs=SCALE[mode].map(x=>(x+tonic)%12);
+  const TL=buildTimeline(P.odd,P.ext||"none",P.introCut);
+  const song={ P, pack, mode, tonic, flatKey, keyPcs, TL, bpm:P.bpm, totalBeats:TL.total, vol:{...(P.vol||VOL_DEFAULT)},
+    parts:{Drums:[],Bass:[],Guitar:[],Lead:[],Vocal:[],Piano:[],Strings:[]}, cc:{Strings:[]},
+    chords:[], phrases:{}, stats:{fixed:0,removed:0} };
+  const scene=new Scene();
+  const push=(part,n)=>{ song.parts[part].push(n); if(part!=="Drums") scene.add(n); };
+
+  /* --- 1. コード・タイムライン --- */
+  for(const sec of TL.secs){
+    const toks=sectionTokens(pack,sec);
+    sec.bars.forEach((bar,i)=>{
+      const bt=toks[i%toks.length];
+      const use=bar.beats<4 ? bt.slice(0,1).concat(bt.length>1?[bt[1]]:[]) : bt;
+      const seg=bar.beats/use.length;
+      use.forEach((tok,j)=>{
+        const ch=parseChord(tok,tonic,flatKey);
+        ch.t=bar.t+j*seg; ch.dur=seg; ch.sec=sec.id; ch.role=sec.role; ch.n=sec.n||1; ch.drop=!!sec.drop;
+        ch.mScale=chordScale(ch,keyPcs);
+        song.chords.push(ch);
+      });
+    });
+  }
+  const chordAt=t=>{ for(const c of song.chords) if(t>=c.t-1e-6 && t<c.t+c.dur-1e-6) return c; return song.chords[song.chords.length-1]; };
+  song.chordAt=chordAt;
+  const secOf=id=>TL.secs.find(s=>s.id===id);
+
+  /* サビ直前の半拍は全楽器を抜く（Max Martin: フィルより音量変化で見せる） */
+  const drops=P.u2?[]:TL.secs.filter(s=>s.preChorus).map(s=>[s.t1-0.5,s.t1]);   // U2ブレイク使用時は抜かずにフィルで入る
+  const fitAccom=(t,dur,ch)=>{
+    for(const [a,b] of drops){ if(t>=a-1e-6 && t<b) return 0; if(t<a && t+dur>a) dur=a-t; }
+    if(ch){ const end=ch.t+ch.dur; if(t+dur>end) dur=end-t; }
+    if(t+dur>TL.total) dur=TL.total-t;
+    return dur>0.05?dur:0;
+  };
+
+  /* --- 2. Piano（Bacharach の和声: ルートレス・ヴォイシング） --- */
+  function solveVoicing(pcs,lo,hi,prev,extra){
+    const opts=pcs.map(pc=>{ const a=[]; for(let m=lo;m<=hi;m++) if(pcOf(m)===pc) a.push(m); return a; });
+    let best=null, bs=1e9;
+    const score=v=>{
+      const s=[...v].sort((a,b)=>a-b); let sc=0;
+      for(let i=0;i<s.length;i++) for(let j=i+1;j<s.length;j++){ const d=s[j]-s[i]; if(d===1||d===13) sc+=1000; if(d===0) sc+=500; }
+      const spread=s[s.length-1]-s[0]; if(spread>15) sc+=(spread-15)*4;
+      const c=(s[0]+s[s.length-1])/2;
+      if(prev){ const pc=(prev[0]+prev[prev.length-1])/2; sc+=Math.abs(c-pc)*1.2+Math.abs(s[s.length-1]-prev[prev.length-1])*1.5; }
+      else sc+=Math.abs(c-(lo+hi)/2);
+      if(extra) sc+=extra(s);
+      return sc;
+    };
+    const rec=(i,acc)=>{ if(i===opts.length){ const s=score(acc); if(s<bs){bs=s; best=[...acc];} return; }
+      for(const m of opts[i]){ acc.push(m); rec(i+1,acc); acc.pop(); } };
+    rec(0,[]);
+    return best.sort((a,b)=>a-b);
+  }
+  function pianoPcs(ch){
+    let iv=[...ch.iv];
+    if(!ch.slash && iv.length>=4 && ch.q!=="dim7"){ iv=iv.filter(i=>i!==0); if(iv.length>=4) iv=iv.filter(i=>i!==7); }
+    return [...new Set(iv.map(i=>(ch.root+i)%12))];
+  }
+  let pv=null;
+  for(const ch of song.chords){
+    // ベースの pc と半音/♭9 で当たる音は同じオクターブ帯に置かない
+    const bassPc=ch.bass;
+    ch.pv=solveVoicing(pianoPcs(ch),52,70,pv, s=>s.reduce((a,m)=>a+((pcOf(m-bassPc)===1)?(m<64?60:0):0),0));
+    pv=ch.pv;
+  }
+  const PIANO_PAT={
+    A1:[[0,4,.8]], A2:[[0,2,.85],[2,2,.75]],
+    B:[[0,1.4,1],[1.5,1.4,.85],[3,1,.9]],
+    C:[[0,1.4,1],[1.5,.9,.85],[2.5,.9,.8],[3.5,1,.95,"ant"]],
+    outro:[[0,4,.75]], D:[[0,2.5,.9],[2.5,1.5,.8]], drop:[[0,4,.85]]
+  };
+  const PIANO_VEL={A:50,B:62,C:76,inter:70,outro:48,D:58};
+  let antChord=null;
+  for(const bar of TL.bars){
+    const sec=secOf(bar.sec); if(sec.role==="intro") continue;
+    const pat= sec.drop ? PIANO_PAT.drop : sec.role==="A" ? PIANO_PAT["A"+sec.n] : sec.role==="inter" ? PIANO_PAT.C : PIANO_PAT[sec.role];
+    for(const [s,d,vm,flag] of pat){
+      if(s>=bar.beats) continue;
+      const t=bar.t+s;
+      let ch=chordAt(t), dur=d;
+      if(flag==="ant" && t+0.5<TL.total){ const nx=chordAt(bar.t+bar.beats); if(nx!==ch){ ch=nx; antChord=nx; } }
+      else if(s===0 && antChord===ch){ antChord=null; continue; }
+      dur=fitAccom(t,dur,flag==="ant"?null:ch);
+      if(flag==="ant"){ const end=ch.t+ch.dur; if(t+dur>end) dur=end-t; }
+      if(!dur) continue;
+      const vel=PIANO_VEL[sec.role]*vm*(sec.drop?0.8:1);
+      ch.pv.forEach((m,i)=>push("Piano",{t,dur,midi:m,vel:clampV(vel-(i===ch.pv.length-1?0:6)+(r()-.5)*6)}));
+    }
+    if(bar.idx===0) antChord=null;
+  }
+
+  /* --- 3. Vocal（Max Martin: メロディが王様。音節数は型で固定） --- */
+  const scaleNotes=[]; for(let m=36;m<=96;m++) if(keyPcs.includes(pcOf(m))) scaleNotes.push(m);
+  const nearestIdx=m=>{ let bi=0; scaleNotes.forEach((x,i)=>{ if(Math.abs(x-m)<Math.abs(scaleNotes[bi]-m)) bi=i; }); return bi; };
+  function onbeatify(notes){  // E.T.方式: 裏拍の入りを表拍へ寄せる
+    const out=[]; let lastS=-1;
+    for(const [s,d] of notes){ const e=s+d; let ns=Math.floor(s); if(ns<=lastS) ns=Math.floor(s*2)/2; if(ns<=lastS) ns=s; out.push([ns,e]); lastS=ns; }
+    return out.map(([s,e],i)=>{ const nx=out[i+1]?out[i+1][0]:99; return [s,Math.min(e,nx)-s]; }).filter(x=>x[1]>0);
+  }
+  const hookLift=pick(r,[2,3,4]);
+  function chordForNote(n){
+    const c0=chordAt(n.t), end=n.t+n.dur, ce=c0.t+c0.dur;
+    if(end>ce+1e-6 && end-ce>ce-n.t){ const c1=chordAt(ce); if(c1!==c0) return {ch:c1, ant:true}; }
+    return {ch:c0, ant:false};
+  }
+  function pickPitch(n,ctx,R,T,opt){
+    const {ch,ant}=chordForNote(n);
+    const lp=n.t-n.bar.t;
+    const strong=opt.forceStrong || ant || Math.abs(lp)<1e-6 || Math.abs(lp-2)<1e-6 || n.dur>=1 || n.first;
+    const pool=opt.pool || (strong?ch.tonesMel:ch.mScale);
+    const target=opt.target ?? scaleNotes[Math.max(0,Math.min(scaleNotes.length-1, ctx.centerIdx+Math.round(n.level)))];
+    const lim=T.leapy?9:5;
+    let best=null, bs=1e9;
+    for(let m=R[0]-(opt.wide?2:0); m<=R[1]+(opt.wide?2:0); m++){
+      if(!pool.includes(pcOf(m))) continue;
+      const leap=m-ctx.prev; let s=Math.abs(m-target);
+      if(Math.abs(leap)>lim) s+=(Math.abs(leap)-lim)*2;
+      if(Math.abs(ctx.lastLeap)>=5 && (Math.sign(leap)===Math.sign(ctx.lastLeap) || Math.abs(leap)>3)) s+=4;  // 跳躍の後は反対方向へ順次
+      if(!strong && !ch.tonesMel.includes(pcOf(m)) && Math.abs(leap)>2) s+=100;                          // 非和声音は弱拍の順次のみ
+      s+=scene.clash(m,n.t,n.dur)*80;
+      s+=r()*0.7;
+      if(s<bs){ bs=s; best=m; }
+    }
+    return best ?? ctx.prev;
+  }
+  function genVocal(sec,T,recycle){
+    const R=VOCAL_RANGE[sec.role];
+    const phrases=[]; let bc=0;
+    T.phrases.forEach(len=>{
+      const phr=[];
+      for(let i=0;i<len;i++){
+        const bar=sec.bars[bc+i]; if(!bar) break;
+        const cell=(i===len-1)?T.end:T.cells[i%T.cells.length];
+        let ns=cellNotes(cell); if(recycle) ns=onbeatify(ns);
+        for(const [s,d] of ns){ if(s>=bar.beats) continue; phr.push({t:bar.t+s, dur:Math.min(d,bar.beats-s), bar}); }
+      }
+      bc+=len; if(phr.length){ phr[0].first=true; phrases.push(phr); }
+    });
+    const secLen=sec.t1-sec.t0;
+    phrases.forEach((phr,pi)=>{
+      const shift=T.shifts[pi%T.shifts.length];
+      phr.forEach((n,k)=>{
+        const p=phr.length>1?k/(phr.length-1):0;
+        n.level=SHAPES[T.shape](p,k)*T.amp+shift;
+        if(sec.role==="C"){ const ps=(n.t-sec.t0)/secLen; n.level+= ps<0.75 ? 3*ps/0.75 : 3*(1-(ps-0.75)/0.25); }
+      });
+    });
+    const ctx={ centerIdx:nearestIdx((R[0]+R[1])/2), prev:Math.round((R[0]+R[1])/2), lastLeap:0 };
+    const flat=phrases.flat();
+    flat.forEach((n,i)=>{
+      const opt={};
+      if(sec.role==="C" && i===0){ n.level=Math.max(n.level,hookLift); opt.forceStrong=true; }            // フック
+      if(sec.role==="C" && i===flat.length-1){                                                        // 主音へ解決
+        const ch=chordForNote(n).ch; opt.pool=ch.tonesMel.includes(tonic)?[tonic]:ch.tonesMel; opt.target=R[0]+5; opt.forceStrong=true;
+      }
+      const m=pickPitch(n,ctx,R,T,opt);
+      ctx.lastLeap=m-ctx.prev; ctx.prev=m; n.midi=m;
+      n.vel=clampV((n.first||Math.abs(n.t-n.bar.t)<1e-6?92:80)*(sec.role==="A"?0.9:1)+(r()-.5)*6);
+    });
+    return phrases;
+  }
+  function copyVocal(src,dst,T){
+    const off=dst.t0-src.t0, R=VOCAL_RANGE[dst.role];
+    const ctx={centerIdx:nearestIdx((R[0]+R[1])/2), prev:60, lastLeap:0};
+    return song.phrases[src.id].map(phr=>phr.map(n=>{
+      const bar=TL.bars.find(b=>b.sec===dst.id && b.idx===n.bar.idx);
+      const c={t:n.t+off, dur:n.dur, midi:n.midi, vel:n.vel, bar, first:n.first, level:n.level};
+      if(scene.clash(c.midi,c.t,c.dur)){ ctx.prev=c.midi; c.midi=pickPitch(c,ctx,R,T,{target:n.midi}); }
+      return c;
+    }));
+  }
+  const vocalT={A:TA,B:TB,C:TC,D:D_TPL};
+  for(const sec of TL.secs){
+    if(!vocalT[sec.role]) continue;
+    const T=vocalT[sec.role];
+    let phr;
+    if(sec.n>=2) phr=copyVocal(secOf(sec.role+"1"),sec,T);          // 2番・ラスサビは同じメロディ（歌詞だけ変える）
+    else if(sec.role==="C" && P.recycle) phr=genVocal(sec,{...TA, end:TA.end, shape:TA.shape, amp:TA.amp+1, shifts:TA.shifts, leapy:TA.leapy},true);
+    else phr=genVocal(sec,T,false);
+    song.phrases[sec.id]=phr;
+    phr.forEach((ph,pi)=>ph.forEach((n,k)=>push("Vocal",{t:n.t,dur:n.dur*0.96,midi:n.midi,vel:n.vel,sec:sec.id,ph:pi,k})));
+  }
+  // サビ最高音チェック: A/B より必ず高くする
+  const vMax=ids=>Math.max(...song.parts.Vocal.filter(n=>ids.includes(n.sec)).map(n=>n.midi));
+  const verseMax=vMax(["A1","A2","B1","B2","D"]);
+  for(const id of TL.secs.filter(s=>s.role==="C").map(s=>s.id)){
+    if(vMax([id])>verseMax) continue;
+    const sec=secOf(id), cand=song.parts.Vocal.filter(n=>n.sec===id && n.t>=sec.t0+16 && n.t<sec.t0+28 && n.dur>=0.9).sort((a,b)=>b.midi-a.midi)[0];
+    if(!cand) continue;
+    const ch=chordAt(cand.t);
+    for(let m=verseMax+1;m<=VOCAL_RANGE.C[1]+2;m++){ if(ch.tonesMel.includes(pcOf(m)) && scene.clash(m,cand.t,cand.dur)===0){ cand.midi=m; break; } }
+  }
+
+  /* --- 4. Bass（Jamerson: 16分・経過音・クロマチック・アプローチ） --- */
+  let prevRoot=40;
+  const BASS_VEL={A:0.82,B:0.9,C:1,inter:0.95,outro:0.75,D:0.85};
+  song.chords.forEach((ch,ci)=>{
+    if(ch.role==="intro") return;
+    const next=song.chords[ci+1], V=BASS_VEL[ch.role]*(ch.role==="A"&&ch.n===1?0.95:1);
+    const roots=[]; for(let m=28;m<=47;m++) if(pcOf(m)===ch.bass) roots.push(m);
+    roots.sort((a,b)=>(Math.abs(a-prevRoot)+scene.clash(a,ch.t,Math.min(ch.dur,1))*50)-(Math.abs(b-prevRoot)+scene.clash(b,ch.t,Math.min(ch.dur,1))*50));
+    const root=roots[0]; prevRoot=root;
+    const offs=[...new Set([0,...ch.tonesMel.map(pc=>pcOf(pc-ch.bass))])].sort((a,b)=>a-b);
+    const third=offs.find(o=>o===3||o===4) ?? offs[1] ?? 7;
+    const fifth=offs.includes(7)?7:offs.includes(6)?6:(offs[2]??7);
+    const sev=offs.find(o=>o===10||o===11||o===9);
+    const place=(t,dur,cands,vel)=>{
+      dur=fitAccom(t,dur,ch); if(!dur) return null;
+      for(const m of cands){ if(m==null||m<28||m>52) continue; if(scene.clash(m,t,dur)===0){ push("Bass",{t,dur,midi:m,vel:clampV(vel*V+(r()-.5)*8)}); return m; } }
+      return null;
+    };
+    const scaleNear=target=>{ let b=null; for(let m=28;m<=52;m++) if(ch.mScale.includes(pcOf(m)) && (b===null||Math.abs(m-target)<Math.abs(b-target))) b=m; return b; };
+    let nextRoot=null;
+    if(next){ nextRoot=null; for(let m=28;m<=47;m++) if(pcOf(m)===next.bass && (nextRoot===null||Math.abs(m-root)<Math.abs(nextRoot-root))) nextRoot=m; }
+    const approach=nextRoot==null?[]:[nextRoot-1,nextRoot+1,scaleNear(nextRoot-2),scaleNear(nextRoot+2)];
+    const L=Math.round(ch.dur);
+    if(ch.role==="outro"){ place(ch.t,ch.dur,[root,root+12],72); return; }
+    if(ch.drop){ place(ch.t,ch.dur,[root,root+12],70); return; }            // 落ちサビ: 全音符で支えるだけ
+    if(ch.role==="A" && ch.n===1){                                    // A1 は引き算（Max Martin）
+      for(let b=0;b<L;b++){ const t=ch.t+b;
+        if(b===0) place(t,1.5,[root],92);
+        else if(b===1) place(t+0.5,0.5,[root+fifth,root],74);
+        else if(b===2) place(t,1,[root+12,root],80);
+        if(b===L-1 && next && L>1) place(t+0.5,0.5,approach,76);
+      }
+      return;
+    }
+    for(let b=0;b<L;b++){
+      const t=ch.t+b;
+      if(b===0){
+        place(t,0.75,[root],100);
+        if(L===1 && next) place(t+0.75,0.25,approach,82);
+        else place(t+0.75,0.25,[root+12,root+fifth,root],70);
+      } else if(b===L-1 && next){
+        place(t,0.5,[root+fifth,root+third],80);
+        place(t+0.5,0.25,[scaleNear((root+fifth+nextRoot)/2)],68);
+        place(t+0.75,0.25,approach,84);
+      } else {
+        const p=r();
+        if(p<0.3){ place(t,0.5,[root+fifth],82); place(t+0.5,0.25,[scaleNear(root+fifth+2)],66); place(t+0.75,0.25,[root+12,root],74); }
+        else if(p<0.55){ place(t,0.1,[root],42); place(t+0.25,0.25,[root+third],70); place(t+0.5,0.5,[root+fifth],80); }
+        else if(p<0.8){ place(t,0.5,[root+third],78); place(t+0.5,0.5,[root+fifth],74); }
+        else { place(t,0.75,[root+12,root],84); place(t+0.75,0.25,[sev!=null?root+sev:scaleNear(root+10)],66); }
+      }
+    }
+  });
+
+  /* --- 5. Guitar（Johnny Marr: ルートレス分散＋9th、トップノートは順次） --- */
+  const riff=RIFFS[Math.floor(r()*RIFFS.length)]; song.riffIdx=RIFFS.indexOf(riff);
+  let gv=null;
+  for(const ch of song.chords){
+    let iv=ch.iv.filter(i=>i!==0); if(iv.length<2) iv=[...ch.iv];
+    let pcs=iv.map(i=>(ch.root+i)%12);
+    if(!["dim7","7b9","m7b5"].includes(ch.q) && !ch.iv.includes(14)) pcs.push((ch.root+2)%12);
+    pcs=[...new Set(pcs)];
+    if(pcs.length>4) pcs=pcs.filter(pc=>pc!==(ch.root+7)%12);
+    const extra=s=>{ let c=0; s.forEach(m=>c+=scene.clash(m,ch.t,ch.dur)*25); if(s[s.length-1]<70) c+=(70-s[s.length-1])*2; return c; };
+    ch.gv=solveVoicing(pcs,62,84,gv,extra); gv=ch.gv;
+  }
+  const GTR_VEL={intro:.85,A:.8,B:.9,C:1,inter:1,outro:.8,D:.8};
+  for(const bar of TL.bars){
+    const sec=secOf(bar.sec), dense=((sec.role==="C"&&!sec.drop)||sec.role==="inter");
+    if(sec.cut) continue;                                          // イントロカット: ドラムだけで始める
+    for(let k=0;k<bar.beats*4;k++){
+      const t=bar.t+k/4, ch=chordAt(t);
+      let c=riff[k];
+      if(k%2===1){ if(dense && k%4===3) c="t"; else continue; }
+      if(c==="."||c===undefined) continue;
+      const V=GTR_VEL[sec.role]*(sec.drop?0.8:1);
+      const notes = c==="c" ? ch.gv.map(m=>[m,0.15,86]) :
+                    c==="t" ? [[ch.gv[ch.gv.length-1],0.25,46]] :
+                    [[ch.gv[Math.min(+c,ch.gv.length-1)], dense?0.5:0.75, k%4===0?72:60]];
+      for(const [m0,d0,v0] of notes){
+        const dur=fitAccom(t,d0,ch); if(!dur) continue;
+        for(const m of [m0,m0+12,m0-12]){ if(m<62||m>86) continue; if(scene.clash(m,t,dur)===0){ push("Guitar",{t,dur,midi:m,vel:clampV(v0*V+(r()-.5)*10)}); break; } }
+      }
+    }
+  }
+
+  /* --- 6. Strings（Morricone: 劇伴的展開 / Bacharach: 旋律的なオケ） --- */
+  const sPush=(t,dur,m,vel,ch)=>{ dur=fitAccom(t,dur,ch); if(!dur) return false;
+    for(const x of [m,m+12,m-12]){ if(x<60||x>91) continue; if(scene.clash(x,t,dur)===0){ push("Strings",{t,dur,midi:x,vel:clampV(vel)}); return true; } } return false; };
+  const padTones=(ch,n,lo,hi,prev)=>{
+    const pref=[3,4,10,11,14,2,7,9,5].map(i=>(ch.root+i)%12).filter(pc=>ch.tonesAll.includes(pc) || pc===(ch.root+2)%12 && !["dim7","7b9","m7b5"].includes(ch.q));
+    const pcs=[...new Set(pref)].slice(0,n);
+    return solveVoicing(pcs.length?pcs:[ch.root],lo,hi,prev,s=>s.reduce((a,m)=>a+scene.clash(m,ch.t,ch.dur)*40,0));
+  };
+  const cc=(t,v)=>song.cc.Strings.push({t,val:clampV(v)});
+  let sv=null;
+  for(const sec of TL.secs){
+    const chs=song.chords.filter(c=>c.sec===sec.id);
+    if(sec.role==="A" && sec.n===2){ cc(sec.t0,72); chs.forEach(ch=>{ sv=padTones(ch,2,67,84,sv); sv.forEach(m=>sPush(ch.t,ch.dur,m,54,ch)); }); }
+    if(sec.role==="B"){
+      cc(sec.t0,70);
+      for(let x=0;x<=8;x++) cc(sec.t0+16+x*((sec.t1-sec.t0-16)/8), 70+x*6);     // 後半4小節でスウェル
+      if(sec.n===2) chs.forEach(ch=>{ sv=padTones(ch,2,64,79,sv); sv.forEach(m=>sPush(ch.t,ch.dur,m,50,ch)); });
+      // 歌の隙間に応答フレーズ（Bacharach のオブリガート）
+      const vs=song.parts.Vocal.filter(n=>n.sec===sec.id).sort((a,b)=>a.t-b.t);
+      for(let i=0;i<vs.length;i++){
+        const gs=vs[i].t+vs[i].dur, ge=i+1<vs.length?vs[i+1].t:sec.t1-0.5;
+        if(ge-gs<1.4) continue;
+        const targets=[84,81,79]; let tt=Math.ceil(gs*2)/2+0.0;
+        targets.forEach((tg,j)=>{ if(tt>=ge-0.2) return; const ch=chordAt(tt);
+          const pool=j===targets.length-1?ch.tonesMel:ch.mScale;
+          let best=null; for(let m=70;m<=88;m++) if(pool.includes(pcOf(m)) && (best===null||Math.abs(m-tg)<Math.abs(best-tg))) best=m;
+          const d=j===targets.length-1?Math.min(1.5,ge-tt):0.5;
+          sPush(tt,d,best,70,ch); tt+=0.5; });
+      }
+    }
+    if(sec.role==="C"){
+      cc(sec.t0,112);
+      if(sec.n===1||sec.drop) chs.forEach(ch=>{ sv=padTones(ch,3,72,91,sv); sv.forEach(m=>sPush(ch.t,ch.dur,m,sec.drop?58:64,ch)); });
+      else {                                                                     // サビ2: 下行する対旋律
+        for(let t=sec.t0;t<sec.t1-0.01;t+=2){ const ch=chordAt(t); const ps=(t-sec.t0)/(sec.t1-sec.t0); const tg=Math.round(88-14*ps);
+          let best=null; for(let m=70;m<=91;m++) if(ch.tonesMel.includes(pcOf(m)) && scene.clash(m,t,Math.min(2,ch.t+ch.dur-t))===0 && (best===null||Math.abs(m-tg)<Math.abs(best-tg))) best=m;
+          if(best!=null) sPush(t,Math.min(2,ch.t+ch.dur-t),best,74,ch);
+          const ch2=chordAt(t+1); if(ch2!==ch){ let b2=null; for(let m=70;m<=91;m++) if(ch2.tonesMel.includes(pcOf(m)) && (b2===null||Math.abs(m-tg)<Math.abs(b2-tg))) b2=m; if(b2!=null) sPush(t+1,1,b2,72,ch2); }
+        }
+      }
+    }
+    if(sec.role==="D"){                                                          // Dメロ: 劇伴。低い持続音＋歌の上で下行する旋律、8小節かけてクレッシェンド
+      for(let x=0;x<=16;x++) cc(sec.t0+x*((sec.t1-sec.t0)/16), 50+x*4);
+      chs.forEach(ch=>{ sv=padTones(ch,2,60,72,sv); sv.forEach(m=>sPush(ch.t,ch.dur,m,58,ch)); });
+      for(let t=sec.t0;t<sec.t1-0.01;t+=2){ const ch=chordAt(t); const ps=(t-sec.t0)/(sec.t1-sec.t0); const tg=Math.round(89-12*ps);
+        let best=null; for(let m=74;m<=91;m++) if(ch.tonesMel.includes(pcOf(m)) && scene.clash(m,t,Math.min(2,ch.t+ch.dur-t))===0 && (best===null||Math.abs(m-tg)<Math.abs(best-tg))) best=m;
+        if(best!=null) sPush(t,Math.min(2,ch.t+ch.dur-t),best,72,ch); }
+    }
+    if(sec.role==="inter"){                                                      // 間奏: Strings がサビのフックを再現
+      cc(sec.t0,110);
+      const c1=secOf("C1"), off=sec.t0-c1.t0;
+      song.parts.Vocal.filter(n=>n.sec==="C1" && n.t<c1.t0+16).forEach(n=>{
+        const t=n.t+off; if(t>=sec.t1) return; const ch=chordAt(t);
+        let m=n.midi+12; if(m>91) m-=12; sPush(t,Math.min(n.dur,sec.t1-t),m,84,null);
+      });
+    }
+    if(sec.role==="outro"){
+      for(let x=0;x<=16;x++) cc(sec.t0+x*((sec.t1-sec.t0)/16), 100-x*6);       // フェードアウト
+      chs.forEach(ch=>{ sv=padTones(ch,3,64,84,sv); sv.forEach(m=>sPush(ch.t,ch.dur,m,60,ch)); });
+    }
+  }
+
+  /* --- 7. Lead（The Edge: 8分の開放的な音型 → Logic で付点8分ディレイ） --- */
+  const lp=LEADPAT[Math.floor(r()*LEADPAT.length)];
+  let lv=null;
+  for(const sec of TL.secs){
+    if(!(sec.role==="inter" || sec.id==="C2" || sec.full || sec.role==="D" || sec.role==="outro")) continue;
+    for(const bar of sec.bars){
+      for(let k=0;k<bar.beats*2;k++){
+        const t=bar.t+k/2, ch=chordAt(t);
+        if(!ch.lv){ const pcs=[ch.root,(ch.root+7)%12]; if(!["dim7","7b9","m7b5"].includes(ch.q)) pcs.push((ch.root+2)%12); else pcs[1]=ch.tonesAll[2];
+          ch.lv=solveVoicing([...new Set(pcs)],74,91,lv,s=>s.reduce((a,m)=>a+scene.clash(m,ch.t,ch.dur)*40,0)); lv=ch.lv; }
+        const m=ch.lv[Math.min(+lp[k%4],ch.lv.length-1)];
+        const dur=fitAccom(t,0.45,ch); if(!dur) continue;
+        if(scene.clash(m,t,dur)===0) push("Lead",{t,dur,midi:m,vel:clampV((k%2?56:66)*(sec.role==="outro"?0.85:1)+(r()-.5)*6)});
+      }
+    }
+  }
+
+  /* --- 8. Drums（Copeland: ハット／リム主体・キック最小・Velocityにムラ） --- */
+  if(P.drums){ genDrums(song,r); if(P.u2||P.introCut) insertU2(song, !P.u2); }
+
+  /* --- 9. 保険: 衝突が残っていれば優先度の低いパートから直す --- */
+  cleanup(song);
+  song.check=consonance(song);
+  const autoTheme=Math.floor(r()*THEMES.length);
+  song.themeIdx=P.theme>=0?P.theme:autoTheme; song.theme=THEMES[song.themeIdx];
+  makeLyrics(song,P.lyricSeed||0);
+  song.hookLift=hookLift;
+  return song;
+}
+
+const DSTYLE={
+  A:    {vel:.78, p16:.55, open:.08, back:"rim",   kick:"min",   crash:false},
+  B:    {vel:.88, p16:.7,  open:.12, back:"snare", kick:"min",   crash:true},
+  C:    {vel:1,   p16:.8,  open:.2,  back:"snare", kick:"drive", crash:true, crash4:true},
+  inter:{vel:.95, p16:.75, open:.18, back:"snare", kick:"drive", crash:true},
+  outro:{vel:.7,  p16:.4,  open:.1,  back:"rim",   kick:"min",   crash:true},
+  D:    {vel:.74, p16:.3,  open:.05, back:"rim",   kick:"min",   crash:true, half:true}   // Dメロ: ハーフタイム
+};
+const FILLS=[
+  (add,s)=>{ add(s+3,DRUM.SNARE,90); add(s+3.25,DRUM.TOM1,94); add(s+3.5,DRUM.TOM2,98); add(s+3.75,DRUM.TOM3,104); },
+  (add,s)=>{ for(let i=0;i<4;i++) add(s+3+i*0.25,DRUM.SNARE,78+i*9); },
+  (add,s)=>{ add(s+3,DRUM.TOM1,92); add(s+3.25,DRUM.SNARE,84); add(s+3.5,DRUM.TOM2,96); add(s+3.75,DRUM.TOM3,104); },
+  (add,s)=>{ add(s+3,DRUM.SNARE,86); add(s+3.5,DRUM.SNARE,80); add(s+3.75,DRUM.SNARE,70); add(s+3.875,DRUM.SNARE,100); }
+];
+/* 瀬谷スタイルの署名フィル: U2「Until The End Of The World」1小節ブレイク（seya-style/reference/u2_break.json と同一, 480tick/拍） */
+const U2_BREAK=[[0,38,111],[120,38,111],[240,36,111],[240,46,111],[480,36,111],[480,46,111],[720,36,127],[720,46,127],
+  [960,38,95],[1080,38,111],[1200,36,111],[1200,46,127],[1440,38,111],[1680,38,95],[1800,38,95]];
+/* 挿入点: 全サビ系の直前1小節 / 間奏明け直前1小節 / 最初の歌い出し直前1小節（= 対象セクション開始小節 − 1、重複は統合） */
+function u2Bars(TL){
+  const set=new Set();
+  TL.secs.forEach((s,i)=>{ const nx=TL.secs[i+1]; if(!nx) return;
+    if(nx.role==="C" || s.role==="inter" || s.role==="intro") set.add(s.bars[s.bars.length-1]); });
+  return [...set];
+}
+function insertU2(song,introOnly){
+  const D=song.parts.Drums, bars=introOnly ? [song.TL.secs[0].bars.at(-1)] : u2Bars(song.TL);
+  for(const b of bars){
+    for(let i=D.length-1;i>=0;i--) if(D[i].t>=b.t-1e-6 && D[i].t<b.t+b.beats-1e-6) D.splice(i,1);   // その小節の既存パターン／フィルは置き換え
+    const off=(4-b.beats)*480;                                                                         // 2/4 小節ではブレイク後半（サビへ向かう側）を使う
+    U2_BREAK.forEach(([tk,m,v])=>{ if(tk<off) return; D.push({t:b.t+(tk-off)/480, dur:50/480, midi:m, vel:Math.max(25,Math.min(125,v))}); });
+  }
+  song.u2Count=bars.length;
+}
+function genDrums(song,r){
+  const D=DRUM;
+  const add=(t,m,v,d=0.12)=>song.parts.Drums.push({t,dur:d,midi:m,vel:clampV(v)});
+  for(const sec of song.TL.secs){
+    const S=DSTYLE[sec.role]; if(!S || sec.drop) continue;          // 落ちサビはドラムを抜く
+    const V=S.vel*(sec.role==="A"&&sec.n===2?1.06:1);
+    sec.bars.forEach((b,i)=>{
+      if(sec.role==="outro" && i>=sec.bars.length-2) return;     // アウトロ最後の2小節はドラムを抜いてギター＋弦で終わる
+      const last=i===sec.bars.length-1, beats=b.beats, s=b.t;
+      if(i===0 && S.crash) add(s,D.CRASH,100*V,1);
+      else if(i%4===0 && S.crash4) add(s,D.CRASH,86*V,1);
+      let until=beats, fill=null;
+      if(last){
+        if(sec.preChorus) until=Math.max(1,beats-1);               // サビ前: フィルなしで止める
+        else if(sec.role==="A") fill="mini";
+        else if(sec.role==="C"||sec.role==="inter") fill="full";
+      }
+      if(fill==="full") until=beats-1; if(fill==="mini") until=beats-0.5;
+      for(let q=0;q<beats;q++){
+        const sub=r()<S.p16?4:2;
+        for(let k=0;k<sub;k++){
+          const frac=k/sub, t=q+frac; if(t>=until) break;
+          const strong=k===0, eighth=Math.abs(frac-.5)<1e-6;
+          const open=!strong && r()<S.open;
+          add(s+t, open?D.HHO:D.HHC, (strong?(q===0?88:78):(eighth?60:42))*V+(r()-.5)*12, open?.2:.08);
+        }
+      }
+      for(const q of (S.half?[2]:[1,3])) if(q<beats && q<until) add(s+q, S.back==="rim"?D.RIM:D.SNARE, (S.back==="rim"?82:104)*V+(r()-.5)*8, .15);
+      if(beats>2){
+        if(r()<.55 && 2.5<until) add(s+2.5,D.RIM,52*V);
+        if(r()<.35 && .75<until) add(s+.75,D.RIM,46*V);
+        if(r()<.4 && 1.75<until) add(s+1.75,D.RIM,42*V);
+      }
+      add(s,D.KICK,100*V,.18);
+      if(beats>2){
+        if(S.kick==="min"){ if(2.5<until) add(s+2.5,D.KICK,76*V,.15); if(r()<.35&&1.75<until) add(s+1.75,D.KICK,66*V,.15); }
+        else { add(s+2,D.KICK,92*V,.18); if(r()<.5&&2.5<until) add(s+2.5,D.KICK,78*V,.15); if(r()<.3) add(s+.75,D.KICK,68*V,.15); }
+      }
+      if(fill==="full") pick(r,FILLS)((t,m,v)=>add(t,m,v*V),s+beats-4);
+      if(fill==="mini"){ add(s+beats-.5,D.SNARE,76*V); add(s+beats-.25,r()<.5?D.TOM2:D.SNARE,92*V); }
+    });
+  }
+}
+
+/* 優先度 Vocal > Bass > Piano > Guitar > Strings > Lead。衝突した低優先ノートはオクターブ移動→短縮→削除 */
+function cleanup(song){
+  const order=["Vocal","Bass","Piano","Guitar","Strings","Lead"], sc=new Scene();
+  for(const p of order){
+    const kept=[], R=RANGE[p];
+    for(const n of song.parts[p].sort((a,b)=>a.t-b.t)){
+      if(p!=="Vocal"){
+        const cl=sc.clashList(n.midi,n.t,n.dur);
+        if(cl.length){
+          let ok=false;
+          for(const d of [12,-12]){ const m=n.midi+d; if(m>=R[0]&&m<=R[1]&&sc.clash(m,n.t,n.dur)===0){ n.midi=m; ok=true; break; } }
+          if(!ok){ const fs=Math.min(...cl.map(x=>x.t)); if(fs>n.t+0.24){ n.dur=fs-n.t; ok=sc.clash(n.midi,n.t,n.dur)===0; } }
+          if(!ok){ song.stats.removed++; continue; }
+          song.stats.fixed++;
+        }
+      }
+      sc.add(n); kept.push(n);
+    }
+    song.parts[p]=kept;
+  }
+}
+/* 16分グリッドで全パートの同時発音を走査し、短2度(1半音)・♭9(13半音)を含むスロットの割合 */
+function consonance(song){
+  const all=["Bass","Guitar","Lead","Vocal","Piano","Strings"].flatMap(p=>song.parts[p]);
+  const sc=new Scene(); all.forEach(n=>sc.add(n));
+  let slots=0, bad=0;
+  for(let s=0;s<song.totalBeats*4;s++){
+    const on=[...sc.over(s/4+0.01,0.02)]; if(on.length<2) continue; slots++;
+    let hit=false;
+    for(let i=0;i<on.length&&!hit;i++) for(let j=i+1;j<on.length;j++){ const d=Math.abs(on[i].midi-on[j].midi); if(d===1||d===13){ hit=true; break; } }
+    if(hit) bad++;
+  }
+  return {slots,bad,rate:slots?bad/slots:0};
+}
+
+/* ============================ 歌詞（SynthV 用・英語） ============================
+   SynthV の英語 G2P を誤らせないため、全単語を1音節にし「1音符＝1単語」で載せる（memory: synthv-english-lyrics）。
+   各テーマは Verse1→Pre1→Chorus→Verse2→Pre2→Bridge の順に物語が進む完成した歌詞。
+   ( ) で囲んだ語句は省略可。音符数に合わせて、左の ( ) から順に省いて文法を保ったまま伸縮する。
+   Chorus の1行目は必ずフックで始まる。 */
+const LYR=[
+  { t:"終電のホームで言えなかったこと", en:"Last Train", hook:"don't go yet",
+    A1:["(oh) (and) the (last) train waits in the (cold) night","(and) I (still) watch your breath fade (so) slow","(but) (all) the words I (should) say stay in me","(so) I (just) count the (red) lights one by one"],
+    B1:["(oh) (and) if I could stop the (old) clock (right) now","(then) (just) one more stop is all I need","(so) (please) (just) turn to look at me"],
+    C:["don't go yet (don't go yet) stay (right) here with me","(oh) (this night) we could run (on) to the light","(so) (just) hold my hand (and) don't let go","(oh) (and) let this heart ride the (last) train home"],
+    A2:["(now) the (red) sign reads the (last) call","(and) your (warm) hand (just) slips (from mine)","(and) (still) I can't find the (right) words to say","(and) the (white) lights (all) blur (in the rain)"],
+    B2:["(but) (just) one word from you could stop the (whole) world","(so) (please) (just) say my name (out loud)","(and) I will wait (right) here (for you)"],
+    D:["(and) the (red) (tail) lights fade (in the dark)","(but) I (still) know spring will come (for us)"] },
+  { t:"海沿いの国道、最後のドライブ", en:"Coast Road", hook:"hold the wheel",
+    A1:["(oh) we drive (down) the (long) road by the sea","(and) the (cold) salt wind blows (in) through the glass","(and) an old song plays (so) (soft and low)","(while) the (red) sun bleeds in the (wide) sky"],
+    B1:["(but) (please) don't tell me where this road ends","(so) (just) keep your eyes on the line (in front)","(and) we don't need to say one word (at all)"],
+    C:["hold the wheel (hold the wheel) don't let it go","(oh) we'll drive till the dawn (breaks through)","(oh) (just) you and me by the (dark) sea","(so) I'll keep this (last) ride in my heart"],
+    A2:["(now) the (white) rails flash (by) in the dusk","(and) your (bare) feet rest on the dash","(and) you (just) laugh like the night won't end","(but) (far) (off) I see the town lights glow"],
+    B2:["(oh) (and) the light turns green (for us) (now)","(but) (please) don't say it's time to go","(so) (just) drive (with me) one more mile"],
+    D:["(and) when the sun comes up (at last)","(please) (still) smile the way you do (right) now"] },
+  { t:"卒業式のあとの空っぽの教室", en:"Empty Room", hook:"see you soon",
+    A1:["(oh) the chalk (still) lines the (green) board","(and) the (spring) wind blows (in) through the (old) blinds","(and) the (last) bell rings (out) through the hall","(and) I (still) write your name (in the dust)"],
+    B1:["(oh) (and) my hands grip the (worn) (dark) sleeves","(but) the words I kept (all) (year) stay (in my desk)","(and) (now) the room is (just) you and me"],
+    C:["see you soon (see you soon) I want to say","(so) (let's) walk to the next spring (with a smile)","(oh) this is not the end (for us)","(so) (let's) (both) smile (right) here (in the sun)"],
+    A2:["(oh) the desks (all) stand in (neat) rows","(and) the (pink) (spring) light falls on your seat","(and) your (old) (red) scarf hangs by the door","(and) I (just) breathe (in) the (warm) (sweet) air"],
+    B2:["(oh) (and) when we walk out through the gate","(then) (all) our days here turn to (old) dreams","(so) (please) look back just one more time"],
+    D:["(and) one day we'll meet (right) here (once more)","(so) (for now) I'll keep your smile (in my heart)"] },
+  { t:"雨上がりの交差点ですれ違う", en:"Crosswalk", hook:"don't turn round",
+    A1:["(oh) the rain (has) (just) stopped on the street","(and) the (red) light glows in the (wet) (black) road","(and) the crowd (just) moves (like a tide)","(then) I see your back in the (gray) crowd"],
+    B1:["(oh) my heart jumps (up to my throat)","(but) if I call your name (out loud)","(then) all we had might break (in two)"],
+    C:["don't turn round (don't turn round) just walk on","(oh) (go) (on) till the (bright) sky clears","(and) go (on) to the life you chose","(oh) (and) I'll be fine (on my own)"],
+    A2:["(now) the drops (still) hang on the (black) lines","(and) my (worn) shoes splash through the (deep) (cold) pools","(and) the (whole) town smells of rain (and grass)","(but) I (still) catch (a trace of) your scent"],
+    B2:["(oh) (and) the (green) light starts to blink","(and) (still) I won't say so long","(so) (just) keep your eyes on the road (you chose)"],
+    D:["(and) the walk sign blinks (green then red)","(but) (look) (up) the sky is blue (once more)"] },
+  { t:"引っ越し前夜、段ボールの部屋", en:"Boxes", hook:"we were here",
+    A1:["(oh) (the) (brown) box stacks fill the (bare) room","(and) there's no (more) shade on the (tall) glass","(and) the (pale) marks (still) stay on the wall","(and) two (blue) cups sit (side by side)"],
+    B1:["(oh) you ask me (with a smile)","(so) (when) we hand back the keys (at dawn)","(then) all of this will (just) be gone"],
+    C:["we were here (we were here) in this small room","(oh) (please) don't let the warmth (just) fade","(and) (though) a new town waits (for us)","(still) I'll step on (with my head up)"],
+    A2:["(oh) the moon light falls on the (bare) floor","(and) the (thin) walls hold our (soft) (late) talks","(and) I (can) (still) hear you laugh (in the dark)","(but) the tape seals up the (last) box"],
+    B2:["(oh) (and) your (old) keys ring (in my hand)","(and) we (both) know it's time to go","(so) (let's) (just) stay (here) (till the dawn)"],
+    D:["(oh) (and) I leave (my) thanks (here) (in the room)","(and) when the door shuts (a new life starts)"] },
+  { t:"閉館間際のプラネタリウム", en:"Dome", hook:"when the stars fade",
+    A1:["(oh) the (dark) dome lights up with (small) stars","(and) we lie back in the (soft) (black) seats","(and) a (calm) voice names the (cold) (bright) stars","(and) (with my hand) I trace the stars"],
+    B1:["(but) the (last) bell rings (from far off)","(and) (though) this sky is fake (for now)","(right now) it's (still) all I need"],
+    C:["when the stars fade (when the stars fade) I'll (still) be here","(oh) I'll find you (with a map of stars)","(and) when the night ends I'll wait (right) here","(so) (just) look up (to the sky) (and smile)"],
+    A2:["(oh) the (red) star glows (low) in the west","(and) your (soft) breath (so) close to me","(and) the (paint) moon hangs (on the dome)","(and) I (could) (just) stay (here) (all night)"],
+    B2:["(but) the lights come up (slow and white)","(and) the (big) doors swing wide (to the night)","(so) (please) take my hand (as we go)"],
+    D:["(oh) the real stars shine (so bright) (up there)","(and) they watch us (both) (from up high)"] },
+  { t:"送れなかったメッセージ", en:"Unsent", hook:"left on read",
+    A1:["(oh) I type (a few) words (in the dark)","(and) the (blue) screen glows (on my face)","(at) (two) at night I can't sleep","(so) I write it (down) then I (just) clear it"],
+    B1:["(oh) (how) I miss you (so much)","(but) I know I can't (just) say that","(and) my thumb stops (on the send key)"],
+    C:["left on read (left on read) it's fine (with me)","(oh) (and) if my words don't reach you","(I) (still) (just) hope your days are (all) bright","(and) that the sun will shine (on you)"],
+    A2:["(oh) the (gray) dawn creeps (in through the blinds)","(and) your (last) text (still) sits (right) there","(and) I read it (one more time)","(and) (then) I turn my phone (face down)"],
+    B2:["(but) I know you're (out) there (in the night)","(and) that's (just) all I need (to know)","(so) I (just) let the words rest (for now)"],
+    D:["(oh) one day we'll laugh (and talk all night)","(so) (till then) (please) take care (of your heart)"] },
+  { t:"真夜中のコインランドリー", en:"Spin", hook:"round and round",
+    A1:["(oh) the (white) lights hum (on the tiles)","(and) the (big) drum spins (with a low moan)","(and) a (red) shirt twirls (in the glass)","(and) I stare at the (round) (small) door"],
+    B1:["(but) no soap (in the world) can wash you out","(oh) (and) if the pain could turn to foam","(then) it would all (just) drift (off)"],
+    C:["round and round (round and round) we still turn","(oh) (and) I'll wait for the dawn (to come)","(and) I'll hold the warmth (still) (in my hands)","(so) I (can learn to) smile (once more)"],
+    A2:["(oh) the (bright) sign blinks (on and off)","(and) the (warm) air smells of (clean) sheets","(and) I see my face in the (dark) glass","(and) it looks (so) small (in this late light)"],
+    B2:["(but) (when) the load comes out (warm and dry)","(then) I'll fold up the past (with care)","(and) walk out (in to the night)"],
+    D:["(oh) (when) the (loud) buzz sounds (at last)","(I'll) head home through the (blue) (dawn) streets"] },
+  { t:"観覧車が一周するまで", en:"Wheel", hook:"one more time",
+    A1:["(oh) the (small) car sways (up in the air)","(and) the (whole) town shrinks (to a dot)","(and) (so) we sit (face to face) (in the glow)","(and) our knees are (just) (so) close"],
+    B1:["(oh) (when) we reach the top (of the wheel)","I'll say the words (I've kept so long)","(so) (please) (just) stop the clock (for us)"],
+    C:["one more time (one more time) (I'll say) I love you","(oh) I'll shout it (to the sky)","(and) (though) we come down (at last)","(my) love won't fade (like the light)"],
+    A2:["(oh) the (gold) sun sets on the (still) bay","(and) the ships rest (in the port)","(and) through the (thin) glass the sky turns pink","(and) you smile (then look down)"],
+    B2:["(oh) (now) we're near the top (of the wheel)","(and) my heart beats (loud and fast)","(so) (please) (just) hear what I (need to) say"],
+    D:["(and) (when) we're back on the (hard) ground","(please) (still) hold my hand (like this)"] },
+  { t:"始発を待つ駅のベンチ", en:"First Train", hook:"till the dawn",
+    A1:["(oh) the (deep) sky fades (to pale blue)","(and) we sit on a (cold) (hard) bench","(and) the steam curls (up) (from my tin cup)","(and) our two shapes lean on the (old) wall"],
+    B1:["(oh) we talked (the whole night through)","(but) when the first train comes (at five)","(then) we'll go (our own ways)"],
+    C:["till the dawn (till the dawn) stay (right) here with me","(oh) (please) don't let this night slip by","(when) the light breaks (through the clouds)","I'll wave (my hand) (and smile at you)"],
+    A2:["(oh) the rails shine (in the first light)","(and) the birds (start to) sing (in the trees)","(and) the (last) stars fade one by one","(and) your head rests on my (left) arm"],
+    B2:["(oh) (now) I hear the train (far off)","(and) we (both) know what comes next","(so) (for now) (let's) just hold on tight"],
+    D:["(oh) a (new) song plays (on the line)","(and) the (bright) day starts (for us both)"] },
+  { t:"二人で見た最後の花火", en:"Sparks", hook:"don't fade out",
+    A1:["(oh) your (thin) sleeve sways (in the breeze)","(and) the (warm) night wind blows (soft)","(and) the stalls glow (red and gold) (all down the lane)","(and) I search for your hand (in the crowd)"],
+    B1:["(oh) I knew the (warm) days would end","(but) I kept it (all) in my heart","(and) when the last spark lights (up) the sky"],
+    C:["don't fade out (don't fade out) stay in my eyes","(oh) I'll keep the sparks in my mind (for good)","(and) hold the light (close to my chest)","(so) this night will live on (in me)"],
+    A2:["(oh) we walk by the (dark) (slow) stream","(and) the (small) lamps float (down the tide)","(and) the crowd (just) swells (and sways)","(and) I hold your hand (so) tight"],
+    B2:["(oh) the last (great) boom will (soon) come","(and) then the dark takes the (whole) sky","(so) (please) (just) stay (here) (a while)"],
+    D:["(oh) (when) the smoke clears from the (night) sky","(and) your (bright) smile will stay (with me)"] },
+  { t:"冬の滑走路、遠ざかる光", en:"Runway", hook:"on the far side",
+    A1:["(oh) I stand on the (cold) deck (in the wind)","(and) I look out through the (steel) fence","(and) a (big) white plane rolls down the strip","(and) my (cold) hands hide in my coat"],
+    B1:["(oh) I (just) can't say (please don't go)","(and) the (loud) roar shakes my chest","(as) the wheels (start to) leave the ground"],
+    C:["on the far side (on the far side) your sky waits","(oh) (so) fly (on) (straight and true)","(and) (though) your light fades from my eyes","(I'll) walk on (with my head held high)"],
+    A2:["(oh) the (gray) clouds hang (low and still)","(and) the (red) lights blink (on the strip)","(and) I (still) hear your (last) words","(and) they ring (on and on) (in me)"],
+    B2:["(oh) (and) the jet turns (to a dot)","(and) my heart flies (up there too)","(so) I let you go (with a wave)"],
+    D:["(oh) through a gap in the (thick) clouds","I (can) feel the spring (draw near)"] }
+];
+/* 行が音数に収まらないときの予備（短く、どのテーマにも馴染む） */
+const LYR_SPARE=["(oh) (and) I (still) know (it's true)","(so) (just) stay (here) with me","(oh) (please) hold on (to me)","(and) the night goes on"];
+/* 和訳（LYR と同じ順番・同じ行数）。省略語を全部入れた形の訳 */
+const LYR_JA=[
+  { A1:["冷たい夜に 最終電車が待っている","君の吐く息が ゆっくり消えていくのを見ていた","言うべき言葉は 全部胸にしまったまま","赤い灯りを ひとつずつ数えてる"],
+    B1:["もしも今 あの古い時計を止められたら","あとひと駅 それだけでいいのに","だからお願い 振り向いて僕を見て"],
+    C:["まだ行かないで ここにいて","今夜なら 光の方へ走っていける","この手を握って 離さないで","この心を 最終電車に乗せて帰ろう"],
+    A2:["赤い表示が 最終案内を告げる","君の温かい手が 僕の手からすり抜ける","言うべき言葉が まだ見つからない","白い灯りが 雨ににじんでいく"],
+    B2:["君のひと言で 世界だって止まるのに","だから 僕の名前を声に出して","僕はここで 君を待っている"],
+    D:["赤いテールランプが 闇に消えていく","それでも春は来ると 僕は知っている"] },
+  { A1:["海沿いの長い道を 走っていく","冷たい潮風が 窓から吹き込む","古い歌が 小さく静かに流れる","赤い夕陽が 広い空に滲んでいく"],
+    B1:["この道の終わりを 教えないで","前の白線だけを 見ていて","言葉なんて ひとつもいらない"],
+    C:["ハンドルを握って 離さないで","夜明けが来るまで 走り続けよう","君と僕だけ 暗い海のそばで","この最後のドライブを 胸にしまっておく"],
+    A2:["夕暮れの中 白いレールが流れていく","君の素足が ダッシュボードに乗っている","夜が終わらないみたいに 君が笑う","遠くに 街の灯りが見えてきた"],
+    B2:["信号が 僕らのために青に変わる","もう帰る時間だなんて 言わないで","あと1マイルだけ 一緒に走って"],
+    D:["ようやく 朝日が昇ったら","今みたいに笑っていて"] },
+  { A1:["緑の黒板に チョークの跡が残ってる","古いブラインドから 春の風が吹き込む","最後のチャイムが 廊下に響く","ほこりの上に 君の名前を書く"],
+    B1:["すり切れた袖を ぎゅっと握りしめる","1年ためた言葉は 机の中に置いたまま","今この教室には 君と僕だけ"],
+    C:["またね と言いたい","笑って 次の春へ歩いていこう","これは終わりじゃない 僕らにとって","ここで 陽だまりの中で笑おう"],
+    A2:["机がきれいに 並んでいる","君の席に 春の淡い光が落ちる","ドアのそばに 君の赤いマフラー","温かく甘い空気を 吸い込む"],
+    B2:["あの門を くぐって出ていけば","ここでの日々は 懐かしい夢になる","だから もう一度だけ振り返って"],
+    D:["いつか またここで会おう","今は 君の笑顔を胸にしまっておく"] },
+  { A1:["雨がちょうど 止んだところ","濡れた道に 赤信号が映る","人の波が 潮のように流れる","人混みの中に 君の背中を見つけた"],
+    B1:["心臓が 喉まで跳ね上がる","でも 君の名前を呼んだら","僕らの全部が 壊れてしまいそう"],
+    C:["振り向かないで そのまま歩いて","空が晴れるまで 進んでいって","君が選んだ人生へ 進んでいって","僕は大丈夫 ひとりでも"],
+    A2:["黒い電線に まだ雨粒が光る","履き古した靴で 水たまりを踏む","街じゅうが 雨と草の匂い","それでも 君の香りがかすかにする"],
+    B2:["青信号が 点滅し始める","それでも さよならは言わない","君が選んだ道だけを 見ていて"],
+    D:["歩行者信号が 青から赤へ","でも見上げれば 空はまた青い"] },
+  { A1:["茶色い段ボールが 空っぽの部屋を埋める","高い窓には もうカーテンがない","壁には まだ薄い跡が残ってる","青いマグカップが ふたつ並んでる"],
+    B1:["君が 笑いながら聞いてくる","明け方に 鍵を返したら","これも全部 なくなってしまう"],
+    C:["僕らは ここにいた この小さな部屋に","この温もりを 消さないで","新しい街が 僕らを待っていても","顔を上げて 歩いていく"],
+    A2:["月の光が 何もない床に落ちる","薄い壁が 夜更けの話を覚えてる","暗闇で笑う君の声が まだ聞こえる","最後の箱に ガムテープを貼る"],
+    B2:["君の古い鍵が 僕の手の中で鳴る","もう行く時間だと ふたりとも分かってる","夜明けまで ここにいよう"],
+    D:["この部屋に ありがとうを置いていく","ドアが閉まったら 新しい暮らしが始まる"] },
+  { A1:["暗いドームに 小さな星が灯る","柔らかい黒い座席に もたれかかる","穏やかな声が 冷たく輝く星の名を告げる","この手で 星をなぞってみる"],
+    B1:["遠くで 閉館のベルが鳴る","今は 作り物の空だけど","今の僕には これで十分"],
+    C:["星が消えても 僕はここにいる","星の地図で 君を見つけ出す","夜が明けたら ここで待ってる","だから空を見上げて 笑って"],
+    A2:["赤い星が 西の空に低く光る","君の柔らかい息が すぐそばにある","描かれた月が ドームに浮かぶ","このまま 一晩中ここにいたい"],
+    B2:["灯りが ゆっくり白く戻ってくる","大きな扉が 夜へと開いていく","帰り道 僕の手を握って"],
+    D:["本物の星が あんなに明るく光ってる","高いところから 僕らを見守ってる"] },
+  { A1:["暗闇で いくつか言葉を打つ","青い画面が 顔を照らす","夜中の2時 眠れない","書いては また消してしまう"],
+    B1:["こんなにも 君に会いたい","でも それは言えないって分かってる","送信ボタンの上で 親指が止まる"],
+    C:["既読のままで かまわない","僕の言葉が 届かなくても","君の毎日が 晴れていることを願う","君に 陽が差すことを"],
+    A2:["灰色の夜明けが ブラインドから忍び込む","君の最後のメッセージが まだそこにある","もう一度 読み返す","それから スマホを伏せて置く"],
+    B2:["君がどこかの夜にいると 分かってる","それだけ知っていれば 十分","今は 言葉をそっと休ませておく"],
+    D:["いつか 一晩中笑って話そう","それまで どうか心を大事にして"] },
+  { A1:["白い蛍光灯が タイルの上でうなる","大きなドラムが 低くうめいて回る","赤いシャツが ガラスの中で踊る","小さな丸い扉を じっと見つめる"],
+    B1:["どんな洗剤でも 君は洗い流せない","この痛みが 泡になってくれたら","全部 流れていくのに"],
+    C:["くるくると 僕らはまだ回り続ける","夜明けが来るまで ここで待つ","手の中の温もりを 離さずに","もう一度 笑えるように"],
+    A2:["明るい看板が ついたり消えたり","温かい空気に 洗いたてのシーツの匂い","暗いガラスに 自分の顔が映る","夜更けの光の中で とても小さく見える"],
+    B2:["洗濯物が 温かく乾いて出てきたら","過去を 丁寧にたたもう","そして 夜の中へ出ていく"],
+    D:["ようやく ブザーが鳴ったら","青い夜明けの街を 歩いて帰ろう"] },
+  { A1:["小さなゴンドラが 空の上で揺れる","街全体が 点みたいに小さくなる","光の中で 向かい合って座る","膝が 触れそうなくらい近い"],
+    B1:["観覧車のてっぺんに着いたら","ずっと抱えてきた言葉を 言うよ","だから 時計を止めて"],
+    C:["もう一度 君が好きだと言う","空に向かって 叫ぶよ","いつかは 下に降りてしまうけど","この想いは 光みたいに消えない"],
+    A2:["静かな港に 金色の夕陽が沈む","船が 港で休んでいる","薄いガラスの向こうで 空がピンクに染まる","君は笑って うつむく"],
+    B2:["もうすぐ てっぺんだ","胸が 大きく速く鳴る","言いたいことを 聞いてほしい"],
+    D:["硬い地面に 戻ったあとも","こうして 手をつないでいて"] },
+  { A1:["深い空が 淡い青に変わっていく","冷たく硬いベンチに ふたりで座る","ブリキのカップから 湯気が立ちのぼる","古い壁に ふたりの影が寄りかかる"],
+    B1:["ひと晩じゅう 話し続けた","でも 5時に始発が来たら","それぞれの道へ 行ってしまう"],
+    C:["夜明けまで ここにいて","この夜を 過ぎ去らせないで","雲の間から 光が差したら","手を振って 君に笑いかけるよ"],
+    A2:["朝一番の光に レールが光る","木々で 鳥が歌い始める","最後の星が ひとつずつ消えていく","君の頭が 僕の左腕にもたれる"],
+    B2:["遠くに 電車の音が聞こえる","次に何が来るか ふたりとも分かってる","今はただ しっかりつかまっていよう"],
+    D:["線路に 新しい歌が流れる","明るい一日が ふたりのために始まる"] },
+  { A1:["君の薄い袖が 夜風に揺れる","温かい夜風が やさしく吹く","屋台の灯りが 赤と金に並んでる","人混みの中で 君の手を探す"],
+    B1:["温かい日々が 終わると分かってた","でも ずっと胸にしまっていた","最後の花火が 空を照らすとき"],
+    C:["消えないで この目に残っていて","この火花を ずっと心に焼きつける","その光を 胸に抱きしめて","この夜は 僕の中で生き続ける"],
+    A2:["暗くゆっくり流れる川辺を 歩く","小さな灯籠が 流れていく","人混みが ふくらんで揺れる","君の手を ぎゅっと握る"],
+    B2:["最後の大きな一発が もうすぐ来る","そして 闇が空を覆う","だから もう少しだけここにいて"],
+    D:["煙が 夜空から晴れたとき","君の笑顔は 僕の中に残ってる"] },
+  { A1:["風の中 冷たい展望デッキに立つ","金網越しに 外を見る","大きな白い飛行機が 滑走路を走る","冷えた手を コートに隠す"],
+    B1:["行かないで とは言えない","大きな轟音が 胸を震わせる","車輪が 地面を離れていく"],
+    C:["さよならの向こうで 君の空が待っている","まっすぐに 飛んでいって","君の光が 見えなくなっても","僕は 胸を張って歩いていく"],
+    A2:["灰色の雲が 低く動かずにいる","滑走路で 赤いライトが点滅する","君の最後の言葉が まだ聞こえる","何度も 胸の中で響く"],
+    B2:["ジェット機が 点になっていく","僕の心も あそこまで飛んでいく","手を振って 君を見送る"],
+    D:["厚い雲の 切れ間から","春が近づくのを 感じる"] }
+];
+const LYR_SPARE_JA=["それが本当だって 分かってる","ここに いて","しがみついていて","夜は 続いていく"];
+const THEMES=LYR.map(x=>[x.t, x.hook]);
+
+function parseLyric(s,ja){
+  const items=[]; const re=/\(([^)]*)\)|([^\s()]+)/g; let m;
+  while((m=re.exec(s))) items.push(m[1]!=null ? {w:m[1].trim().split(/\s+/),opt:true} : {w:[m[2]],opt:false});
+  return { src:s, ja:ja||"", items, min:items.filter(i=>!i.opt).reduce((a,i)=>a+i.w.length,0), max:items.reduce((a,i)=>a+i.w.length,0) };
+}
+const LYR_P=LYR.map((th,ti)=>{ const o={...th};
+  ["A1","B1","C","A2","B2","D"].forEach(k=>o[k]=th[k].map((l,i)=>parseLyric(l,LYR_JA[ti][k][i])));
+  return o; });
+const LYR_SPARE_P=LYR_SPARE.map((l,i)=>parseLyric(l,LYR_SPARE_JA[i]));
+
+/* N 語ちょうどに伸縮: ( ) を左から優先して省く組み合わせを探し、足りない分は最後の語を伸ばす("-") */
+function realizeLine(L, N){
+  if(L.min>N) return null;
+  const opts=L.items.map((it,i)=>it.opt?i:-1).filter(i=>i>=0);
+  let best=null, bs=1e9;
+  for(let mask=0; mask<(1<<opts.length); mask++){
+    let cnt=L.max, pen=0;
+    opts.forEach((ix,b)=>{ if(mask&(1<<b)){ cnt-=L.items[ix].w.length; pen+=b*0.6; } });
+    if(cnt>N) continue;
+    const sc=(N-cnt)*3+pen;
+    if(sc<bs){ bs=sc; best=mask; }
+  }
+  const words=[];
+  L.items.forEach((it,i)=>{ const b=opts.indexOf(i); if(b>=0 && (best&(1<<b))) return; words.push(...it.w); });
+  const mel=N-words.length;
+  return { words, ja:L.ja, units:[...words, ...Array(mel).fill("-")],
+           text:(words.join(" ").replace(/^./,c=>c.toUpperCase()).replace(/\bi\b/g,"I"))+(mel?" ~":"") };
+}
+/* セクションの音符を「1行=6〜11語」目安で区切る（フレーズの切れ目を優先） */
+function segmentNotes(notes){
+  const T=notes.length; if(T<8) return [notes];
+  const cuts=new Set(); notes.forEach((n,i)=>{ if(i>0 && n.ph!==notes[i-1].ph) cuts.add(i); });
+  const best=Array(T+1).fill(Infinity), prev=Array(T+1).fill(-1); best[0]=0;
+  for(let i=0;i<T;i++){ if(best[i]===Infinity) continue;
+    for(let L=4;L<=16&&i+L<=T;L++){ const j=i+L;
+      let c=(L>=6&&L<=11)?Math.abs(L-8)*0.25:(L<6?(6-L)*2.5:(L-11)*2.5);
+      if(j<T && !cuts.has(j)) c+=3;
+      if(best[i]+c<best[j]){ best[j]=best[i]+c; prev[j]=i; } } }
+  const out=[]; let j=T; while(j>0){ const i=prev[j]; out.unshift(notes.slice(i,j)); j=i; }
+  return out;
+}
+const LYR_KEY={A1:"A1",A2:"A2",B1:"B1",B2:"B2",C1:"C",D:"D"};
+function makeLyrics(song, lseed){
+  const th=LYR_P[song.themeIdx], lines={};
+  const V=song.parts.Vocal;
+  for(const sec of song.TL.secs){
+    const notes=V.filter(n=>n.sec===sec.id).sort((a,b)=>a.t-b.t);
+    if(!notes.length) continue;
+    if(sec.role==="C" && sec.id!=="C1" && lines.C1){                      // サビ2・ラスサビは1番サビと同じ歌詞
+      const src=lines.C1; let i=0;
+      src.forEach(l=>l.units.forEach(u=>{ if(notes[i]) notes[i++].lyric=u; }));
+      while(i<notes.length) notes[i++].lyric="-";
+      lines[sec.id]=src.map(l=>({...l})); continue;
+    }
+    const list=th[LYR_KEY[sec.id]]||th[sec.role==="C"?"C":sec.role+"1"];
+    const blocks=segmentNotes(notes), sig=b=>b.map(n=>n.midi).join(",");
+    const L=[]; let p=(lseed||0)%list.length*(sec.role==="C"?0:1);       // 作り直しでは行の割り当てをずらす（サビ頭のフックは固定）
+    blocks.forEach((b,j)=>{
+      let ln=null;
+      if(sec.role==="C" && j>0 && sig(b)===sig(blocks[0])) ln={...L[0]};  // 同じメロディには同じ言葉
+      else {
+        const order=sec.role==="C"&&j===0 ? [0] : [...list.keys()].map(k=>(p+k)%list.length);
+        for(const k of order){ ln=realizeLine(list[k],b.length); if(ln){ p=k+1; break; } }
+        if(!ln && sec.role==="C" && j===0){ const hw=th.hook.split(" "); const w=hw.slice(0,b.length); ln={words:w,ja:th.C[0].ja,units:[...w,...Array(b.length-w.length).fill("-")],text:w.join(" ")+" ~"}; }
+        if(!ln) for(const s of LYR_SPARE_P){ ln=realizeLine(s,b.length); if(ln) break; }
+        if(!ln){ const w=Array(b.length).fill("oh"); ln={words:w,units:w,text:w.join(" ")}; }
+      }
+      b.forEach((n,k)=>n.lyric=ln.units[k]??"-");
+      L.push(ln);
+    });
+    lines[sec.id]=L;
+  }
+  song.lyrics=lines;
+}
+function lyricsText(song){
+  const th=LYR[song.themeIdx];
+  return `"${th.en}" — ${th.t}\n\n`+song.TL.secs.filter(s=>song.lyrics[s.id]).map(s=>`[${s.en}]\n`+song.lyrics[s.id].map(l=>l.text+(l.ja?`\n　（${l.ja}）`:"")).join("\n")).join("\n\n");
+}
+
+/* ============================ SynthV (.svp) 書き出し ============================
+   スキーマは scripts/beyond_the_chasm_v3_lyrics.py（SynthV Studio 2 の実ファイルから写したもの）と同じ。
+   4分音符 = 705600000 blick。ボイスは Mai 2（英語 / arpabet、実績のある設定）。 */
+const BLICK=705600000;
+function uuid(){ return (crypto.randomUUID ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{ const v=Math.random()*16|0; return (c==="x"?v:(v&3|8)).toString(16); })); }
+function buildSVP(song, breath){
+  const V=[...song.parts.Vocal].sort((a,b)=>a.t-b.t);
+  const note=(t,dur,pitch,lyric)=>({ musicalType:"singing", onset:Math.round(t*BLICK), duration:Math.round(dur*BLICK),
+    lyrics:lyric, phonemes:"", accent:"", pitch, detune:0, instantMode:false,
+    attributes:{dF0Left:0.0, dF0Right:0.0, dF0Vbr:0.0, evenSyllableDuration:true} });
+  const notes=[];
+  V.forEach((n,i)=>{
+    const prevEnd=i?V[i-1].t+V[i-1].dur:-1;
+    if(breath && n.k===0 && n.t-prevEnd>=0.6){                 // フレーズ頭にブレス（Karen Carpenter の息づかい）
+      const d=Math.min(0.5,n.t-prevEnd-0.1); notes.push(note(n.t-d-0.02,d,n.midi,"br"));
+    }
+    notes.push(note(n.t,n.dur,n.midi,n.lyric||"la"));
+  });
+  const meter=[]; let prev=0;
+  song.TL.bars.forEach((b,i)=>{ if(b.beats!==prev){ meter.push({index:i,numerator:b.beats,denominator:4}); prev=b.beats; } });
+  const EMPTY={mode:"cubic",points:[]}, GID=uuid();
+  const title=`${keyName(song.P)} ${comboCode(song.P)} ${song.theme[0]}`;
+  return {
+    version:196, uuid:uuid(),
+    time:{meter, tempo:[{position:0,bpm:song.bpm}], startTimeSeconds:0.0},
+    library:[],
+    tracks:[{
+      name:"Vocal - "+song.theme[0], dispColor:"ff7db235", dispOrder:0, renderEnabled:true,
+      mixer:{gainDecibel:0.0,pan:0.0,mute:false,solo:false,display:true,fxPresetName:"",fxParams:{}},
+      mainGroup:{ name:"main", uuid:GID,
+        parameters:Object.fromEntries(["pitchDelta","vibratoEnv","loudness","tension","breathiness","voicing","gender","toneShift","mouthOpening"].map(k=>[k,{...EMPTY}])),
+        vocalModes:{}, pitchControls:[],
+        musicalScale:{type:song.mode==="minor"?"Minor":"Major", root:SHARP[song.tonic]},
+        notes },
+      mainRef:{ uuid:uuid(), groupID:GID, blickAbsoluteBegin:0, blickAbsoluteEnd:-1, blickOffset:0, pitchOffset:0, mute:false, isInstrumental:false,
+        database:{name:"Mai 2", language:"english", phoneset:"arpabet", languageOverride:"", phonesetOverride:"", backendType:"SVR3", version:"200"},
+        dictionary:"", voice:{vocalModeInherited:true,vocalModePreset:"",vocalModeParams:{},choirSeatingSeparation:0.699999988079071},
+        voicePresetName:"", takes:{activeTakeId:0,takes:[{id:0,seedDuration:0,seedPitch:0,seedTimbre:0,liked:false}]} },
+      groups:[]
+    }],
+    renderConfig:{destination:"",filename:title,numChannels:1,aspirationFormat:"noAspiration",bitDepth:16,sampleRate:44100,
+      exportMixDown:true,exportPitch:false,bypassPan:false,bypassGain:false,bypassEffects:false},
+    projectMixer:{linkRoomSettings:true}
+  };
+}
+
+/* ============================ MIDI 書き出し (SMF Fmt1) ============================ */
+const PPQ=480;
+const cc7=(song,p)=>clampV(song.vol[p]*song.vol.master/100);
+function vlq(n){ const b=[n&0x7f]; n>>=7; while(n>0){ b.unshift((n&0x7f)|0x80); n>>=7; } return b; }
+function trackChunk(events){
+  events.sort((a,b)=>a.tick-b.tick || a.ord-b.ord);
+  let out=[], last=0;
+  for(const e of events){ out.push(...vlq(e.tick-last), ...e.data); last=e.tick; }
+  out.push(0x00,0xff,0x2f,0x00);
+  const len=out.length;
+  return [0x4d,0x54,0x72,0x6b,(len>>>24)&255,(len>>>16)&255,(len>>>8)&255,len&255,...out];
+}
+function metaText(type,str){ const bytes=[...new TextEncoder().encode(str)]; return [0xff,type,...vlq(bytes.length),...bytes]; }
+function buildMIDI(song){
+  const us=Math.round(60000000/song.bpm);
+  const tempo=[{tick:0,ord:0,data:[0xff,0x51,0x03,(us>>>16)&255,(us>>>8)&255,us&255]}, {tick:0,ord:0,data:metaText(0x03,"Song Info")}];
+  let prevBeats=0;
+  song.TL.bars.forEach(b=>{ if(b.beats!==prevBeats){ tempo.push({tick:Math.round(b.t*PPQ),ord:0,data:[0xff,0x58,0x04,b.beats,2,24,8]}); prevBeats=b.beats; } });
+  song.TL.secs.forEach(s=>tempo.push({tick:Math.round(s.t0*PPQ),ord:1,data:metaText(0x06,s.en)}));
+  const tracks=[trackChunk(tempo)];
+  for(const p of PARTS){
+    const notes=song.parts[p]; if(!notes.length) continue;
+    const ch=CH[p], ev=[{tick:0,ord:0,data:metaText(0x03,p)}];
+    if(PROG[p]!=null) ev.push({tick:0,ord:0,data:[0xC0|ch,PROG[p]]});
+    ev.push({tick:0,ord:0,data:[0xB0|ch,7,cc7(song,p)]});                                    // CC7 = トラック音量
+    (song.cc[p]||[]).forEach(c=>ev.push({tick:Math.round(c.t*PPQ),ord:1,data:[0xB0|ch,11,c.val&127]}));
+    for(const n of notes){
+      const on=Math.round(n.t*PPQ), off=Math.max(on+1,Math.round((n.t+n.dur)*PPQ));
+      if(p==="Vocal" && n.lyric) ev.push({tick:on,ord:2.5,data:metaText(0x05,n.lyric)});   // 歌詞イベント（SynthV の MIDI 読み込み用）
+      ev.push({tick:on,ord:3,data:[0x90|ch,n.midi&127,n.vel&127]});
+      ev.push({tick:off,ord:2,data:[0x80|ch,n.midi&127,0]});
+    }
+    tracks.push(trackChunk(ev));
+  }
+  const header=[0x4d,0x54,0x68,0x64,0,0,0,6,0,1,(tracks.length>>8)&255,tracks.length&255,(PPQ>>8)&255,PPQ&255];
+  return new Uint8Array([...header,...tracks.flat()]);
+}
+function download(bytes,name,mime){
+  const blob=new Blob([bytes],{type:mime||"audio/midi"}), url=URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url; a.download=name; a.style.display="none"; document.body.appendChild(a); a.click(); a.remove();
+  const link=document.getElementById("saveLink");
+  link.href=url; link.download=name; link.style.display="inline-flex"; link.textContent=`⬇ 保存されない場合はここをタップ： ${name}`;
+  setTimeout(()=>URL.revokeObjectURL(url),120000);
+}
+
+/* ============================ ピアノロール ============================ */
+const hidden=new Set();
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function drawRoll(song){
+  const cv=document.getElementById("roll"), wrap=document.getElementById("rollwrap"), dpr=window.devicePixelRatio||1;
+  const W=Math.max(wrap.clientWidth-2, song.totalBeats*6), H=320, drumH=song.parts.Drums.length?46:0, melH=H-drumH-16;
+  cv.style.width=W+"px"; cv.width=W*dpr; cv.height=H*dpr;
+  const g=cv.getContext("2d"); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
+  const x=t=>t/song.totalBeats*W, lo=26, hi=93, y=m=>16+melH-((m-lo)/(hi-lo))*melH, hh=Math.max(2,melH/(hi-lo)-0.5);
+  g.strokeStyle="#231e31"; song.TL.bars.forEach(b=>{ g.beginPath(); g.moveTo(x(b.t)+.5,16); g.lineTo(x(b.t)+.5,H); g.stroke(); });
+  g.font="11px "+css("--sans");
+  song.TL.secs.forEach(s=>{ g.strokeStyle="rgba(169,155,255,.55)"; g.setLineDash([3,3]); g.beginPath(); g.moveTo(x(s.t0)+.5,0); g.lineTo(x(s.t0)+.5,H); g.stroke(); g.setLineDash([]);
+    g.fillStyle=css("--accent2"); g.fillText(s.name,x(s.t0)+4,12); });
+  song.TL.bars.forEach(b=>{ if(b.beats!==4){ g.fillStyle="rgba(255,207,107,.12)"; g.fillRect(x(b.t),16,x(b.t+b.beats)-x(b.t),H-16); } });
+  for(const p of ["Strings","Piano","Guitar","Lead","Bass","Vocal"]){
+    if(hidden.has(p)) continue;
+    g.fillStyle=css(COLOR[p]); g.globalAlpha=p==="Vocal"?1:.7;
+    song.parts[p].forEach(n=>g.fillRect(x(n.t),y(n.midi),Math.max(1.5,x(n.t+n.dur)-x(n.t)-.5),hh));
+  }
+  g.globalAlpha=1;
+  if(drumH && !hidden.has("Drums")){
+    const top=H-drumH;
+    if(song.u2Count){ g.fillStyle="rgba(255,122,156,.18)"; u2Bars(song.TL).forEach(b=>g.fillRect(x(b.t),top,x(b.t+b.beats)-x(b.t),drumH)); }
+    g.strokeStyle="#332e45"; g.beginPath(); g.moveTo(0,top); g.lineTo(W,top); g.stroke();
+    const row=m=>m===DRUM.KICK?2:(m===DRUM.SNARE||m===DRUM.RIM||m>=DRUM.TOM3&&m<=DRUM.TOM1)?1:0;
+    g.fillStyle=css("--drum");
+    song.parts.Drums.forEach(n=>{ g.globalAlpha=Math.max(.3,n.vel/120); g.fillRect(x(n.t),top+6+row(n.midi)*13,2.5,9); });
+    g.globalAlpha=1;
+  }
+}
+
+/* ============================ Web Audio 試聴 ============================ */
+let actx=null, playing=false, scheduled=[];
+function stopAudio(){ playing=false; scheduled.forEach(o=>{ try{o.stop();}catch(e){} }); scheduled=[]; document.getElementById("stopBtn").disabled=true; }
+function playSong(song){
+  stopAudio(); actx=actx||new (window.AudioContext||window.webkitAudioContext)(); actx.resume();
+  playing=true; document.getElementById("stopBtn").disabled=false;
+  const spb=60/song.bpm, t0=actx.currentTime+0.15, mtof=m=>440*Math.pow(2,(m-69)/12);
+  const master=actx.createGain(); master.gain.value=0.8; master.connect(actx.destination);
+  const bus=(g)=>{ const n=actx.createGain(); n.gain.value=g; n.connect(master); return n; };
+  const strBus=bus(1);
+  const cc=song.cc.Strings; strBus.gain.setValueAtTime(0.8,t0); cc.forEach(c=>strBus.gain.linearRampToValueAtTime(c.val/127,t0+c.t*spb));
+  const leadBus=bus(1), dl=actx.createDelay(2), fb=actx.createGain(), wet=actx.createGain();
+  dl.delayTime.value=0.75*spb; fb.gain.value=0.35; wet.gain.value=0.45;
+  leadBus.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(master);
+  const vf=p=>Math.pow(cc7(song,p)/127,2)*1.6;                   // CC7 のカーブ（おおよそ二乗）で試聴にも反映
+  const voice=(notes,type,gain,dst,opt={})=>notes.forEach(n=>{
+    const o=actx.createOscillator(), e=actx.createGain(); o.type=type; o.frequency.value=mtof(n.midi);
+    const st=t0+n.t*spb, dur=Math.max(0.06,n.dur*spb), v=gain*(n.vel/127), atk=opt.atk||0.01;
+    e.gain.setValueAtTime(0.0001,st); e.gain.exponentialRampToValueAtTime(v,st+atk);
+    const rel=opt.decay?Math.min(dur,opt.decay):dur;
+    e.gain.exponentialRampToValueAtTime(0.0001,st+Math.max(rel,atk+0.02));
+    let node=o;
+    if(opt.lp){ const f=actx.createBiquadFilter(); f.type="lowpass"; f.frequency.value=opt.lp; o.connect(f); node=f; }
+    node.connect(e); e.connect(dst); o.start(st); o.stop(st+Math.max(rel,atk+0.02)+0.05); scheduled.push(o);
+  });
+  const P=song.parts, on=p=>!hidden.has(p);
+  if(on("Piano"))   voice(P.Piano,"triangle",0.06*vf("Piano"),master,{decay:1.6});
+  if(on("Guitar"))  voice(P.Guitar,"square",0.035*vf("Guitar"),master,{decay:0.5,lp:3200});
+  if(on("Bass"))    voice(P.Bass,"triangle",0.30*vf("Bass"),master);
+  if(on("Strings")) voice(P.Strings,"sawtooth",0.028*vf("Strings"),strBus,{atk:0.18,lp:1500});
+  if(on("Lead"))    voice(P.Lead,"sine",0.07*vf("Lead"),leadBus,{decay:0.4});
+  if(on("Vocal"))   voice(P.Vocal,"triangle",0.24*vf("Vocal"),master,{atk:0.03,lp:2400});
+  if(on("Drums") && P.Drums.length){
+    const nb=actx.createBuffer(1,actx.sampleRate*0.5,actx.sampleRate), nd=nb.getChannelData(0);
+    for(let i=0;i<nd.length;i++) nd[i]=Math.random()*2-1;
+    P.Drums.forEach(n=>{
+      const st=t0+n.t*spb, v=n.vel/127*vf("Drums");
+      if(n.midi===DRUM.KICK||(n.midi>=DRUM.TOM3&&n.midi<=DRUM.TOM1)){
+        const o=actx.createOscillator(), e=actx.createGain(); o.type="sine";
+        const f=n.midi===DRUM.KICK?150:n.midi===DRUM.TOM1?210:n.midi===DRUM.TOM2?160:120;
+        o.frequency.setValueAtTime(f,st); o.frequency.exponentialRampToValueAtTime(f*0.35,st+0.12);
+        e.gain.setValueAtTime(v*0.8,st); e.gain.exponentialRampToValueAtTime(0.001,st+0.18);
+        o.connect(e); e.connect(master); o.start(st); o.stop(st+0.2); scheduled.push(o);
+      } else {
+        const s=actx.createBufferSource(), f=actx.createBiquadFilter(), e=actx.createGain(); s.buffer=nb;
+        const snare=n.midi===DRUM.SNARE||n.midi===DRUM.RIM;
+        f.type=snare?"bandpass":"highpass"; f.frequency.value=n.midi===DRUM.RIM?2600:snare?1800:n.midi===DRUM.CRASH?5000:8000;
+        const dur=n.midi===DRUM.RIM?0.05:snare?0.14:n.midi===DRUM.HHO?0.18:n.midi===DRUM.CRASH?0.6:0.04;
+        e.gain.setValueAtTime(v*(snare?0.55:0.3),st); e.gain.exponentialRampToValueAtTime(0.001,st+dur);
+        s.connect(f); f.connect(e); e.connect(master); s.start(st); s.stop(st+dur+0.02); scheduled.push(s);
+      }
+    });
+  }
+  const end=t0+song.totalBeats*spb+1.5;
+  const timer=setTimeout(()=>{ if(playing) stopAudio(); },(end-actx.currentTime)*1000);
+  scheduled.push({stop:()=>clearTimeout(timer)});
+}
+
+/* ============================ UI ============================ */
+const SLOTS=[
+  {id:"pack",tag:"P",label:"コード進行",who:"Bacharach",list:PACKS},
+  {id:"a",tag:"A",label:"Aメロ",who:"Max Martin（裏拍）",list:A_TPL},
+  {id:"b",tag:"B",label:"Bメロ",who:"Bacharach（変則フレーズ）",list:B_TPL},
+  {id:"c",tag:"C",label:"サビ",who:"Max Martin（表拍フック）",list:C_TPL}
+];
+const locks={};
+let SONG=null;
+const $=id=>document.getElementById(id);
+const pad2=n=>String(n+1).padStart(2,"0");
+function renderSlots(){
+  const box=$("slots"); box.innerHTML="";
+  SLOTS.forEach(s=>{
+    const el=document.createElement("div"); el.className="slot";
+    el.innerHTML=`<div class="top"><span class="tag">${s.tag}</span><b style="font-size:13px">${s.label}</b><span class="who">${s.who}</span>
+      <button class="lock" id="lock_${s.id}" title="シャッフル時に固定">🔓</button></div>
+      <select id="sel_${s.id}">${s.list.map((x,i)=>`<option value="${i}">${s.tag}${pad2(i)} ${x.name}${x.mode?` (${x.mode==="minor"?"minor":"major"})`:""}</option>`).join("")}</select>
+      <div class="desc" id="desc_${s.id}"></div>`;
+    box.appendChild(el);
+    const sel=el.querySelector("select"), desc=el.querySelector(".desc"), lk=el.querySelector(".lock");
+    const upd=()=>{ const x=s.list[+sel.value]; desc.textContent=x.desc+(s.id==="pack"?`　A: ${x.A.replace(/\s*\|\s*/g," | ")}`:""); updCombo(); };
+    sel.onchange=upd; upd();
+    lk.onclick=()=>{ locks[s.id]=!locks[s.id]; lk.classList.toggle("on",!!locks[s.id]); lk.textContent=locks[s.id]?"🔒":"🔓"; };
+  });
+}
+const VOL_DEFAULT={ master:100, Drums:100, Bass:100, Guitar:90, Lead:80, Vocal:110, Piano:85, Strings:85 };
+const VOL_KEYS=Object.keys(VOL_DEFAULT);
+const VOL={...VOL_DEFAULT};
+function renderVols(){
+  const box=$("vols"); box.innerHTML="";
+  VOL_KEYS.forEach(k=>{
+    const w=document.createElement("label"); w.style.cssText="display:block; font-size:12px; color:var(--muted)";
+    const nm=k==="master"?"全体（%）":LABEL[k];
+    w.innerHTML=`<span style="display:flex; justify-content:space-between"><span>${k==="master"?"":`<i style="display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;background:var(${COLOR[k]})"></i>`}${nm}</span><b id="vv_${k}" style="color:var(--text); font-family:var(--mono)">${VOL[k]}</b></span>
+      <input type="range" min="0" max="127" value="${VOL[k]}" style="width:100%; accent-color:var(--accent)">`;
+    const inp=w.querySelector("input");
+    inp.oninput=()=>{ VOL[k]=+inp.value; $("vv_"+k).textContent=VOL[k]; if(SONG){ SONG.vol={...VOL}; SONG.P.vol=SONG.vol; saveHash(SONG.P); } };
+    box.appendChild(w);
+  });
+}
+function readParams(){
+  return { pack:+$("sel_pack").value, a:+$("sel_a").value, b:+$("sel_b").value, c:+$("sel_c").value,
+    key:+$("key").value, bpm:Math.max(40,Math.min(260,+$("bpm").value||128)), seed:+$("seed").value||0,
+    odd:$("optOdd").checked, recycle:$("optRecycle").checked, drums:$("optDrums").checked, u2:$("optU2").checked, introCut:$("optCut").checked, ext:$("optExt").value, vol:{...VOL}, theme:+$("optTheme").value, lyricSeed:+($("optTheme").dataset.lseed||0) };
+}
+function comboCode(P){ return `P${pad2(P.pack)}-A${pad2(P.a)}-B${pad2(P.b)}-C${pad2(P.c)}`; }
+function keyName(P){ const pk=PACKS[P.pack]; return (isFlatKey(P.key,pk.mode)?FLAT:SHARP)[P.key]+(pk.mode==="minor"?"m":""); }
+function updCombo(){ if(!$("sel_c")) return; const P=readParams(); $("combo").innerHTML=`<b>${comboCode(P)}</b> · ${keyName(P)} · ${P.bpm} · s${P.seed}`; }
+function fmt(sec){ const m=Math.floor(sec/60), s=Math.round(sec%60); return `${m}:${String(s).padStart(2,"0")}`; }
+function saveHash(P){ try{ history.replaceState(null,"",`#p=${P.pack}&a=${P.a}&b=${P.b}&c=${P.c}&k=${P.key}&bpm=${P.bpm}&s=${P.seed}&odd=${+P.odd}&rec=${+P.recycle}&dr=${+P.drums}&u2=${+P.u2}&cut=${+P.introCut}&th=${P.theme}&ls=${P.lyricSeed}&ext=${P.ext}&vol=${VOL_KEYS.map(k=>VOL[k]).join(".")}`); }catch(e){} }
+function loadHash(){
+  try{
+    const h=new URLSearchParams(location.hash.slice(1)); if(!h.has("p")) return;
+    const set=(id,v)=>{ if(v!=null) $(id).value=v; };
+    set("sel_pack",h.get("p")); set("sel_a",h.get("a")); set("sel_b",h.get("b")); set("sel_c",h.get("c"));
+    set("key",h.get("k")); set("bpm",h.get("bpm")); set("seed",h.get("s"));
+    if(h.has("odd")) $("optOdd").checked=h.get("odd")==="1";
+    if(h.has("rec")) $("optRecycle").checked=h.get("rec")==="1";
+    if(h.has("dr")) $("optDrums").checked=h.get("dr")==="1";
+    if(h.has("u2")) $("optU2").checked=h.get("u2")==="1";
+    if(h.has("cut")) $("optCut").checked=h.get("cut")==="1";
+    if(h.has("th")) $("optTheme").value=h.get("th");
+    if(h.has("ls")) $("optTheme").dataset.lseed=h.get("ls");
+    if(h.has("vol")){ h.get("vol").split(".").forEach((v,i)=>{ if(VOL_KEYS[i] && v!=="") VOL[VOL_KEYS[i]]=Math.max(0,Math.min(127,+v)); }); renderVols(); }
+    if(h.has("ext") && EXT[h.get("ext")]) $("optExt").value=h.get("ext");
+    SLOTS.forEach(s=>$("sel_"+s.id).onchange());
+  }catch(e){}
+}
+
+function doGenerate(){
+  stopAudio();
+  const P=readParams(); saveHash(P);
+  SONG=generateSong(P);
+  const S=SONG, spb=60/S.bpm, c1=S.TL.secs.find(s=>s.id==="C1");
+  const chorusAt=c1.t0*spb, rate=S.check.rate*100;
+  const vMax=ids=>Math.max(...S.parts.Vocal.filter(n=>ids.includes(n.sec)).map(n=>n.midi));
+  const peakOK=vMax(["C1"])>vMax(["A1","B1"]);
+  const nm=m=>(S.flatKey?FLAT:SHARP)[pcOf(m)]+(Math.floor(m/12)-1);
+  $("out").classList.add("show");
+  $("meta").innerHTML=
+    `<span>キー <b>${keyName(P)}</b></span><span>BPM <b>${S.bpm}</b></span>`+
+    `<span>${S.TL.bars.length}小節 <b>${fmt(S.totalBeats*spb)}</b></span>`+
+    `<span>サビ到達 <b class="${chorusAt<=50?"ok":"ng"}">${fmt(chorusAt)} ${chorusAt<=50?"✓ 50秒以内":"✗ 50秒超"}</b></span>`+
+    `<span>サビ最高音 <b class="${peakOK?"ok":"ng"}">${nm(vMax(["C1"]))} ${peakOK?"✓ A/Bより上":"✗"}</b></span>`+
+    `<span>短2度衝突率 <b class="${rate<=5?"ok":"ng"}">${rate.toFixed(1)}%</b>${S.stats.fixed||S.stats.removed?` <span style="color:var(--faint)">(自動修正 ${S.stats.fixed} / 削除 ${S.stats.removed})</span>`:""}</span>`+
+    `<span>ギターリフ <b>R${pad2(S.riffIdx)}</b></span>`+
+    `<span>サビ前 <b>${P.u2?`U2ブレイク ×${S.u2Count}`:"半拍ブレイク（Max Martin）"}${P.introCut?" ／ 頭は U2ブレイクでスタート":""}</b></span>`;
+  const box=$("sections"); box.innerHTML="";
+  S.TL.secs.forEach(sec=>{
+    const row=document.createElement("div"); row.className="secrow";
+    const lb=document.createElement("span"); lb.className="chip lb"; lb.textContent=`${sec.name} (${sec.bars.length})`; row.appendChild(lb);
+    sec.bars.forEach(b=>{
+      const chs=S.chords.filter(c=>c.t>=b.t-1e-6 && c.t<b.t+b.beats-1e-6);
+      const c=document.createElement("span"); c.className="chip"+(b.beats!==4?" odd":"");
+      c.textContent=sec.cut?"ドラムのみ（U2ブレイク）":chs.map(x=>x.name).join(" ")+(b.beats!==4?` [${b.beats}/4]`:""); row.appendChild(c);
+    });
+    if(S.phrases[sec.id]){ const sy=document.createElement("span"); sy.className="chip syl"; sy.textContent="音節 "+S.phrases[sec.id].map(p=>p.length).join("-"); row.appendChild(sy); }
+    box.appendChild(row);
+  });
+  $("theme").innerHTML=`テーマ：<b>${S.theme[0]}</b>（曲名 "${LYR[S.themeIdx].en}"）　／　サビ頭のフック：<b>"${S.theme[1]}"</b><br>`+
+    `<span style="font-size:12px">A=${"A"+pad2(P.a)+" "+A_TPL[P.a].name} / B=${"B"+pad2(P.b)+" "+B_TPL[P.b].name} / サビ=${P.recycle?"Aメロ輪郭の表拍化（リサイクル）":"C"+pad2(P.c)+" "+C_TPL[P.c].name}　・　フックの持ち上げ +${S.hookLift}度</span>`;
+  $("varList").innerHTML=
+    `<li><b>Key</b> ${keyName(P)} ／ <b>BPM</b> ${S.bpm}</li>`+
+    `<li><b>コード進行</b> ${comboCode(P).slice(0,3)} ${PACKS[P.pack].name}</li>`+
+    `<li><b>歌メロ</b> ${"A"+pad2(P.a)+" "+A_TPL[P.a].name} ／ ${"B"+pad2(P.b)+" "+B_TPL[P.b].name}</li>`+
+    `<li><b>サビのフック</b> ${P.recycle?"リサイクル（E.T.方式）":"C"+pad2(P.c)+" "+C_TPL[P.c].name}（+${S.hookLift}度）</li>`+
+    `<li><b>ギターリフ</b> R${pad2(S.riffIdx)} <span style="font-family:var(--mono)">${RIFFS[S.riffIdx]}</span></li>`+
+    `<li><b>テーマ</b> ${S.theme[0]}</li>`;
+  renderLegend(); drawRoll(S);
+  ["playBtn","midiBtn","memoBtn","svpBtn","bundleBtn"].forEach(id=>$(id).disabled=false);
+  renderLyrics();
+}
+function renderLyrics(){
+  const S=SONG, box=$("lyrics"); box.innerHTML="";
+  S.TL.secs.filter(s=>S.lyrics[s.id]).forEach(sec=>{
+    const d=document.createElement("div");
+    d.innerHTML=`<h4>${sec.name} <span style="color:var(--faint);font-weight:400">${sec.en}</span></h4>`+S.lyrics[sec.id].map(l=>`<p>${l.text}<small>${l.units.length}</small>${l.ja?`<span class="ja">${l.ja}</span>`:""}</p>`).join("");
+    box.appendChild(d);
+  });
+}
+function renderLegend(){
+  const lg=$("legend"); lg.innerHTML="";
+  ["Vocal","Piano","Guitar","Bass","Strings","Lead","Drums"].forEach(p=>{
+    const s=document.createElement("span"); s.className=hidden.has(p)?"off":"";
+    s.innerHTML=`<i style="background:var(${COLOR[p]})"></i>${LABEL[p]} <span style="color:var(--faint)">${SONG?SONG.parts[p].length:0}</span>`;
+    s.onclick=()=>{ hidden.has(p)?hidden.delete(p):hidden.add(p); renderLegend(); SONG&&drawRoll(SONG); };
+    lg.appendChild(s);
+  });
+}
+/* MIDI と .svp は同じ名前・同じ小節1拍目起点・同じテンポ／拍子で出す（Logic 上で並べるとそのまま揃う） */
+const IN_APP=!!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.bundle);
+function fileBase(S){
+  const P=S.P;
+  return `${keyName(P)}_${comboCode(P)}${P.ext==='last'?'_LastChorus':P.ext==='dmelo'?'_Dmelo':P.ext==='full'?'_3min':''}${P.introCut?'_IntroCut':''}${P.u2?'_U2break':''}_${LYR[S.themeIdx].en.replace(/\s+/g,'')}_BPM${S.bpm}_seed${P.seed}`;
+}
+function logicSteps(S){
+  const base=fileBase(S);
+  return [
+`■ Logic Pro への取り込み手順（${base}）`,
+``,
+`1. ${base}.mid を Logic で開く（アプリで「書き出し後に Logic Pro で開く」をオンにしていれば自動）`,
+`   → 7トラック・テンポ ${S.bpm}・拍子変更・セクションマーカーが入った新規プロジェクトになる`,
+`2. [トラック] > [新規ソフトウェア音源トラック] を1本作り、音源スロットで`,
+`   [AU 音源] > [Dreamtonics] > [Synthesizer V Studio 2 Pro] を選ぶ（トラック名は「SynthV」など）`,
+`3. 開いたプラグイン画面に ${base}.svp をドラッグ（またはプラグイン内の File > Open）`,
+`   → SynthV が Logic の再生位置とテンポに追従して歌う。.svp も1小節目1拍目から始まるので MIDI と揃う`,
+`4. MIDI の Vocal トラックは歌メロのガイド。SynthV が鳴ったらミュート（M）しておく`,
+`5. Drums トラックの音源を Addictive Drums 2、Bass を Vintage Electric Bass、Piano を Steinway Grand、`,
+`   Strings を Studio Strings に差し替え（プロジェクト表どおり）`,
+``,
+`※ 小節1の開始位置・テンポを動かさないこと（動かすと SynthV とずれる）。テンポを変えるときは Logic 側だけ変えれば SynthV も追従する。`,
+`※ 歌詞を Logic 側で直したいときは、SynthV の ARA プラグイン（Synthesizer V Studio 2 ARA Plugin）を使う方法もある。`
+  ].join("\n");
+}
+function b64(bytes){ let s=""; for(let i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000)); return btoa(s); }
+function exportBundle(){
+  if(!SONG) return;
+  const S=SONG, base=fileBase(S);
+  const mid=buildMIDI(S), svp=JSON.stringify(buildSVP(S,$("optBreath").checked));
+  const memo=memoText(), steps=logicSteps(S);
+  if(IN_APP){
+    $("bundleBtn").textContent="⏳ 保存先を選んでください…";
+    window.webkit.messageHandlers.bundle.postMessage({ base, openLogic:$("optOpenLogic").checked, files:[
+      {name:base+".mid", b64:b64(mid)},
+      {name:base+".svp", text:svp},
+      {name:base+"_設計メモと歌詞.txt", text:memo},
+      {name:"Logic取り込み手順.txt", text:steps}
+    ]});
+  } else {                                                    // ブラウザでは順番にダウンロード
+    download(mid,base+".mid");
+    setTimeout(()=>download(new TextEncoder().encode(svp),base+".svp","application/json"),500);
+    setTimeout(()=>download(new TextEncoder().encode(memo+"\n\n"+steps),base+"_設計メモと手順.txt","text/plain"),1000);
+  }
+}
+function memoText(){
+  const S=SONG, P=S.P, spb=60/S.bpm;
+  const lines=[`■ ${comboCode(P)}  Key ${keyName(P)}  BPM ${S.bpm}  seed ${P.seed}  (${fmt(S.totalBeats*spb)})`,
+    `コード進行: ${PACKS[P.pack].name} / A: ${"A"+pad2(P.a)+" "+A_TPL[P.a].name} / B: ${"B"+pad2(P.b)+" "+B_TPL[P.b].name} / サビ: ${P.recycle?"リサイクル":"C"+pad2(P.c)+" "+C_TPL[P.c].name}`,
+    `テーマ: ${S.theme[0]}（フック語の例「${S.theme[1]}」）  ギターリフ R${pad2(S.riffIdx)}`, ""];
+  S.TL.secs.forEach(sec=>{
+    const bars=sec.bars.map(b=>S.chords.filter(c=>c.t>=b.t-1e-6&&c.t<b.t+b.beats-1e-6).map(x=>x.name).join(" ")+(b.beats!==4?`(${b.beats}/4)`:""));
+    lines.push(`[${sec.name}] ${bars.join(" | ")}`+(S.phrases[sec.id]?`   音節 ${S.phrases[sec.id].map(p=>p.length).join("-")}`:""));
+  });
+  lines.push("", "──歌詞──", lyricsText(S));
+  lines.push("", `短2度衝突率 ${(S.check.rate*100).toFixed(1)}%`, "Lead: Delay Designer / Tape Delay 1/8付点, FB30%, Mix30%");
+  return lines.join("\n");
+}
+
+window.addEventListener("DOMContentLoaded",()=>{
+  // テンプレートの書式チェック
+  [...A_TPL,...B_TPL,...C_TPL].forEach(T=>{ [...T.cells,T.end].forEach(c=>{ if(c.length!==16) console.warn("cell length",T.name,c); });
+    if(T.phrases.reduce((a,b)=>a+b,0)!==8) console.warn("phrases != 8",T.name); });
+  $("key").innerHTML=SHARP.map((n,i)=>`<option value="${i}">${n}${FLAT[i]!==n?" / "+FLAT[i]:""}</option>`).join("");
+  $("key").value="9";
+  $("optExt").innerHTML=Object.entries(EXT_LABEL).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
+  renderSlots();
+  renderVols();
+  $("volReset").onclick=()=>{ Object.assign(VOL,VOL_DEFAULT); renderVols(); if(SONG){ SONG.vol={...VOL}; SONG.P.vol=SONG.vol; saveHash(SONG.P); } };
+  $("sel_pack").value="1"; $("sel_pack").onchange();
+  loadHash(); updCombo();
+  ["key","bpm","seed"].forEach(id=>$(id).addEventListener("input",updCombo));
+  $("genBtn").onclick=doGenerate;
+  $("playBtn").onclick=()=>SONG&&playSong(SONG);
+  $("stopBtn").onclick=stopAudio;
+  $("diceBtn").onclick=()=>{ $("seed").value=Math.floor(Math.random()*99999); updCombo(); doGenerate(); };
+  $("shuffleBtn").onclick=()=>{
+    SLOTS.forEach(s=>{ if(!locks[s.id]){ const sel=$("sel_"+s.id); sel.value=String(Math.floor(Math.random()*s.list.length)); sel.onchange(); } });
+    $("seed").value=Math.floor(Math.random()*99999); updCombo(); doGenerate();
+  };
+  $("midiBtn").onclick=()=>{ if(!SONG) return; download(buildMIDI(SONG),fileBase(SONG)+".mid"); };
+  $("bundleBtn").onclick=exportBundle;
+  window.__bundleDone=(ok,msg)=>{ $("bundleBtn").textContent=ok?"✅ 書き出しました":"⚠️ "+msg; setTimeout(()=>$("bundleBtn").textContent="📦 Logic用に一括書き出し",2200); };
+  if(IN_APP) $("openLogicWrap").style.display="flex";
+  $("memoBtn").onclick=async()=>{ const t=memoText(); try{ await navigator.clipboard.writeText(t); $("memoBtn").textContent="✅ コピーしました"; }catch(e){ prompt("設計メモ",t); }
+    setTimeout(()=>$("memoBtn").textContent="📋 設計メモ",1600); };
+  $("optTheme").innerHTML=`<option value="-1">seed で自動</option>`+LYR.map((x,i)=>`<option value="${i}">${x.t} — "${x.en}"（hook: ${x.hook}）</option>`).join("");
+  if(!$("optTheme").dataset.th) $("optTheme").value="-1";
+  loadHash();
+  $("optTheme").onchange=()=>{ $("optTheme").dataset.lseed=0; };
+  $("lyrReroll").onclick=()=>{ if(!SONG) return; const ls=(+($("optTheme").dataset.lseed||0))+1; $("optTheme").dataset.lseed=ls;
+    SONG.P.lyricSeed=ls; makeLyrics(SONG,ls); saveHash(SONG.P); renderLyrics(); };
+  $("lyrCopy").onclick=async()=>{ if(!SONG) return; const t=lyricsText(SONG); try{ await navigator.clipboard.writeText(t); $("lyrCopy").textContent="✅ コピーしました"; }catch(e){ prompt("歌詞",t); } setTimeout(()=>$("lyrCopy").textContent="📋 歌詞をコピー",1600); };
+  $("svpBtn").onclick=()=>{ if(!SONG) return;
+    download(new TextEncoder().encode(JSON.stringify(buildSVP(SONG,$("optBreath").checked))),fileBase(SONG)+".svp","application/json"); };
+  window.addEventListener("resize",()=>SONG&&drawRoll(SONG));
+  renderLegend();
+});
+</script>
+</body>
+</html>
