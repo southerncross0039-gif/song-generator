@@ -1,0 +1,1475 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ワンクリック作曲 Cinema — Theme & Score</title>
+<meta name="description" content="Vangelis・Morricone・Bacharach・John Williams・Hans Zimmer と展示会BGMの型から、テーマのはっきりした劇伴曲をワンクリックで作り、MIDI で書き出すブラウザアプリ。インストール・ログイン不要。">
+<meta property="og:title" content="ワンクリック作曲 Cinema — Theme & Score">
+<meta property="og:description" content="動機からテーマを組み立てる劇伴作曲アプリ。27のスコア型（明るい長調14）・展示会BGMのループモード・MIDI 書き出し。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0d0f17">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --ink:#0d0f17; --panel:#161a26; --panel2:#1c2131; --line:#2b3247; --line2:#3a4360;
+  --accent:#d9a441; --accent2:#f2c96b; --rose:#ff7a9c; --amber:#ffb45e; --green:#7fdca0; --sky:#8ec5ff;
+  --cyan:#4fd1c5; --lilac:#c9a8ff; --gold:#e8d27a; --teal:#5fb3b3; --drum:#b3b8d6; --brass:#ff9a62;
+  --text:#ece9f2; --muted:#a3a7c0; --faint:#6c7190; --bad:#ff6b6b;
+  --sans:"Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,Meiryo,system-ui,-apple-system,sans-serif;
+  --mono:"SF Mono",ui-monospace,"Roboto Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:
+    radial-gradient(1100px 560px at 10% -12%, #2c2312 0%, transparent 55%),
+    radial-gradient(900px 640px at 105% 0%, #13243a 0%, transparent 52%),
+    var(--ink);
+  color:var(--text); font-family:var(--sans); line-height:1.55; -webkit-font-smoothing:antialiased; min-height:100vh;
+}
+.wrap{max-width:1120px; margin:0 auto; padding:28px 16px 80px}
+header h1{font-size:26px; margin:0 0 4px; letter-spacing:.5px}
+header h1 .dot{color:var(--accent2)}
+header h1 small{color:var(--faint); font-size:14px; font-weight:400}
+header p{margin:0; color:var(--muted); font-size:13.5px}
+.card{background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+  border-radius:16px; padding:20px; box-shadow:0 18px 46px rgba(0,0,0,.45); margin-top:20px}
+.card h2{font-size:14px; margin:0 0 12px; color:var(--accent2); letter-spacing:.4px}
+.grid{display:grid; gap:14px}
+.controls{grid-template-columns:repeat(2,minmax(0,1fr))}
+.slots{grid-template-columns:minmax(0,1fr)}
+@media(min-width:760px){ .controls{grid-template-columns:repeat(4,minmax(0,1fr))} .slots{grid-template-columns:repeat(2,minmax(0,1fr))} }
+label.f{display:block; font-size:12px; color:var(--muted); margin-bottom:6px; letter-spacing:.3px}
+select,input[type=number]{width:100%; background:#10131d; color:var(--text); border:1px solid var(--line2);
+  border-radius:10px; padding:10px 11px; font-family:var(--sans); font-size:14px; appearance:none}
+select:focus,input:focus{outline:none; border-color:var(--accent)}
+.slot{background:#10131d; border:1px solid var(--line2); border-radius:12px; padding:12px}
+.slot .top{display:flex; align-items:center; gap:8px; margin-bottom:8px}
+.slot .tag{font-family:var(--mono); font-size:11px; color:var(--ink); background:var(--accent2); border-radius:6px; padding:2px 7px; font-weight:700}
+.slot .who{font-size:11.5px; color:var(--faint)}
+.slot .lock{margin-left:auto; background:none; border:1px solid var(--line2); color:var(--muted); border-radius:8px; padding:3px 9px; cursor:pointer; font-size:12px}
+.slot .lock.on{border-color:var(--amber); color:var(--amber)}
+.slot select{background:#161a26}
+.slot .desc{font-size:12px; color:var(--muted); margin-top:7px; min-height:2.8em}
+.opts{display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:14px}
+.opts label{display:flex; flex-wrap:wrap; align-items:center; gap:7px; color:var(--muted); font-size:13px; cursor:pointer; max-width:100%}
+.opts input{accent-color:var(--accent)}
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:16px}
+.btn{border:none; border-radius:12px; padding:13px 20px; font-size:15px; font-weight:700; cursor:pointer;
+  font-family:var(--sans); transition:.15s; display:inline-flex; align-items:center; gap:8px}
+.btn.primary{background:linear-gradient(180deg,var(--accent2),var(--accent)); color:#1a1408; box-shadow:0 8px 22px rgba(217,164,65,.35)}
+.btn.primary:hover{transform:translateY(-1px)}
+.btn.ghost{background:#10131d; color:var(--text); border:1px solid var(--line2)}
+.btn.ghost:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.4; cursor:not-allowed; transform:none}
+.btn.sm{padding:6px 11px; font-size:12px; border-radius:9px}
+.combo{font-family:var(--mono); color:var(--faint); font-size:12px; margin-left:auto}
+.combo b{color:var(--accent2)}
+.roles{display:grid; gap:10px; grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.role{background:#10131d; border:1px solid var(--line2); border-radius:12px; padding:10px 12px; font-size:12.5px; color:var(--muted)}
+.role b{color:var(--text); display:block; margin-bottom:3px}
+.role.cur{border-color:var(--accent)}
+.fv{display:grid; gap:14px; grid-template-columns:minmax(0,1fr)}
+@media(min-width:760px){ .fv{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.fv h3{font-size:12.5px; margin:0 0 6px; color:var(--muted); font-weight:600}
+.fv ul{margin:0; padding-left:18px; font-size:12.5px; color:var(--muted)}
+.fv li b{color:var(--text); font-weight:600}
+.out{display:none}
+.out.show{display:block}
+.meta{display:flex; gap:8px 18px; flex-wrap:wrap; color:var(--muted); font-size:12.5px; margin-bottom:12px}
+.meta b{color:var(--text); font-weight:600}
+.ok{color:var(--green)} .ng{color:var(--bad)}
+.secrow{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:3px 0}
+.chip{font-family:var(--mono); font-size:12.5px; background:#10131d; border:1px solid var(--line2); border-radius:8px; padding:4px 9px; color:var(--accent2)}
+.chip.lb{background:transparent; border-color:var(--accent); font-family:var(--sans); font-weight:700; min-width:118px}
+.chip.who{color:var(--rose); border-color:#5a3346; font-family:var(--sans)}
+.chip.lift{color:var(--amber); border-color:#6a5530; font-family:var(--sans)}
+.themebox{margin:14px 0; padding:12px 14px; border:1px dashed var(--line2); border-radius:12px; font-size:13px; color:var(--muted)}
+.themebox b{color:var(--text)}
+.themebox .bars{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
+.themebox .bars span{font-family:var(--mono); font-size:12px; background:#10131d; border:1px solid var(--line2); border-radius:8px; padding:3px 8px; color:var(--rose)}
+.themebox .bars span.pk{border-color:var(--rose)}
+.rollwrap{background:#0b0d14; border:1px solid var(--line); border-radius:12px; overflow-x:auto; margin:14px 0 8px}
+canvas{display:block; height:340px}
+.legend{display:flex; flex-wrap:wrap; gap:6px 14px; font-size:12px; color:var(--muted)}
+.legend span{cursor:pointer; user-select:none}
+.legend span.off{opacity:.35; text-decoration:line-through}
+.legend i{display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:5px; vertical-align:-1px}
+.hint{color:var(--faint); font-size:12px; margin-top:14px; line-height:1.75}
+kbd{font-family:var(--mono); background:#10131d; border:1px solid var(--line2); border-radius:5px; padding:1px 6px; font-size:11px}
+#saveLink{display:none; margin-top:12px; padding:11px 16px; border-radius:10px; background:#10131d; border:1px solid var(--amber); color:var(--amber); font-size:13px; text-decoration:none; max-width:100%; overflow-wrap:anywhere; word-break:break-all}
+.footer{color:var(--faint); font-size:11.5px; margin-top:26px; text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ワンクリック作曲<span class="dot">.</span> Cinema <small>Theme &amp; Score — Vangelis × Morricone × Bacharach × John Williams × Hans Zimmer ＋ 展示会BGM（Inter BEE）劇伴作曲システム</small></h1>
+    <p>まず2小節の「動機（テーマの核）」を決め、それを反復・模続進行・断片化して8小節のテーマに育て、曲全体でテーマを何度も出す（提示 → 確保 → 対照 → ビルド → クライマックス → コーダ）劇伴型の作曲エンジンです。スコア型27（☀ 明るい長調 14・🌙 短調 13）× 動機16 × テーマの形2 × 対照主題3（× 12キー × seed）。Third までの MIDI 書き出し・AD2 変換・試聴・Logic 一括書き出しをそのまま引き継いでいます。</p>
+  </header>
+
+  <div class="card">
+    <h2>作曲家スタイル（スコア型を選ぶと自動で切り替わる）</h2>
+    <div class="roles" id="roles"></div>
+  </div>
+
+  <div class="card">
+    <h2>毎回変更するもの</h2>
+    <div class="grid controls">
+      <div><label class="f" for="key">キー（主音）</label><select id="key"></select></div>
+      <div><label class="f" for="bpm">BPM（スコア型を選ぶと推奨テンポ）</label><input type="number" id="bpm" value="72" min="40" max="200"></div>
+      <div><label class="f" for="seed">seed（動機の変形・対旋律・オスティナート・揺らぎ）</label><input type="number" id="seed" value="1"></div>
+      <div><label class="f">&nbsp;</label><button class="btn ghost" id="diceBtn" style="width:100%;justify-content:center;padding:10px">🎲 seed だけ変える</button></div>
+    </div>
+
+    <div class="grid slots" style="margin-top:16px" id="slots"></div>
+
+    <div class="grid" style="margin-top:14px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+      <div><label class="f" for="optForm">曲の長さ</label><select id="optForm"></select></div>
+      <div><label class="f" for="optLift">クライマックスの転調</label><select id="optLift">
+        <option value="auto">スタイルにおまかせ</option><option value="0">しない</option><option value="1">半音上げる</option><option value="2">全音上げる</option></select></div>
+      <div><label class="f" for="optMood">ムード（🎰 シャッフルの対象）</label><select id="optMood">
+        <option value="all">すべて</option><option value="bright">☀ 明るい（長調）だけ</option><option value="dark">🌙 暗い（短調）だけ</option></select></div>
+      <div><label class="f" for="optInst">MIDI の音源想定</label><select id="optInst">
+        <option value="ad">Drums＝Addictive Drums 2 ／ エレキベースは MODO BASS 2</option><option value="gm">GM（Logic 標準音源・他の DAW 用）</option></select></div>
+    </div>
+
+    <div class="opts">
+      <label><input type="checkbox" id="optMut" checked> seed で動機を少しだけ変形する（同じ型でも毎回違うテーマに。最初の音・いちばん長い音は動かさない）</label>
+      <label><input type="checkbox" id="optHint" checked> イントロでテーマを予告（動機の頭2音を低音で、ゆっくり）</label>
+      <label><input type="checkbox" id="optCounter" checked> 対旋律（テーマの反行・ロングトーン）</label>
+      <label><input type="checkbox" id="optOst" checked> オスティナート（Zimmer のオルガン／Morricone のギャロップ／Williams の行進／Vangelis のシーケンス）</label>
+      <label><input type="checkbox" id="optChoir" checked> 合唱（クライマックス・Morricone の掛け声）</label>
+      <label><input type="checkbox" id="optPerc" checked> 打楽器（Drums ＋ Timpani）</label>
+      <label style="color:var(--accent2)"><input type="checkbox" id="optExpo"> 📡 展示会BGMモード（Inter BEE 向け）：継ぎ目なくループ（コーダの代わりにⅤで止まるループ・ブリッジ）／強弱の幅を狭めて会話を邪魔しない音量／転調・リタルダンドなし／▶ 試聴はループ再生</label>
+      <label><input type="checkbox" id="optRit" checked> 最後の2小節でリタルダンド（テンポ情報として MIDI に書き込む）</label>
+    </div>
+
+    <div class="row">
+      <button class="btn primary" id="genBtn">🎬 Generate</button>
+      <button class="btn ghost" id="shuffleBtn">🎰 シャッフル（🔒以外）</button>
+      <button class="btn ghost" id="playBtn" disabled>▶ 試聴</button>
+      <button class="btn ghost" id="themeBtn" disabled title="テーマ確保（8小節）のメロディだけを鳴らす">🎵 テーマだけ</button>
+      <button class="btn ghost" id="stopBtn" disabled>■ 停止</button>
+      <button class="btn ghost" id="midiBtn" disabled>⬇ MIDI書き出し</button>
+      <button class="btn ghost" id="memoBtn" disabled>📋 設計メモ</button>
+      <button class="btn primary" id="bundleBtn" disabled title="MIDI・設計メモ・Logic手順を同じ名前で1つのフォルダに書き出す">📦 Logic用に一括書き出し</button>
+      <label id="openLogicWrap" style="display:none; align-items:center; gap:6px; font-size:12.5px; color:var(--muted)"><input type="checkbox" id="optOpenLogic" checked style="accent-color:var(--accent)"> 書き出し後に Logic Pro で開く</label>
+      <span class="combo" id="combo"></span>
+    </div>
+    <a id="saveLink"></a>
+
+    <details style="margin-top:16px">
+      <summary style="cursor:pointer; color:var(--muted); font-size:13px">🎚 トラック音量（MIDI の CC7 として書き出し・試聴にも反映）</summary>
+      <div class="grid" id="vols" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px 18px; margin-top:12px"></div>
+      <div style="margin-top:8px"><button class="btn ghost sm" id="volReset">初期値に戻す</button></div>
+    </details>
+  </div>
+
+  <div class="card out" id="out">
+    <h2>生成結果</h2>
+    <div class="meta" id="meta"></div>
+    <div class="themebox" id="themebox"></div>
+    <div id="sections"></div>
+    <div class="rollwrap" id="rollwrap"><canvas id="roll"></canvas></div>
+    <div class="legend" id="legend"></div>
+    <div class="hint">
+      • <b>テーマの担当（ピンク）</b>はセクションごとに楽器が替わります（例: Williams はホルン → トランペット → 弦 → 全員）。同じメロディを楽器を替えて何度も聴かせるのが劇伴のテーマの立て方です。<br>
+      • <b>Logic への取り込み</b>：書き出した <kbd>.mid</kbd> を Logic のトラックエリアへドラッグ（または 📦 一括書き出しで自動で開く）。テンポ（リタルダンド込み）とセクションマーカーが入ります。各トラックの音色のおすすめは「Logic取り込み手順.txt」に書き出されます。<br>
+      • <b>空間系</b>：劇伴は残響が主役です。Strings／Choir／Theme は <kbd>Space Designer</kbd> か <kbd>ChromaVerb</kbd> の Hall 系（Decay 2.5〜4s）を Aux に立てて送るのが目安です。Vangelis は 5s 以上の長いホールでも合います。<br>
+      • 凡例をクリックすると、そのパートを試聴・ピアノロールから外せます。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>固定するもの / 変更するもの</h2>
+    <div class="fv">
+      <div>
+        <h3>固定（テーマの作り方）</h3>
+        <ul>
+          <li><b>動機（2小節）</b>：特徴的なリズム＋印象的な跳躍を1つだけ持つ。テーマ・ビルド・コーダはすべてこの動機から作る</li>
+          <li><b>テーマ（8小節）</b>：文型＝動機 → 動機の反復／模続進行 → 前半の断片化で上昇 → 終止。楽節型＝前楽節（半終止）→ 後楽節（全終止）。<b>最高音は5〜7小節目</b>に置き、主音へ解決</li>
+          <li><b>テーマ1回目は半終止（開いて終わる）、2回目は全終止（主音で閉じる）</b>。合わせて16小節の大きな問いと答え</li>
+          <li><b>和声音の規則</b>：1・3拍目と長い音は必ずコード音（または半音でぶつからないテンション）。非和声音は短い経過音・刺繍音だけ。伴奏に乱数は使わない</li>
+          <li><b>構成（標準・54小節）</b>：イントロ（予告）4 → テーマ提示8 → テーマ確保8 → 対照主題8 → ビルド4 → クライマックス8 → クライマックス（終止）8 → コーダ6</li>
+          <li><b>展開</b>：段階的に楽器を足して最後に全員でテーマを歌う。クライマックスはテーマを複数の楽器でオクターブ重ね（必要なら転調）</li>
+        </ul>
+      </div>
+      <div>
+        <h3>毎回変更（この画面で選ぶ）</h3>
+        <ul id="varList">
+          <li>Key / BPM / スコア型（コード進行と編成）/ 動機 / テーマの形 / 対照主題</li>
+          <li>seed：動機の小さな変形・模続進行の幅・対旋律・オスティナートの型・ベロシティの揺らぎ</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">ローカル生成・サーバー不要 / SMF Format 1 出力 / 短2度衝突の自動検査つき / 動機・メロディはすべてオリジナル生成（参照作曲家の楽曲そのものは含みません）</div>
+</div>
+
+<script>
+"use strict";
+/* ============================ 基本定義 ============================ */
+const SHARP=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+const FLAT =["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
+const SCALE={ major:[0,2,4,5,7,9,11], minor:[0,2,3,5,7,8,10] };
+const DRUM={ KICK:36, SNARE:38, RIM:37, HHC:42, HHO:46, RIDE:51, CRASH:49, TOM1:48, TOM2:45, TOM3:43 };
+/* Drums は ch10(=index 9)。他は 0 始まりの ch と GM 音色（スタイルごとに上書き） */
+const PARTS=["Drums","Timpani","Bass","Theme","Counter","Strings","Brass","Keys","Ostinato","Choir","Guitar"];
+const MEL_PARTS=PARTS.filter(p=>p!=="Drums");
+const CH={ Theme:0, Bass:1, Counter:2, Strings:3, Brass:4, Keys:5, Ostinato:6, Choir:7, Guitar:8, Drums:9, Timpani:10 };
+const RANGE={ Theme:[55,93], Counter:[45,86], Strings:[43,93], Brass:[38,79], Keys:[36,96], Ostinato:[40,91], Choir:[48,81], Guitar:[52,86], Bass:[28,55], Timpani:[38,57] };
+const COLOR={ Theme:"--rose", Counter:"--amber", Strings:"--green", Brass:"--brass", Keys:"--sky", Ostinato:"--cyan", Choir:"--lilac", Guitar:"--gold", Bass:"--teal", Timpani:"--drum", Drums:"--drum" };
+const ROMAN={ I:0, II:2, III:4, IV:5, V:7, VI:9, VII:11 };
+const ROMAN_RE=/^([b#]?)(VII|VI|V|IV|III|II|I|vii|vi|v|iv|iii|ii|i)(.*)$/;
+
+function rng(seed){ let a=seed>>>0; return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const pick=(r,arr)=>arr[Math.floor(r()*arr.length)];
+const pcOf=m=>((m%12)+12)%12;
+const clampV=v=>Math.max(1,Math.min(127,Math.round(v)));
+const semi=(a,b)=>{ const d=((a-b)%12+12)%12; return d===1||d===11; };
+function isFlatKey(tonic,mode){ return mode==="major" ? [5,10,3,8,1].includes(tonic) : [2,7,0,5,10,3].includes(tonic); }
+
+/* ローマ数字コード: 大文字=長三和音・小文字=短三和音。b/# は長音階基準の変化。/X はベース音 */
+function parseChord(tok,key,flat){
+  const [main,bassTok]=tok.split("/");
+  const m=main.match(ROMAN_RE); if(!m) throw new Error("chord parse: "+tok);
+  const acc=m[1]==="b"?-1:m[1]==="#"?1:0, up=m[2]===m[2].toUpperCase(), suf=m[3];
+  const root=(key+ROMAN[m[2].toUpperCase()]+acc+120)%12, tri=up?[0,4,7]:[0,3,7];
+  const T={ "":[tri,[], up?"":"m"], "7":[[...tri,10],[], up?"7":"m7"], "maj7":[[0,4,7,11],[],"maj7"], "6":[[...tri,9],[], up?"6":"m6"],
+    "add9":[tri,[14], up?"add9":"m(add9)"], "9":[[...tri,10],[14], up?"9":"m9"], "maj9":[[0,4,7,11],[14],"maj9"],
+    "sus4":[[0,5,7],[],"sus4"], "7sus4":[[0,5,7,10],[],"7sus4"], "sus2":[[0,2,7],[],"sus2"], "ø":[[0,3,6,10],[],"m7(b5)"], "dim":[[0,3,6],[],"dim"] }[suf];
+  if(!T) throw new Error("chord suffix: "+tok);
+  const names=m[1]==="#"?SHARP:m[1]==="b"?FLAT:(flat?FLAT:SHARP);
+  let bass=root, slash="";
+  if(bassTok){ const b=bassTok.match(/^([b#]?)(VII|VI|V|IV|III|II|I)$/i); const ba=b[1]==="b"?-1:b[1]==="#"?1:0; bass=(key+ROMAN[b[2].toUpperCase()]+ba+120)%12; slash="/"+(flat?FLAT:SHARP)[bass]; }
+  const tones=[...new Set(T[0].map(i=>(root+i)%12))];
+  return { tok, root, bass, tones, ext:T[1].map(i=>(root+i)%12), name:names[root]+T[2]+slash, maj7:T[0].includes(11) };
+}
+/* コード・スケール: キーの音階のうち、キー外のコード音と半音で隣り合う音をコード音に置き換える（短調の V で導音になる等） */
+function chordScale(ch,mode){
+  const keyPcs=SCALE[mode].map(x=>(x+ch.key)%12);
+  const out=keyPcs.filter(p=>ch.tones.includes(p) || !ch.tones.some(c=>!keyPcs.includes(c) && semi(p,c)));
+  ch.tones.forEach(c=>{ if(!out.includes(c)) out.push(c); });
+  return out;
+}
+/* メロディの長い音・強拍に置ける音 = コード音 ＋ コード音と半音でぶつからない音階音（9th・6th など） */
+function allowedPcs(ch,mode){
+  const sc=chordScale(ch,mode);
+  return [...new Set([...ch.tones, ...sc.filter(p=>!ch.tones.some(c=>semi(p,c)))])];
+}
+function nearestIn(m,set,dir=0){
+  for(let d=0; d<12; d++){
+    const c=dir>=0?[m+d,m-d]:[m-d,m+d];
+    for(const x of c) if(set.includes(pcOf(x))) return x;
+  }
+  return m;
+}
+
+/* 同時発音の衝突判定（実音で1半音 or ♭9=13半音を衝突とみなす） */
+class Scene{
+  constructor(){ this.b=new Map(); }
+  add(n){ const s=Math.floor(n.t), e=Math.floor(n.t+n.dur-1e-6); for(let k=s;k<=e;k++){ if(!this.b.has(k)) this.b.set(k,[]); this.b.get(k).push(n); } }
+  over(t,dur){ const res=new Set(), s=Math.floor(t), e=Math.floor(t+dur-1e-6);
+    for(let k=s;k<=e;k++){ const arr=this.b.get(k); if(!arr) continue; for(const n of arr) if(n.t<t+dur-1e-6 && n.t+n.dur>t+1e-6) res.add(n); }
+    return res; }
+}
+
+/* ============================ 作曲家スタイル ============================
+   prog = GM 音色（0始まり）。names = Logic で差し替えるときの想定楽器。
+   on = 伴奏として鳴らす強度の範囲 [最小,最大]（各セクションの lvl: 1=静か … 4=全員）。
+   carriers = セクションごとにテーマ（メロディ）を担当する楽器。"Part:±12" はオクターブ重ね。担当中の楽器は伴奏をしない。 */
+const STYLES={
+  vangelis:{ name:"Vangelis", who:"ヴァンゲリス（ブレードランナー）", icon:"🌃",
+    desc:"CS-80 のブラス・パッドと長い残響。テーマは息の長いロングトーンで、サックスが夜の対旋律を吹く。終わりはフェードアウト。",
+    prog:{ Theme:62, Counter:66, Strings:89, Brass:63, Keys:2, Ostinato:98, Choir:91, Bass:38, Timpani:47, Guitar:27 },
+    names:{ Theme:"CS-80 Brass Lead", Counter:"Tenor Sax", Strings:"CS-80 Pad", Brass:"Synth Brass", Keys:"Electric Grand (CP-80)", Ostinato:"Crystal Bells / Sequencer", Choir:"Vox Pad", Bass:"Sub Synth Bass", Timpani:"Timpani", Guitar:"—" },
+    logic:{ Theme:"Alchemy の Synth Brass 系（または Retro Synth の Analog・Saw でアタック遅め）", Counter:"Studio Horns の Tenor Sax", Strings:"Alchemy の Warm Pad 系（CS-80 風の広いパッド）", Brass:"Retro Synth（Analog）で Saw＋ローパス", Keys:"Vintage Electric Piano か Electric Grand 系", Ostinato:"Alchemy の Bell／Pluck 系 ＋ Tape Delay", Choir:"Alchemy の Vox／Choir Pad", Bass:"Retro Synth の Sub Bass" },
+    themeRange:[60,84], seq:[0,1], form:"period", lift:0, motifs:[8,9,13,12], bTypes:["aug","lyric"], ending:"fade", modo:false,
+    on:{ Strings:[1,4], Choir:[4,4], Brass:[2,4], Keys:[1,2], Ostinato:[1,1], Bass:[1,4], Timpani:[9,9], Drums:[3,4] },
+    carriers:{ intro:[], A1:["Theme"], A2:["Theme"], Aint:["Counter:-12"], B:["Counter:-12"], build:["Theme"], AC:["Theme","Counter:-12"], coda:["Counter:-12"] },
+    counterLine:["A2"], counterRange:[50,70], hint:"Counter",
+    coda:{ minor:"bVI | bVII | i | bVI bVII | i | i", major:"IV | iv | I | IV iv | I | I" } },
+  morricone:{ name:"Morricone", who:"エンリオ・モリコーネ（マカロニ・ウエスタン）", icon:"🌵",
+    desc:"口笛とトワンギー・ギター、駆け足のギャロップ、合唱の掛け声とトランペット。4度・5度の呼びかけの跳躍が主役。",
+    prog:{ Theme:78, Counter:56, Strings:48, Brass:60, Keys:14, Ostinato:25, Choir:52, Bass:33, Timpani:47, Guitar:27 },
+    names:{ Theme:"Whistle", Counter:"Trumpet", Strings:"Strings", Brass:"French Horns", Keys:"Tubular Bells", Ostinato:"Acoustic Guitar (gallop)", Choir:"Choir Aahs", Bass:"Electric Bass", Timpani:"Timpani", Guitar:"Twang Guitar (Clean + Spring Reverb)" },
+    logic:{ Theme:"口笛の音源がなければ Alchemy の Whistle／Sine Lead（ビブラート浅め）", Counter:"Studio Horns の Trumpet（リバーブ深め）", Strings:"Studio Strings Legato", Brass:"ライブラリの Orchestral > Brass から French Horns 系", Keys:"Tubular Bells（ライブラリの Orchestral Percussion 系）", Ostinato:"Acoustic Guitar（Steel）", Choir:"ライブラリの Choir（Aahs）", Bass:"MODO BASS 2", Guitar:"Clean ギター＋Amp Designer の Spring Reverb＋Tremolo" },
+    themeRange:[64,88], seq:[-1,0,1], form:"sentence", lift:0, motifs:[3,4,5,13], bTypes:["frag","aug"], ending:"hold", modo:true,
+    on:{ Strings:[2,4], Choir:[2,4], Brass:[3,4], Keys:[4,4], Ostinato:[1,4], Bass:[1,4], Timpani:[3,4], Drums:[2,4] },
+    carriers:{ intro:[], A1:["Theme"], A2:["Guitar:-12"], Aint:["Theme"], B:["Counter:-12"], build:["Counter:-12"], AC:["Counter:-12","Choir:0","Strings:0"], coda:["Theme"] },
+    counterLine:["A2"], counterRange:[55,74], hint:"Counter",
+    coda:{ minor:"iv | V | i | iv V | i | i", major:"IV | V | I | IV V | I | I" } },
+  bacharach:{ name:"Bacharach", who:"バート・バカラック（Close to You／Alfie）", icon:"🌹",
+    desc:"フリューゲルホルンの歌、ルートレスの7th・9th とピアノのコンピング、ストリングスが2回目のテーマを受け持ち、フルートが上で絡む。",
+    prog:{ Theme:56, Counter:73, Strings:48, Brass:59, Keys:0, Ostinato:11, Choir:53, Bass:33, Timpani:47, Guitar:24 },
+    names:{ Theme:"Flugelhorn", Counter:"Flute", Strings:"Strings", Brass:"Muted Trumpets", Keys:"Piano", Ostinato:"Vibraphone", Choir:"Voice Oohs", Bass:"Electric Bass (Flat)", Timpani:"Timpani", Guitar:"Nylon Guitar" },
+    logic:{ Theme:"Studio Horns の Trumpet（Flugelhorn があればそちら）", Counter:"ライブラリの Woodwinds > Flute", Strings:"Studio Strings Legato", Brass:"Studio Horns の Trumpet（ミュート系の音色があればそれ）", Keys:"Steinway Grand", Choir:"ライブラリの Choir（Oohs）", Bass:"MODO BASS 2（'60s P-Bass・Flat Wound）" },
+    themeRange:[60,81], seq:[1,2,0], form:"period", lift:1, motifs:[6,7,12], bTypes:["lyric","aug"], ending:"hold", modo:true,
+    on:{ Strings:[2,4], Choir:[2,4], Brass:[2,4], Keys:[1,4], Ostinato:[9,9], Bass:[1,4], Timpani:[9,9], Drums:[1,4] },
+    carriers:{ intro:[], A1:["Theme"], A2:["Strings:0","Theme:0"], Aint:["Counter:12"], B:["Strings:0"], build:["Theme"], AC:["Theme","Strings:12"], coda:["Theme"] },
+    counterLine:["B"], counterRange:[74,91], hint:"Strings",
+    coda:{ minor:"iv7 | bVII7 | i7 | iv7 bVII7 | i7 | i7", major:"IVmaj7 | iv6 | Imaj7 | ii7 V7sus4 | Imaj7 | Imaj7" } },
+  williams:{ name:"John Williams", who:"ジョン・ウィリアムズ（スター・ウォーズ）", icon:"⭐",
+    desc:"金管のファンファーレ、5度・8度の英雄的な跳躍と3連符、弦の行進オスティナート、ティンパニとスネア。最後は全員で主和音を叩いて終わる。",
+    prog:{ Theme:56, Counter:60, Strings:48, Brass:61, Keys:46, Ostinato:48, Choir:52, Bass:43, Timpani:47, Guitar:24 },
+    names:{ Theme:"Trumpets", Counter:"French Horns", Strings:"Strings", Brass:"Brass Section", Keys:"Harp", Ostinato:"Low Strings (march)", Choir:"Choir", Bass:"Contrabass / Tuba", Timpani:"Timpani", Guitar:"—" },
+    logic:{ Theme:"ライブラリの Orchestral > Brass から Trumpets 系", Counter:"ライブラリの Orchestral > Brass から French Horns 系", Strings:"Studio Strings Legato", Brass:"ライブラリの Orchestral > Brass（Brass Ensemble 系）", Keys:"ライブラリの Harp", Ostinato:"Studio Strings（Celli／Basses の Staccato・Spiccato）", Choir:"ライブラリの Choir", Bass:"Studio Strings の Basses（＋Tuba を重ねてもよい）" },
+    themeRange:[62,86], seq:[1,2,0], form:"sentence", lift:2, motifs:[0,1,2,12], bTypes:["lyric","frag"], ending:"hits", modo:false,
+    on:{ Strings:[1,4], Choir:[4,4], Brass:[2,4], Keys:[1,2], Ostinato:[2,4], Bass:[1,4], Timpani:[2,4], Drums:[3,4] },
+    carriers:{ intro:[], A1:["Counter:-12"], A2:["Theme"], Aint:["Counter:-12"], B:["Strings:0"], build:["Counter:-12"], AC:["Theme","Counter:-12","Strings:0"], coda:["Counter:-12"] },
+    counterLine:["A2"], counterRange:[52,70], hint:"Ostinato",
+    coda:{ minor:"iv | V | i | bVI bVII | i | i", major:"IV | V | I | bVI bVII | I | I" } },
+  zimmer:{ name:"Hans Zimmer", who:"ハンス・ジマー（インターステラー）", icon:"🪐",
+    desc:"パイプオルガンの反復音型が最初から最後まで刻み続け、その上で単純な3〜5音のテーマが少しずつ大きくなる。ピアノの時計の音、最後は低音金管とティンパニ。",
+    prog:{ Theme:19, Counter:42, Strings:48, Brass:57, Keys:0, Ostinato:19, Choir:52, Bass:43, Timpani:47, Guitar:24 },
+    names:{ Theme:"Pipe Organ (lead)", Counter:"Celli", Strings:"Strings", Brass:"Low Brass", Keys:"Piano (ticks)", Ostinato:"Pipe Organ (ostinato)", Choir:"Choir", Bass:"Contrabass / Organ Pedal", Timpani:"Timpani", Guitar:"—" },
+    logic:{ Theme:"パイプオルガン系の音源（なければ Alchemy の Organ／Pipe 系）", Counter:"Studio Strings（Celli）", Strings:"Studio Strings Legato", Brass:"ライブラリの Orchestral > Brass から Trombones／Low Brass 系", Keys:"Steinway Grand（ベロシティ低め・ペダルなし）", Ostinato:"Theme と同じオルガン（別トラックで少し小さく）", Choir:"ライブラリの Choir", Bass:"Studio Strings の Basses（オルガンのペダルを重ねても可）" },
+    themeRange:[60,84], seq:[1,0], form:"sentence", lift:0, motifs:[10,11,12,13], bTypes:["frag","lyric"], ending:"fade", modo:false,
+    on:{ Strings:[2,4], Choir:[3,4], Brass:[3,4], Keys:[1,2], Ostinato:[1,4], Bass:[1,4], Timpani:[3,4], Drums:[1,4] },
+    carriers:{ intro:[], A1:["Theme"], A2:["Theme","Strings:-12"], Aint:["Keys"], B:["Counter:-12"], build:["Strings:0"], AC:["Theme","Strings:0","Brass:-12"], coda:["Keys"] },
+    counterLine:["A2","AC"], counterRange:[48,64], hint:"Counter",
+    coda:{ minor:"bVI | bVII | i | bVI bVII | i | i", major:"IV | V | I | IV V | I | I" } }
+  ,expo:{ name:"Expo BGM", who:"展示会BGM（Inter BEE・放送／映像テック）", icon:"📡",
+    desc:"明るい長調のテック・コーポレート。シンセのプラックが8分で刻み、ピアノがテーマを歌い、4つ打ちは軽め。会話の邪魔をしない一定の音量で、最後は冒頭へ継ぎ目なくループする。",
+    prog:{ Theme:0, Counter:11, Strings:48, Brass:61, Keys:4, Ostinato:81, Choir:91, Bass:38, Timpani:47, Guitar:27 },
+    names:{ Theme:"Piano (lead)", Counter:"Vibraphone / Bell", Strings:"Strings", Brass:"—", Keys:"Electric Piano", Ostinato:"Synth Pluck", Choir:"Air Pad", Bass:"Synth Bass", Timpani:"—", Guitar:"Clean Guitar (muted 8ths)" },
+    logic:{ Theme:"Steinway Grand（ベロシティ控えめ・Space Designer を少し）", Counter:"Vibraphone 系か Alchemy の Bell 系", Strings:"Studio Strings Legato（音量は控えめ）", Keys:"Vintage Electric Piano", Ostinato:"Alchemy の Pluck 系 ＋ Tape Delay（1/8 付点・Mix 20%）", Choir:"Alchemy の Air／Pad 系", Bass:"Retro Synth の Synth Bass（または MODO BASS 2）", Guitar:"Clean ギター＋Compressor（ミュートの8分）" },
+    themeRange:[60,79], seq:[1,0,2], form:"sentence", lift:0, motifs:[14,15,12,1], bTypes:["frag","lyric"], ending:"hold", modo:false,
+    on:{ Strings:[2,4], Choir:[3,4], Brass:[9,9], Keys:[1,4], Ostinato:[1,4], Bass:[1,4], Timpani:[9,9], Drums:[2,4], Guitar:[3,4] },
+    carriers:{ intro:[], A1:["Theme"], A2:["Theme","Counter:12"], Aint:["Counter"], B:["Counter"], build:["Theme"], AC:["Theme","Counter:12","Strings:0"], coda:["Theme"] },
+    counterLine:["A1"], counterRange:[55,72], hint:"Counter",
+    coda:{ major:"IV | V | I | IV V | I | I", minor:"bVI | bVII | i | bVI bVII | i | i" },
+    loop:{ major:"IV | V | ii7 | V7sus4", minor:"bVI | bVII | iv | V7sus4" } }
+};
+const STYLE_KEYS=Object.keys(STYLES);
+/* 展示会BGMモードのループ・ブリッジ（最後をⅤで止めて冒頭のⅠへ戻る）。スタイル側に loop がなければこれ */
+const LOOP_DEF={ major:"IV | V | ii7 | V7sus4", minor:"bVI | bVII | iv | V7sus4" };
+
+/* ============================ スコア型（進行） ============================
+   A = テーマ8小節（7〜8小節目は開いた終わり）。Acad = 2回目（全終止）の7〜8小節目。B = 対照主題8小節。
+   すべて原曲の和声語法を参考にした一般的な進行（楽曲そのものの引用ではない） */
+const PACKS=[
+  { style:"vangelis", name:"霧の都市（Blade Runner メインタイトル型）", mode:"minor", bpm:72,
+    A:"i | bVImaj7 | bIII | bVII | i | bVImaj7 | iv | bVII", Acad:"bVI bVII | i", B:"iv | bVII | bIIImaj7 | bVImaj7 | iv | bVII | bVI | V7sus4 V7",
+    desc:"短調のエオリアン。bVI・bVII を大きく揺らし、Ⅴを避けて浮遊させる" },
+  { style:"vangelis", name:"夜のサックス（Love Theme 型）", mode:"minor", bpm:66,
+    A:"i7 | iv7 | bVII | bIIImaj7 | bVImaj7 | iiø | V7sus4 | V7", Acad:"iv7 V7 | i7", B:"bVImaj7 | bVII | bIIImaj7 | bVImaj7 | iv7 | bVII | bIII | V7sus4 V7",
+    desc:"ジャジーな短調の循環。サックスの対旋律が主役になる夜のテーマ" },
+  { style:"vangelis", name:"雨の中の涙（ドリアン型）", mode:"minor", bpm:70,
+    A:"i | IV | i | IV | bIII | bVII | IV | IV", Acad:"bVII IV | i", B:"bVI | bVII | i | i | bVI | bVII | V7sus4 | V7",
+    desc:"短調の主和音と長いⅣ（ドリアン）の往復。明るさのある哀しみ" },
+  { style:"vangelis", name:"シーケンサー疾走（End Titles 型）", mode:"minor", bpm:118, ost:"arp16", drive:true,
+    A:"i | i | bVII | bVII | bVI | bVI | V7sus4 | V", Acad:"bVI bVII | i", B:"iv | iv | bVII | bVII | bIII | bIII | bVI | V7",
+    desc:"16分のシンセ・アルペジオとドラムで走る。2小節ずつのゆったりした和声" },
+  { style:"vangelis", name:"栄光への疾走（Chariots of Fire 型）", mode:"major", bpm:70, ost:"pulse", prog:{Ostinato:2}, names:{Ostinato:"Electric Grand (pulse)"},
+    A:"I | IV/I | I | V/I | I | IV/I | ii7 | V7sus4", Acad:"IV V | I", B:"vi | IV | I | V | vi | IV | ii7 | V7sus4 V",
+    desc:"主音のペダルの上で Ⅳ・Ⅴ が揺れる長調。ピアノの8分の脈動の上で CS-80 のブラスが希望を歌う" },
+  { style:"morricone", name:"荒野の呼び声（続・夕陽のガンマン型）", mode:"minor", bpm:112,
+    A:"i | i | bVII | bVII | bVI | bVI | V | V", Acad:"iv V | i", B:"iv | i | iv | i | bVI | bIII | iv | V7",
+    desc:"短調の下降（i–bVII–bVI–V）。口笛とギャロップの定番" },
+  { style:"morricone", name:"駆け上がる黄金（エクスタシー型）", mode:"minor", bpm:104,
+    A:"i | iv | bVII | bIII | bVI | iv | V | V", Acad:"V7 | i", B:"bVI | bIII | iv | i | bVI | iiø | V7sus4 | V7",
+    desc:"5度圏を一周する進行。合唱とトランペットが頂点へ向かって積み上がる" },
+  { style:"morricone", name:"ハーモニカの男（ナポリの6度型）", mode:"minor", bpm:76,
+    A:"i | bII | i | bII | iv | i | V | V", Acad:"iv V7 | i", B:"bVI | bVI | iv | iv | bII | bII | V7 | V7",
+    desc:"主和音とナポリの bII の往復。張りつめた決闘の空気" },
+  { style:"morricone", name:"郷愁の映画館（ニュー・シネマ・パラダイス型）", mode:"major", bpm:76,
+    A:"I | vi | IV | V | iii | vi | ii7 | V7sus4 V7", Acad:"IV V7 | I", B:"IV | iv | I | vi | ii7 | V7 | IV | V7sus4 V7",
+    desc:"長調の叙情。Bで同主短調のⅣm を借りて胸を締めつける" },
+  { style:"morricone", name:"陽気な西部（ギャロップ・ホーム型）", mode:"major", bpm:120,
+    A:"I | I | IV | I | I | ii | V7 | V7", Acad:"IV V7 | I", B:"IV | I | IV | I | vi | ii | V7sus4 | V7",
+    desc:"長調のギャロップ。口笛とトランペットが陽気に掛け合う" },
+  { style:"bacharach", name:"そっと寄り添う（Close to You 型）", mode:"major", bpm:92,
+    A:"Imaj7 | IVmaj7 | iii7 | vi7 | ii7 | V7sus4 | Imaj7 | V7sus4", Acad:"ii7 V7 | Imaj7", B:"IVmaj7 | iv6 | iii7 | VI7 | ii7 | bVII7 | ii7 | V7sus4 V7",
+    desc:"maj7 と sus4 の柔らかい循環。Bで iv6・bVII7 の借用" },
+  { style:"bacharach", name:"問いかける歌（Alfie 型）", mode:"major", bpm:80,
+    A:"Imaj7 | bVIImaj7 | IVmaj7 | iv6 | iii7 | VI7 | ii7 | V7sus4", Acad:"ii7 V7sus4 | Imaj7", B:"vi7 | II7 | ii7 | V7 | bIIImaj7 | bVImaj7 | ii7 | V7sus4 V7",
+    desc:"bVIImaj7・bIIImaj7 へ遠回りしてから戻る、転調感のある歌" },
+  { style:"bacharach", name:"短調の街角（Walk On By 型）", mode:"minor", bpm:104,
+    A:"i7 | iv7 | i7 | iv7 | bVIImaj7 | bIIImaj7 | iiø V7 | V7sus4", Acad:"iiø V7 | i7", B:"bVImaj7 | bVII7 | bIIImaj7 | bVImaj7 | iv7 | bVII7 | V7sus4 | V7",
+    desc:"短調の i7–iv7 の揺れから長調の maj7 へ抜ける" },
+  { style:"bacharach", name:"雨にぬれても（Raindrops 型）", mode:"major", bpm:112,
+    A:"I | Imaj7 | I7 | IVmaj7 | iii7 | VI7 | ii7 | V7sus4", Acad:"ii7 V7 | I6", B:"IVmaj7 | iii7 | ii7 | V7 | IVmaj7 | iii7 | bVII7 | V7sus4 V7",
+    desc:"クリシェ（I–Imaj7–I7）で軽やかに歩く長調。口笛でも歌える明るさ" },
+  { style:"williams", name:"英雄の行進（メインタイトル型）", mode:"major", bpm:104,
+    A:"I | I | IV | I | vi | IV | ii V | V", Acad:"bVI bVII | I", B:"vi | iii | IV | I | bVI | bVII | IV | V7",
+    desc:"長調の行進。終止は bVI–bVII–I（英雄の終止）" },
+  { style:"williams", name:"双子の夕日（フォースのテーマ型）", mode:"minor", bpm:72,
+    A:"i | bVI | iv | V | i | bVI | iv | V", Acad:"iv V | i", B:"bIII | bVII | bVI | bIII | iv | bVI | iv | V7",
+    desc:"短調の祈り。ホルンが静かに歌い、最後は全員で" },
+  { style:"williams", name:"勝利の讃歌（王座の間型）", mode:"major", bpm:96,
+    A:"I | iii | IV | V | I | vi | ii | V", Acad:"IV V7 | I", B:"IV | V | iii | vi | ii | bVII | IV | V7sus4 V7",
+    desc:"長調の讃歌。クライマックスで全音上へ転調" },
+  { style:"williams", name:"闇の軍勢（帝国の行進型）", mode:"minor", bpm:104,
+    A:"i | i | bVI | i | i | bVI | iv | V", Acad:"bVI V | i", B:"iv | i | iv | i | bVI | bII | V | V7",
+    desc:"短調の付点の行進。bVI と bII の暗い色" },
+  { style:"williams", name:"空を飛ぶ歓び（E.T. Flying 型）", mode:"major", bpm:116,
+    A:"I | II | IV | I | vi | II | IV | V", Acad:"IV V | I", B:"IV | V | iii | vi | II | V | IV | V7sus4 V7",
+    desc:"リディアンの II（長三和音）で浮き上がる飛翔の長調" },
+  { style:"zimmer", name:"時を越える（インターステラー型）", mode:"minor", bpm:76,
+    A:"i | i | bVI | bVI | bIII | bIII | bVII | bVII", Acad:"bVI bVII | i", B:"bVI | bVII | i | i | bVI | bVII | iv | V7sus4",
+    desc:"2小節ずつ i–bVI–bIII–bVII。オルガンの反復音型の上で" },
+  { style:"zimmer", name:"夢の階層（Time 型）", mode:"minor", bpm:64,
+    A:"i | bIII | bVII | IV | i | bIII | bVII | IV", Acad:"bVII IV | i", B:"bVI | bIII | bVII | IV | bVI | bIII | bVII | IV",
+    desc:"i–bIII–bVII–IV（ドリアンのⅣ）を4小節で繰り返し、少しずつ厚くする" },
+  { style:"zimmer", name:"ドッキング（No Time for Caution 型）", mode:"minor", bpm:92, ost:"drive",
+    A:"i | i | bVI | bVI | iv | iv | bVII | V", Acad:"bVI bVII | i", B:"bVI | bIII | bVII | iv | bVI | bIII | bVII | V",
+    desc:"16分のオルガンが加速するように刻み続ける緊迫型" },
+  { style:"zimmer", name:"雄大な朝（Lion King 型）", mode:"major", bpm:84,
+    A:"I | V | vi | IV | I | V | IV | V", Acad:"IV V | I", B:"vi | IV | I | V | vi | IV | ii7 | Vsus4 V",
+    desc:"長調の I–V–vi–IV。明るい反復音型と合唱で夜明けを描く" },
+  { style:"expo", name:"放送の未来（Tech Corporate）", mode:"major", bpm:112,
+    A:"I | V | vi | IV | I | V | IV | V", Acad:"IV V | I", B:"vi | IV | I | V | vi | IV | ii7 | Vsus4 V",
+    desc:"王道の I–V–vi–IV。プラックの8分と軽い4つ打ちで前向きに" },
+  { style:"expo", name:"8K の空（リディアン・ワイド）", mode:"major", bpm:104,
+    A:"Imaj7 | II | Imaj7 | II | vi | IV | ii7 | V", Acad:"IV V | I", B:"IVmaj7 | V | iii7 | vi | IVmaj7 | V | ii7 | Vsus4 V",
+    desc:"Imaj7 と II の往復で広がる、高解像度の空のような響き" },
+  { style:"expo", name:"スタジオの朝（Pluck Pop）", mode:"major", bpm:120,
+    A:"IV | V | iii | vi | IV | V | I | I", Acad:"IV V | I", B:"ii7 | iii7 | IV | V | ii7 | iii7 | IV | Vsus4 V",
+    desc:"Ⅳ始まりの明るさ。朝の情報番組のように軽快に" },
+  { style:"expo", name:"イノベーション（Uplifting Build）", mode:"major", bpm:124,
+    A:"vi | IV | I | V | vi | IV | I | V", Acad:"IV V | I", B:"IV | I | V | vi | IV | I | ii7 | V",
+    desc:"vi–IV–I–V で静かに始まり、少しずつ盛り上がるプレゼン向き" }
+];
+
+/* ============================ 動機（2小節＝8拍） ============================
+   [開始拍, 長さ, 音階度数]。度数 0=主音, 4=属音, 7=1オクターブ上, 負=下。
+   どれも「特徴的なリズム＋印象的な跳躍を1つ」の原則で作ったオリジナル。 */
+const MOTIFS=[
+  { name:"英雄の5度跳躍", style:"williams", desc:"主音から5度へ跳び、3連符で駆け上がって8度へ。英雄のファンファーレ",
+    n:[[0,.667,0],[.667,.333,0],[1,2,4],[3,.333,3],[3.333,.333,4],[3.667,.333,5],[4,1.5,7],[5.5,.5,6],[6,2,4]] },
+  { name:"讃歌の順次上行", style:"williams", desc:"付点で一歩ずつ上がり、6度で胸を張る。讃歌・祈り",
+    n:[[0,1.5,0],[1.5,.5,1],[2,1,2],[3,1,4],[4,1.5,5],[5.5,.5,4],[6,2,2]] },
+  { name:"行進の付点", style:"williams", desc:"付点のリズムで足を踏み鳴らし、最後は5度下へ沈む。闇の軍勢",
+    n:[[0,.75,0],[.75,.25,0],[1,1,2],[2,.75,4],[2.75,.25,3],[3,1,2],[4,.75,1],[4.75,.25,2],[5,1,0],[6,2,-3]] },
+  { name:"荒野の呼び声", style:"morricone", desc:"5度下から主音、さらに5度上へ跳んで長く伸ばし、回音で戻る",
+    n:[[0,.5,-3],[.5,.5,0],[1,3,4],[4,.25,5],[4.25,.25,4],[4.5,.5,3],[5,1,2],[6,2,0]] },
+  { name:"口笛のこだま", style:"morricone", desc:"属音から4度上の主音へ跳び、ゆっくり降りてくる口笛の節",
+    n:[[0,1,4],[1,1,7],[2,2,6],[4,.5,5],[4.5,.5,4],[5,1,3],[6,2,4]] },
+  { name:"疾走ギャロップ", style:"morricone", desc:"付点16分の駆け足で同音を蹴り、3度ずつ駆け上がる",
+    n:[[0,.75,0],[.75,.25,0],[1,.75,2],[1.75,.25,2],[2,2,4],[4,.75,3],[4.75,.25,3],[5,.75,1],[5.75,.25,1],[6,2,2]] },
+  { name:"長7度の憧れ", style:"bacharach", desc:"裏拍から長7度へ跳ぶシンコペーション。ため息のように降りる",
+    n:[[0,.5,2],[.5,1.5,6],[2,.5,5],[2.5,.5,4],[3,1,2],[4,.5,1],[4.5,1.5,5],[6,2,4]] },
+  { name:"同音から6度", style:"bacharach", desc:"同じ音で語りかけ、6度上へふわっと開く",
+    n:[[0,.5,4],[.5,.5,4],[1,1,4],[2,1.5,9],[3.5,.5,8],[4,1,7],[5,1,5],[6,2,4]] },
+  { name:"息の長い霧", style:"vangelis", desc:"属音を3拍伸ばしてから、ゆっくり主音へ降りる。ロングトーンのテーマ",
+    n:[[0,3,4],[3,1,3],[4,1.5,2],[5.5,.5,3],[6,2,0]] },
+  { name:"夜の告白", style:"vangelis", desc:"属音から8度へ駆け上がり、ため息のように降りる。サックス向き",
+    n:[[0,.5,4],[.5,.5,5],[1,2,7],[3,1,6],[4,1,4],[5,.5,3],[5.5,.5,2],[6,2,4]] },
+  { name:"上昇する三音", style:"zimmer", desc:"主音・2度・3度の3音だけを長く。単純さが反復で大きくなる",
+    n:[[0,2,0],[2,2,1],[4,4,2]] },
+  { name:"祈りのオルガン", style:"zimmer", desc:"5度の周りを揺れて6度へ一瞬触れ、2度へ降りる",
+    n:[[0,1.5,4],[1.5,.5,3],[2,2,4],[4,1.5,5],[5.5,.5,4],[6,2,2]] },
+  { name:"6度の跳躍（愛のテーマ）", style:"all", desc:"主音から6度へ跳び、順次で降りて3度で止まる。どの作曲家にも合う",
+    n:[[0,1,0],[1,3,5],[4,.5,4],[4.5,.5,3],[5,1,2],[6,2,2]] },
+  { name:"哀歌の下行", style:"all", desc:"8度から5度まで順次で降りる下行テトラコルド。哀しみの定型",
+    n:[[0,2,7],[2,1,6],[3,1,5],[4,3,4],[7,1,3]] },
+  { name:"上昇アルペジオ（希望）", style:"expo", desc:"主和音を8分で駆け上がって8度で伸ばし、6度・5度へ降りる。前向きで覚えやすい",
+    n:[[0,.5,0],[.5,.5,2],[1,.5,4],[1.5,2.5,7],[4,.5,6],[4.5,.5,4],[5,1,5],[6,2,4]] },
+  { name:"シンコペーションの跳ね", style:"expo", desc:"付点8分の跳ねるリズムで5度から8度へ。コーポレート・ポップの定番",
+    n:[[0,.75,4],[.75,.75,4],[1.5,1,5],[2.5,1.5,7],[4,.75,6],[4.75,.75,5],[5.5,.5,4],[6,2,2]] }
+];
+const TFORMS=[
+  { name:"文型（Sentence）", key:"sentence", desc:"動機 → 動機の反復（模続進行）→ 断片化して上昇 → 終止。推進力があり行進・ファンファーレ向き" },
+  { name:"楽節型（Period）", key:"period", desc:"前楽節（半終止）→ 後楽節（全終止）。問いと答えが歌になり、ラブテーマ・バラード向き" }
+];
+const BTYPES=[
+  { name:"拡大と反行", key:"aug", desc:"動機を2倍の長さにし、後半は上下を反転。テーマと同じ素材で別の顔" },
+  { name:"新しい歌（ロングトーン）", key:"lyric", desc:"2分音符中心の順次の歌。テーマとリズムを対照させる" },
+  { name:"断片の模続進行", key:"frag", desc:"動機の前半だけを高さを変えて畳みかける。緊張を高める" }
+];
+
+/* ============================ 構成 ============================ */
+const SEC_INFO={
+  intro:{ name:"イントロ（予告）", en:"Prologue", kind:"intro" },
+  A1:{ name:"テーマ提示", en:"Main Theme", kind:"A", ck:"A1" },
+  A2:{ name:"テーマ確保", en:"Main Theme (answer)", kind:"A", ck:"A2" },
+  Aint:{ name:"テーマ（独奏）", en:"Theme (solo)", kind:"A", ck:"Aint" },
+  B:{ name:"対照主題", en:"Second Theme", kind:"B", ck:"B" },
+  B2:{ name:"対照主題2", en:"Second Theme II", kind:"B", ck:"B" },
+  build:{ name:"ビルドアップ", en:"Build", kind:"build", ck:"build" },
+  AC1:{ name:"クライマックス", en:"Climax", kind:"A", ck:"AC", climax:true },
+  AC2:{ name:"クライマックス（終止）", en:"Climax (final)", kind:"A", ck:"AC", climax:true },
+  coda:{ name:"コーダ", en:"Coda", kind:"coda", ck:"coda" },
+  loop:{ name:"ループ・ブリッジ", en:"Loop Bridge", kind:"loop", ck:"build" }
+};
+/* [id, 小節数, 強度lvl, 閉じる(=全終止)か] */
+const FORMS={
+  short:[["intro",4,1],["A1",8,1,0],["A2",8,3,1],["coda",4,2]],
+  std:[["intro",4,1],["A1",8,1,0],["A2",8,2,1],["B",8,2],["build",4,3],["AC1",8,4,0],["AC2",8,4,1],["coda",6,2]],
+  long:[["intro",4,1],["A1",8,1,0],["A2",8,2,1],["B",8,2],["Aint",8,1,1],["B2",8,3],["build",4,3],["AC1",8,4,0],["AC2",8,4,1],["coda",6,2]]
+};
+const FORM_LABEL={ auto:"おまかせ（約3分に近い方）", short:"ショート：テーマ提示＋確保のみ（28小節）", std:"標準：対照主題＋クライマックス（54小節）", long:"ロング：独奏のテーマ＋対照主題2（70小節）" };
+function bars2sec(bars,bpm){ return bars*4*60/bpm; }
+function resolveForm(f,bpm,expo){
+  if(f!=="auto") return f;
+  if(expo) return "long";                                           // 展示会BGM: 同じループを頻繁に聞かせないよう長い構成
+  return Math.abs(bars2sec(54,bpm)-180)<=Math.abs(bars2sec(70,bpm)-180) ? "std" : "long";
+}
+function buildTimeline(form,expo){
+  let t=0; const bars=[], secs=[];
+  const list=expo ? FORMS[form].map(x=>x[0]==="coda"?["loop",4,2]:x) : FORMS[form];   // 展示会BGMモード: コーダの代わりにⅤで止まるループ・ブリッジ
+  for(const [id,nb,lvl,closed] of list){
+    const sec={ id, ...SEC_INFO[id], nbars:nb, lvl, closed:!!closed, t0:t, bars:[] };
+    for(let i=0;i<nb;i++){ const b={t,beats:4,sec:id,idx:i}; bars.push(b); sec.bars.push(b); t+=4; }
+    sec.t1=t; secs.push(sec);
+  }
+  return {bars,secs,total:t};
+}
+function secTokens(pack,st,sec){
+  const sp=s=>s.split("|").map(x=>x.trim().split(/\s+/));
+  const A=sp(pack.A), B=sp(pack.B), cad=sp(pack.Acad);
+  switch(sec.kind){
+    case "intro": return A.slice(0,sec.nbars);
+    case "A": return sec.closed ? [...A.slice(0,6),...cad] : A;
+    case "B": return B;
+    case "build": return [...B.slice(4,7),["V7"]];                  // 最後の小節は次（クライマックス）のキーの V7
+    case "loop": return sp(pack.loop||(st.loop||LOOP_DEF)[pack.mode]);
+    case "coda": { const c=sp(pack.coda||st.coda[pack.mode]); return c.length<=sec.nbars ? c : [...c.slice(0,sec.nbars-2),...c.slice(-2)]; }
+  }
+}
+
+/* ============================ 動機の変形・テーマ構築（度数空間） ============================ */
+const N=a=>({t:a[0],dur:a[1],deg:a[2]});
+function mutateMotif(M,r){
+  const ns=M.map(n=>({...n})); if(ns.length<3) return {ns,op:"そのまま"};
+  const longest=ns.reduce((a,n,i)=>n.dur>ns[a].dur?i:a,0);
+  const inner=ns.map((_,i)=>i).filter(i=>i>0 && i!==longest && i<ns.length-1);
+  const ops=[];
+  if(inner.length) ops.push("pitch");
+  if(ns.some((n,i)=>i!==longest && i>0 && n.dur>=1 && n.dur<=2)) ops.push("split");
+  if(ns.some((n,i)=>i<ns.length-1 && n.dur===1 && ns[i+1].dur===1 && Number.isInteger(n.t))) ops.push("dot");
+  if(!ops.length) return {ns,op:"そのまま"};
+  const op=pick(r,ops);
+  if(op==="pitch"){ const i=pick(r,inner), dirs=[1,-1].filter(d=>ns[i].deg+d!==ns[i-1].deg && ns[i].deg+d!==ns[i+1].deg);   // 隣と同じ音になる向きには動かさない
+    if(!dirs.length) return {ns,op:"そのまま"};
+    ns[i].deg+=pick(r,dirs); return {ns,op:`${i+1}音目を${ns[i].deg>M[i].deg?"上":"下"}へ1度`}; }
+  if(op==="split"){ const cand=ns.map((n,i)=>i).filter(i=>i!==longest && i>0 && ns[i].dur>=1 && ns[i].dur<=2); const i=pick(r,cand), n=ns[i];
+    ns.splice(i,1,{t:n.t,dur:n.dur/2,deg:n.deg},{t:n.t+n.dur/2,dur:n.dur/2,deg:n.deg}); return {ns,op:`${i+1}音目を同音連打に`}; }
+  const cand=ns.map((n,i)=>i).filter(i=>i<ns.length-1 && ns[i].dur===1 && ns[i+1].dur===1 && Number.isInteger(ns[i].t)); const i=pick(r,cand);
+  ns[i].dur=1.5; ns[i+1].t+=.5; ns[i+1].dur=.5; return {ns,op:`${i+1}〜${i+2}音目を付点に`};
+}
+const shiftN=(ns,dt,dd)=>ns.map(n=>({...n,t:n.t+dt,deg:n.deg+dd}));
+const maxDeg=ns=>Math.max(...ns.map(n=>n.deg)), minDeg=ns=>Math.min(...ns.map(n=>n.deg));
+function frontHalf(M){ const h=M.filter(n=>n.t<4-1e-6).map(n=>({...n,dur:Math.min(n.dur,4-n.t)})); return h.length>=2?h:M.filter(n=>n.t<6-1e-6).map(n=>({...n,dur:Math.min(n.dur,6-n.t)})); }
+/* 終止: 7小節目で頂点の少し下から順次に降り、8小節目を長く伸ばす */
+function cadence(t0,from,closed,rh){
+  const ends=closed?[0,7,-7]:[4,1,-3,8];
+  const below=ends.filter(e=>e<from); const end=(below.length?below:ends).reduce((a,e)=>Math.abs(e-(from-2))<Math.abs(a-(from-2))?e:a);
+  const out=rh.map(([t,d],k)=>({t:t0+t,dur:d,deg:Math.round(from+(end+1-from)*k/Math.max(1,rh.length-1))}));
+  out.push({t:t0+4,dur:4,deg:end,cad:closed?"closed":"open"});
+  return out;
+}
+const CAD_RH=[[[0,1],[1,1],[2,2]],[[0,1.5],[1.5,.5],[2,2]],[[0,.5],[.5,.5],[1,1],[2,2]]];
+function themeDeg(M,form,s,closed,r){
+  const half=frontHalf(M), mx=maxDeg(M), rh=pick(r,CAD_RH);
+  let out;
+  if(form==="sentence"){
+    const peak=Math.max(mx,mx+s)+1, t2=peak-maxDeg(half);
+    out=[...shiftN(M,0,0), ...shiftN(M,8,s), ...shiftN(half,16,t2-1), ...shiftN(half,20,t2)];
+    out.push(...cadence(24,peak-1,closed,rh));
+  } else {
+    const ans=shiftN(half,8,s), last=ans[ans.length-1].deg;
+    const hold=[4,1,8,-3].reduce((a,e)=>Math.abs(e-last)<Math.abs(a-last)?e:a);
+    /* 後楽節: 動機の後半を持ち上げて、ここをテーマの最高音（前半より1度以上高い）にする */
+    const tail=M.filter(n=>n.t>=4-1e-6), lift=tail.length?Math.max(2,Math.max(mx,maxDeg(ans))+1-maxDeg(tail)):2;
+    const ph3=M.map(n=>({...n,t:n.t+16,deg:n.t>=4-1e-6?n.deg+lift:n.deg}));
+    out=[...shiftN(M,0,0), ...ans, {t:12,dur:4,deg:hold,cad:"half"}, ...ph3, ...cadence(24,maxDeg(ph3)-1,closed,rh)];
+  }
+  return out.filter(n=>n.t<32-1e-6).map(n=>({...n,dur:Math.min(n.dur,32-n.t)}));
+}
+function bDeg(M,type,themePeak,r){
+  const d0=M[0].deg;
+  if(type==="aug"){
+    const aug=M.map(n=>({...n,t:n.t*2,dur:n.dur*2}));
+    const inv=aug.map(n=>({...n,deg:d0-(n.deg-d0)}));
+    const a=shiftN(aug,0,2), b=shiftN(inv,16,Math.max(2,themePeak-2-maxDeg(inv)));
+    const l=b[b.length-1]; l.dur=32-l.t; l.cad="open";
+    return [...a,...b];
+  }
+  if(type==="lyric"){
+    const out=[], start=2, target=Math.max(start+2,themePeak-1);
+    let t=0, k=0;
+    while(t<28-1e-6){
+      const d=Math.round(start+(target-start)*Math.min(1,t/24))+(k%3===2?-1:0);
+      const len=(k%4===1 && r()<.5)?3:2, dur=Math.min(len,28-t);
+      out.push({t,dur,deg:d}); t+=dur; k++;
+    }
+    const last=out[out.length-1].deg, hold=[4,1,8,-3].reduce((a,e)=>Math.abs(e-last)<Math.abs(a-last)?e:a);
+    out.push({t:28,dur:4,deg:hold,cad:"open"});
+    return out;
+  }
+  const half=frontHalf(M), base=Math.max(0,themePeak-3-maxDeg(half));
+  const out=[]; [0,1,0,2,1,3].forEach((tr,i)=>out.push(...shiftN(half,i*4,base+tr)));
+  const last=out[out.length-1].deg, hold=[4,8,1,11].reduce((a,e)=>Math.abs(e-last)<Math.abs(a-last)?e:a);
+  out.push({t:24,dur:8,deg:hold,cad:"open"});
+  return out;
+}
+function buildDeg(M,themePeak,nb){
+  const half=frontHalf(M), base=themePeak-3-maxDeg(half), out=[];
+  for(let i=0;i<nb-1;i++) out.push(...shiftN(half,i*4,base+i));
+  const last=out[out.length-1].deg, hold=[4,8,1,11].reduce((a,e)=>Math.abs(e-last)<Math.abs(a-last)?e:a);
+  out.push({t:(nb-1)*4,dur:4,deg:hold,cad:"open"});
+  return out;
+}
+function codaDeg(M,nb){
+  const half=frontHalf(M).map(n=>({...n,t:n.t*2,dur:n.dur*2})), last=half[half.length-1].deg;
+  const fin=[0,7,-7,14].reduce((a,e)=>Math.abs(e-last)<Math.abs(a-last)?e:a);   // 直前の音に近いオクターブの主音で終わる
+  return nb>4 ? [...half, {t:8,dur:4,deg:fin,cad:"closed"}, {t:nb*4-8,dur:8,deg:fin,cad:"closed"}]
+              : [...half, {t:8,dur:nb*4-8,deg:fin,cad:"closed"}];
+}
+function introDeg(M){ return M.slice(0,2).map(n=>({t:8+n.t*2,dur:n.dur*2,deg:n.deg-7})).map((n,i,a)=>i===a.length-1?{...n,dur:16-n.t}:n); }
+
+/* ============================ 生成本体 ============================ */
+function generateSong(P){
+  const pack=PACKS[P.pack], st=STYLES[pack.style], mode=pack.mode, tonic=P.key, flat=isFlatKey(tonic,mode);
+  const r=rng((P.seed*2654435761)%2147483647+P.pack*101+P.motif*13+P.tform*7+P.btype*3+P.key*17+11);
+  const form=resolveForm(P.form,P.bpm,P.expo), TL=buildTimeline(form,P.expo);
+  const lift=P.expo?0:(P.lift==="auto"?st.lift:+P.lift), hasClimax=TL.secs.some(s=>s.climax);
+  TL.secs.forEach(s=>{ s.shift=(hasClimax && (s.climax || s.kind==="coda")) ? lift : 0; });
+  const song={ P, pack, st, mode, tonic, flat, TL, form, lift:hasClimax?lift:0, bpm:P.bpm, totalBeats:TL.total, vol:{...(P.vol||VOL_DEFAULT)},
+    parts:Object.fromEntries(PARTS.map(p=>[p,[]])), cc:{}, ending:P.expo?"loop":st.ending, chords:[], stats:{removed:0,resnap:0}, who:{} };
+
+  /* ---- 和声 ---- */
+  TL.secs.forEach((sec,si)=>{
+    const toks=secTokens(pack,st,sec), nextShift=(TL.secs[si+1]||sec).shift;
+    sec.bars.forEach((b,i)=>{
+      const bt=toks[i]||toks[toks.length-1], key=(tonic+((sec.kind==="build" && i===sec.nbars-1)?nextShift:sec.shift))%12;
+      bt.forEach((tok,j)=>{ const ch=parseChord(tok,key,isFlatKey(key,mode)); song.chords.push({...ch,key,t:b.t+j*4/bt.length,dur:4/bt.length,sec:sec.id}); });
+    });
+  });
+  const CHS=song.chords;
+  const chordAt=t=>{ let lo=0,hi=CHS.length-1; while(lo<hi){ const m=(lo+hi+1)>>1; if(CHS[m].t<=t+1e-6) lo=m; else hi=m-1; } return CHS[lo]; };
+  song.chordAt=chordAt;
+  const nextChange=(t)=>{ const c=chordAt(t); return c.t+c.dur; };
+
+  /* ---- 動機とテーマ ---- */
+  const M0=MOTIFS[P.motif].n.map(N), mut=P.mut?mutateMotif(M0,r):{ns:M0,op:"そのまま"};
+  const M=mut.ns, tform=TFORMS[P.tform].key, s=pick(r,st.seq), btype=BTYPES[P.btype].key;
+  const themeO=themeDeg(M,tform,s,false,r), themeC=themeDeg(M,tform,s,true,r);
+  const themePeak=maxDeg(themeC);
+  song.motif={M,op:mut.op,s,tform,btype};
+  /* テーマの高さ: 主音の MIDI をスタイルの音域に収まるように選ぶ */
+  const degS=d=>Math.floor(d/7)*12+SCALE[mode][((d%7)+7)%7];
+  const lowS=degS(Math.min(minDeg(themeO),minDeg(themeC))), highS=degS(themePeak), [rl,rh]=st.themeRange;
+  let base=null, bestScore=1e9;
+  for(let m=36+tonic; m<=84; m+=12){ const lo=m+lowS, hi=m+highS, over=Math.max(0,rl-lo)+Math.max(0,hi-rh), sc=over*10+Math.abs((lo+hi)/2-(rl+rh)/2); if(sc<bestScore){ bestScore=sc; base=m; } }
+
+  /* 度数 → 実音（コード・キーに合わせて吸着） */
+  const keyOff=ch=>{ let o=((ch.key-tonic)%12+12)%12; if(o>6) o-=12; return o; };
+  function realize(degNotes,t0,off){
+    const out=degNotes.map(n=>{ const t=t0+n.t, ch=chordAt(t); return {t,dur:n.dur,m:base+off+keyOff(ch)+degS(n.deg),cad:n.cad,ch}; });
+    out.forEach((n,i)=>{
+      const sc=chordScale(n.ch,mode), al=allowedPcs(n.ch,mode), prev=out[i-1], dir=prev?Math.sign(n.m-prev.m):0;
+      const strong=Math.abs(((n.t%2)+2)%2)<1e-6 || n.dur>=.75;
+      if(n.cad==="closed"){ n.m=nearestIn(n.m,[n.ch.key],-1); return; }
+      if(n.cad){ n.m=nearestIn(n.m,n.ch.tones,-1); return; }
+      n.m=nearestIn(n.m,strong?al:sc,dir);
+    });
+    /* 弱拍の短い音が半音でコード音とぶつかるなら、経過音・刺繍音（前後と2度で繋がる）のときだけ残す */
+    out.forEach((n,i)=>{
+      if(!n.ch.tones.some(c=>semi(pcOf(n.m),c))) return;
+      const p=out[i-1], q=out[i+1], step=(a,b)=>a&&b&&Math.abs(a.m-b.m)>=1&&Math.abs(a.m-b.m)<=2;
+      if(!(n.dur<=.5 && step(p,n) && step(n,q))){ n.m=nearestIn(n.m,allowedPcs(n.ch,mode),p?Math.sign(n.m-p.m):0); song.stats.resnap++; }
+    });
+    /* コードの変わり目をまたぐ長い音: 次のコードで濁るならそこで切って、次のコードの音で続ける */
+    const res=[];
+    out.forEach(n=>{
+      let cur={...n};
+      while(true){
+        const nc=nextChange(cur.t);
+        if(cur.t+cur.dur<=nc+1e-6){ res.push(cur); break; }
+        const ch2=chordAt(nc+1e-4), al2=allowedPcs(ch2,mode);
+        if(al2.includes(pcOf(cur.m))){ cur.ch=ch2; const rest=cur.t+cur.dur; res.push({...cur,dur:nc-cur.t}); cur={...cur,t:nc,dur:rest-nc,tie:true}; continue; }
+        const rest=cur.t+cur.dur; res.push({...cur,dur:nc-cur.t});
+        cur={...cur,t:nc,dur:rest-nc,m:nearestIn(cur.m,ch2.tones,0),ch:ch2,tie:false};
+      }
+    });
+    /* タイで分けた同音はつなぎ直す */
+    const merged=[];
+    res.forEach(n=>{ const l=merged[merged.length-1]; if(n.tie && l && l.m===n.m && Math.abs(l.t+l.dur-n.t)<1e-6) l.dur+=n.dur; else merged.push({t:n.t,dur:n.dur,m:n.m,cad:n.cad}); });
+    return merged;
+  }
+
+  /* ---- セクションごとのメロディ ---- */
+  const mel={};                                   // sec.id → 実音ノート（基準オクターブ）
+  const bTypeList=[btype,...BTYPES.map(b=>b.key).filter(k=>k!==btype)];
+  TL.secs.forEach(sec=>{
+    let d=null, off=0;
+    if(sec.kind==="A") d=sec.closed?themeC:themeO;
+    else if(sec.kind==="B") d=bDeg(M,sec.id==="B2"?bTypeList[1]:bTypeList[0],themePeak,r), off=sec.id==="B2"?2:0;
+    else if(sec.kind==="build" || sec.kind==="loop") d=buildDeg(M,themePeak,sec.nbars);
+    else if(sec.kind==="coda") d=codaDeg(M,sec.nbars);
+    else if(sec.kind==="intro" && P.hint && sec.nbars>=4) d=introDeg(M);
+    if(!d) return;
+    const ns=realize(d,sec.t0,off===2?degS(1)-degS(0):0);
+    tameLeaps(ns);
+    if(sec.kind==="A") ensurePeak(ns,sec.t0);
+    mel[sec.id]=ns;
+  });
+  /* 1オクターブを超える跳躍（フレーズの継ぎ目で起きる）は、継ぎ目の音を同じ音名のままオクターブ移動して歌える幅にする */
+  function tameLeaps(ns){
+    const big=(a,b)=>a&&b&&Math.abs(a.m-b.m)>12;
+    for(let i=1;i<ns.length;i++){
+      if(!big(ns[i-1],ns[i])) continue;
+      const p=ns[i-1], c=ns[i], dp=Math.sign(c.m-p.m)*12;
+      if(!big(ns[i-2],{m:p.m+dp})) p.m+=dp;
+      else if(!big({m:c.m-dp},ns[i+1])) c.m-=dp;
+    }
+  }
+  /* テーマの山: 5〜7小節目の最高音が1〜4小節目より必ず高くなるように、山の音（長めの音を優先）をコード音の範囲で持ち上げる */
+  function ensurePeak(ns,t0){
+    const a=ns.filter(n=>n.t<t0+16-1e-6), b=ns.filter(n=>n.t>=t0+16-1e-6 && n.t<t0+28-1e-6);
+    if(!a.length || !b.length) return;
+    const m1=Math.max(...a.map(n=>n.m)), m2=Math.max(...b.map(n=>n.m));
+    if(m2>m1) return;
+    const pk=b.filter(n=>n.m>=m2-3).reduce((x,n)=>n.dur>x.dur||(n.dur===x.dur&&n.m>x.m)?n:x);
+    const al=allowedPcs(chordAt(pk.t),mode); let m=m1+1; while(!al.includes(pcOf(m)) && m<m1+6) m++;
+    if(al.includes(pcOf(m))){ pk.m=m; song.stats.peak=(song.stats.peak||0)+1; }
+  }
+  song.mel=mel;
+
+  /* ---- テーマの担当楽器へ割り当て ---- */
+  const carrying={};                              // sec.id → Set(part)
+  const pushN=(part,n)=>song.parts[part].push(n);
+  const velMel=(sec,n,arr)=>{
+    const pk=Math.max(...arr.map(x=>x.m)), base=56+sec.lvl*11;
+    return clampV(base+(n.m===pk?8:0)+(Math.abs(((n.t-sec.t0)%8))<1e-6?5:0)+(n.dur>=2?4:0)+(r()*6-3));
+  };
+  TL.secs.forEach(sec=>{
+    carrying[sec.id]=new Set();
+    const notes=mel[sec.id]; if(!notes) return;
+    let list=sec.kind==="intro" ? [st.hint+":0"] : (st.carriers[sec.ck]||["Theme"]);
+    list.forEach((spec,k)=>{
+      const [part,o]=spec.split(":"), off=+(o||0);
+      let ns=notes.map(n=>({...n,m:n.m+off}));
+      const [lo,hi]=RANGE[part];
+      while(Math.max(...ns.map(n=>n.m))>hi && Math.min(...ns.map(n=>n.m))-12>=lo-2) ns=ns.map(n=>({...n,m:n.m-12}));
+      while(Math.min(...ns.map(n=>n.m))<lo) ns=ns.map(n=>({...n,m:n.m+12}));
+      ns.forEach(n=>pushN(part,{t:n.t,dur:n.dur,midi:n.m,vel:clampV(velMel(sec,n,ns)-(k?8:0)-(sec.kind==="intro"?14:0)),mel:true,pri:3}));
+      carrying[sec.id].add(part);
+    });
+    song.who[sec.id]=list.map(x=>x.split(":")[0]);
+  });
+  song.carrying=carrying;
+
+  /* ---- 伴奏 ---- */
+  arrange(song,st,P,r,carrying);
+  /* 展示会BGMモード: 会話を邪魔しないよう強弱の幅を狭め（ベロシティを中央へ寄せ、テーマは少し控えめ）、CC11 もほぼ一定に */
+  if(P.expo){
+    PARTS.forEach(p=>song.parts[p].forEach(n=>{ n.vel=clampV(76+(n.vel-76)*0.55-(n.mel?4:0)); }));
+    Object.values(song.cc).forEach(a=>a.forEach(c=>{ c.val=clampV(100+(c.val-100)*0.35); }));
+  }
+
+  /* ---- 仕上げ: 同じ音の重なりを切る・衝突を測って直す ---- */
+  fixSamePitchOverlaps(song);
+  song.check=consonance(song);
+  for(let k=0; k<3 && song.check.rate>0.03; k++){ fixClashes(song); fixSamePitchOverlaps(song); song.check=consonance(song); }
+  song.tempo=tempoMap(song);
+  return song;
+}
+
+/* ============================ 伴奏（すべてコード音から決める・乱数は型選びとベロシティだけ） ============================ */
+function voice(pcs,lo,hi,prev){
+  const center=prev&&prev.length?prev.reduce((a,b)=>a+b,0)/prev.length:(lo+hi)/2;
+  let out=pcs.map(pc=>{ let best=null; for(let m=lo;m<=hi;m++) if(pcOf(m)===pc && (best==null||Math.abs(m-center)<Math.abs(best-center))) best=m; return best; }).filter(x=>x!=null).sort((a,b)=>a-b);
+  for(let i=1;i<out.length;i++) if(out[i]-out[i-1]===1){ if(out[i]+12<=hi) out[i]+=12; else out.splice(i,1); i=0; out.sort((a,b)=>a-b); }
+  return [...new Set(out)];
+}
+const padPcs=ch=>ch.maj7?ch.tones.filter(p=>p!==ch.root):ch.tones;          // maj7 はルートレス（ルートと長7度の半音を避ける）
+const nearestPcM=(pc,target)=>{ let m=target; for(let d=0;d<12;d++){ if(pcOf(target+d)===pc) return target+d; if(pcOf(target-d)===pc) return target-d; } return m; };
+
+function arrange(song,st,P,r,carrying){
+  const S=song, TL=S.TL, style=S.pack.style, push=(p,n)=>{ if(Number.isFinite(n.midi)) S.parts[p].push(n); };
+  const inLvl=(part,sec)=>{ const [a,b]=st.on[part]; return sec.lvl>=a && sec.lvl<=b; };
+  const free=(part,sec)=>!carrying[sec.id].has(part);
+  const chordsOf=sec=>S.chords.filter(c=>c.t>=sec.t0-1e-6 && c.t<sec.t1-1e-6);
+  const V=(sec,b)=>clampV(b+sec.lvl*12+(r()*6-3));
+  const lastSec=TL.secs[TL.secs.length-1], endT=TL.total;
+  const finalT=lastSec.kind==="coda" ? lastSec.t1-8 : null;              // 最後の主和音（コーダ最後の2小節）
+  const cc=(p,t,v)=>{ (S.cc[p]=S.cc[p]||[]).push({t,val:clampV(v)}); };
+  const ost=S.pack.ost || (style==="expo"?"pluck":style==="zimmer"?"organ":style==="morricone"?"gallop":style==="williams"?"march":style==="vangelis"?"bells":"none");
+  const ostVar=Math.floor(r()*3);
+  /* メロディ優先: 伴奏の和音から、その間に鳴るメロディ（長い音・拍頭の音）と半音でぶつかる音を抜く（maj7 のルートを歌うとき等） */
+  const melNotes=Object.values(S.parts).flat().filter(n=>n.mel);
+  const melPcs=(t0,t1)=>[...new Set(melNotes.filter(n=>n.t<t1-1e-6 && n.t+n.dur>t0+1e-6 && (n.dur>=.75 || Math.abs(n.t-Math.round(n.t))<1e-6)).map(n=>pcOf(n.midi)))];
+  const safeV=(v,t0,t1)=>{ const mp=melPcs(t0,t1), f=v.filter(m=>!mp.some(p=>semi(pcOf(m),p))); return f.length?f:v.slice(0,1).filter(m=>!mp.some(p=>semi(pcOf(m),p))); };
+  const voiceS=(pcs,lo,hi,prev,c)=>{ const mp=melPcs(c.t,c.t+c.dur), f=pcs.filter(p=>!mp.some(q=>semi(p,q))); return voice(f.length?f:pcs,lo,hi,prev).filter(m=>!mp.some(q=>semi(pcOf(m),q))); };
+
+  TL.secs.forEach(sec=>{
+    const chs=chordsOf(sec), isEnd=sec===lastSec;
+    const cut=(c)=>isEnd && finalT!=null && c.t>=finalT-1e-6;               // 最後の2小節は伸ばすだけ
+
+    /* --- Strings（パッド） --- */
+    if(inLvl("Strings",sec) && free("Strings",sec) || (sec.kind==="coda" && free("Strings",sec))){
+      let prev=null; const lo=style==="vangelis"?50:52, hi=style==="vangelis"?76:74;
+      chs.forEach(c=>{ if(cut(c) && c.t>finalT+1e-6) return; const v=voiceS(padPcs(c),lo,hi,prev,c); prev=v;
+        const dur=cut(c)?endT-c.t:c.dur; v.forEach(m=>push("Strings",{t:c.t,dur,midi:m,vel:V(sec,48),pri:1})); });
+    }
+    /* --- Choir --- */
+    if(P.choir && free("Choir",sec) && (inLvl("Choir",sec) || (sec.kind==="build" && st.on.Choir[0]<=3))){
+      if(style==="morricone" && sec.kind==="B"){                           // 掛け声: 主音と5度を4分で
+        chs.forEach(c=>{ const v=voiceS([c.root,(c.root+7)%12].filter(p=>c.tones.includes(p)),52,69,null,c);
+          for(let t=c.t;t<c.t+c.dur-1e-6;t+=1) v.forEach(m=>push("Choir",{t,dur:.7,midi:m,vel:V(sec,(t-c.t)%2===0?60:50),pri:1})); });
+      } else { let prev=null; chs.forEach(c=>{ if(cut(c) && c.t>finalT+1e-6) return; const v=voiceS(padPcs(c),55,76,prev,c); prev=v; const dur=cut(c)?endT-c.t:c.dur;
+        v.forEach(m=>push("Choir",{t:c.t,dur,midi:m,vel:V(sec,44),pri:1})); }); }
+    }
+    /* --- Brass --- */
+    if(inLvl("Brass",sec) && free("Brass",sec) || (isEnd && S.ending==="hits" && free("Brass",sec))){
+      let prev=null;
+      chs.forEach(c=>{
+        if(cut(c) && c.t>finalT+1e-6) return;
+        if(style==="williams"){
+          const v=voiceS(padPcs(c),48,67,prev,c); prev=v;
+          if(cut(c)){ v.forEach(m=>push("Brass",{t:c.t,dur:endT-c.t,midi:m,vel:110,pri:1})); return; }
+          if(sec.lvl>=3 && c.dur>=4){ [[0,1.5,1],[2,.9,.9],[3,.3,.8],[3.333,.3,.85],[3.667,.3,.9]].forEach(([o,d,a])=>v.forEach(m=>push("Brass",{t:c.t+o,dur:d,midi:m,vel:V(sec,52*a+20),pri:1}))); }
+          else v.forEach(m=>push("Brass",{t:c.t,dur:c.dur,midi:m,vel:V(sec,40),pri:1}));
+        } else if(style==="bacharach"){
+          const v=voiceS(padPcs(c),60,76,prev,c); prev=v;
+          if(cut(c)){ v.forEach(m=>push("Brass",{t:c.t,dur:endT-c.t,midi:m,vel:70,pri:1})); return; }
+          [[1.5,.4],[3,.4]].filter(([o])=>o<c.dur).forEach(([o,d])=>v.forEach(m=>push("Brass",{t:c.t+o,dur:d,midi:m,vel:V(sec,46),pri:1})));
+        } else if(style==="zimmer"){
+          const rt=nearestPcM(c.bass,40), v=[rt,rt+7].filter(m=>c.tones.includes(pcOf(m)));
+          v.forEach(m=>push("Brass",{t:c.t,dur:cut(c)?endT-c.t:c.dur,midi:m,vel:V(sec,60),pri:1}));
+        } else {
+          const v=voiceS(padPcs(c),style==="vangelis"?55:48,style==="vangelis"?76:67,prev,c); prev=v;
+          v.forEach(m=>push("Brass",{t:c.t,dur:cut(c)?endT-c.t:c.dur,midi:m,vel:V(sec,42),pri:1}));
+        }
+      });
+    }
+    /* --- Keys --- */
+    if(free("Keys",sec) && (inLvl("Keys",sec) || (style==="morricone" && sec.kind==="intro"))){
+      chs.forEach(c=>{
+        if(cut(c) && c.t>finalT+1e-6) return;
+        if(style==="vangelis"){                                  // CP-80 の4分アルペジオ
+          const v=voiceS(padPcs(c),55,79,null,c); for(let k=0;k*1<c.dur-1e-6;k++){ const m=v[k%v.length]; push("Keys",{t:c.t+k,dur:Math.min(2,c.t+c.dur-(c.t+k)),midi:m,vel:V(sec,40),pri:0}); }
+        } else if(style==="morricone"){                          // チューブラーベル: 2小節ごとの頭
+          if(Math.abs(((c.t-sec.t0)%8))<1e-6) push("Keys",{t:c.t,dur:2,midi:nearestPcM(c.root,76),vel:V(sec,52),pri:0});
+        } else if(style==="bacharach"){                          // ピアノのコンピング（ルートレス）
+          const v=voiceS(padPcs(c),52,71,null,c);
+          const pat=cut(c)?[[0,endT-c.t]]:c.dur>=4?[[0,1],[1.5,.5],[2.5,1.5]]:[[0,1],[1.5,.5]];
+          pat.forEach(([o,d])=>v.forEach(m=>push("Keys",{t:c.t+o,dur:d,midi:m,vel:V(sec,38),pri:0})));
+        } else if(style==="williams"){                           // ハープ: 2拍の16分アルペジオ
+          const v=voiceS(padPcs(c),48,62,null,c), seq=[...v,...v.map(m=>m+12)].slice(0,8);
+          seq.forEach((m,k)=>{ const t=c.t+k*.25; if(t<c.t+c.dur-1e-6) push("Keys",{t,dur:c.t+c.dur-t,midi:m,vel:V(sec,34+k*2),pri:0}); });
+        } else if(style==="expo"){                               // エレピ: 1拍目と2拍目裏（シンコペーション）
+          const v=voiceS(padPcs(c),55,72,null,c), pat=c.dur>=4?[[0,1.5],[2.5,1.5]]:[[0,1.5]];
+          pat.forEach(([o,d])=>v.forEach(m=>push("Keys",{t:c.t+o,dur:d,midi:m,vel:V(sec,34),pri:0})));
+        } else if(style==="zimmer"){                             // 時計のようなピアノの刻み
+          const m=nearestPcM(c.tones.reduce((a,p)=>Math.abs(((p-(c.key+7))%12+12)%12)<Math.abs(((a-(c.key+7))%12+12)%12)?p:a,c.tones[0]),79);
+          for(let t=c.t;t<c.t+c.dur-1e-6;t+=1) push("Keys",{t,dur:.25,midi:m,vel:V(sec,34),pri:0});
+        }
+      });
+    }
+    /* --- Ostinato --- */
+    if(P.ost && free("Ostinato",sec) && ost!=="none" && (inLvl("Ostinato",sec) || ost==="arp16" || ost==="drive" || (["organ","gallop","pluck","pulse"].includes(ost) && sec.kind!=="coda"))){
+      chs.forEach(c=>{
+        if(isEnd && finalT!=null && c.t>=finalT-1e-6) return;
+        const end=c.t+c.dur;
+        if(ost==="arp16"){ const v=voiceS(c.tones,50,70,null,c), seq=[...v,v[0]+12], idx=[0,1,2,3,2,1,0,2][ostVar%2?7:0]!==undefined?[0,1,2,3,2,1,0,2]:[0,1,2,3];
+          let k=0; for(let t=c.t;t<end-1e-6;t+=.25,k++) push("Ostinato",{t,dur:.22,midi:seq[idx[k%idx.length]%seq.length],vel:V(sec,(k%4===0)?44:32),pri:0}); }
+        else if(ost==="bells"){ const v=voiceS(c.tones,72,88,null,c); [[0,0],[1.5,1],[3,2]].forEach(([o,i])=>{ if(c.t+o<end-1e-6) push("Ostinato",{t:c.t+o,dur:1.5,midi:v[i%v.length],vel:V(sec,30),pri:0}); }); }
+        else if(ost==="gallop"){ const v=voiceS(c.tones,52,67,null,c);
+          for(let t=c.t;t<end-1e-6;t+=1) [[0,.45,1],[.5,.22,.75],[.75,.22,.8]].forEach(([o,d,a])=>v.forEach((m,i)=>push("Ostinato",{t:t+o+i*.01,dur:d,midi:m,vel:V(sec,48*a),pri:0}))); }
+        else if(ost==="march"){
+          const rt=nearestPcM(c.bass,45), fifth=c.tones.includes((c.root+7)%12)?nearestPcM((c.root+7)%12,rt+5):rt;
+          const pats=[["r","r","5","r","r","r","5","r"],["r","5","r","5","r","5","r","5"],["r","r","r","r","5","5","r","r"]], pat=pats[ostVar];
+          for(let k=0;k<c.dur*2;k++){ const t=c.t+k*.5; if(k===7 && c.dur>=4){ [0,.333,.667].forEach((o,j)=>push("Ostinato",{t:c.t+3.5+o*.5,dur:.15,midi:j===1?fifth:rt,vel:V(sec,44),pri:0})); continue; }
+            push("Ostinato",{t,dur:.3,midi:pat[k%8]==="5"?fifth:rt,vel:V(sec,k%2?36:46),pri:0}); }
+        }
+        else if(ost==="pluck"){                                  // シンセ・プラックの8分アルペジオ（展示会BGMの推進力）
+          const v=voiceS(c.tones,60,79,null,c), seq=[v[0],v[1%v.length],v[2%v.length],v[0]+12];
+          let k=0; for(let t=c.t;t<end-1e-6;t+=.5,k++) push("Ostinato",{t,dur:.3,midi:seq[[0,1,2,3,2,1,3,2][(k+ostVar)%8]],vel:V(sec,k%2?30:40),pri:0}); }
+        else if(ost==="organ" || ost==="drive" || ost==="pulse"){
+          const v=voiceS(c.tones,60,76,null,c), a=v[ostVar%v.length], b=v[(ostVar+1)%v.length]===a?v[0]:v[(ostVar+1)%v.length];
+          const step=(ost==="drive"||sec.lvl>=3)?.25:.5;
+          let k=0; for(let t=c.t;t<end-1e-6;t+=step,k++) push("Ostinato",{t,dur:step*.95,midi:k%2?b:a,vel:V(sec,k%4===0?38:30),pri:0});
+        }
+      });
+    }
+    /* --- Bass --- */
+    if(inLvl("Bass",sec) && free("Bass",sec) || sec.kind==="coda"){
+      chs.forEach(c=>{
+        if(cut(c) && c.t>finalT+1e-6) return;
+        const rt=nearestPcM(c.bass,style==="zimmer"||style==="vangelis"?36:40), five=c.tones.includes((c.root+7)%12)?nearestPcM((c.root+7)%12,rt+4):rt;
+        const clampB=m=>{ while(m<28) m+=12; while(m>55) m-=12; return m; };
+        if(cut(c)){ push("Bass",{t:c.t,dur:endT-c.t,midi:clampB(rt),vel:80,pri:2}); return; }
+        let pat;
+        if(style==="morricone") pat=c.dur>=4?[[0,2,rt],[2,2,five]]:[[0,c.dur,rt]];
+        else if(style==="bacharach") pat=c.dur>=4?[[0,1.5,rt],[1.5,.5,five],[2,1.5,rt],[3.5,.5,five]]:[[0,1.5,rt],[1.5,.5,five]];
+        else if(style==="expo" && sec.lvl>=2){ pat=[]; for(let k=0;k<c.dur*2;k++) pat.push([k*.5,.4,k%4===3?rt+12:rt]); }
+        else if(style==="williams" && sec.lvl>=2){ pat=[]; for(let k=0;k<c.dur;k++) pat.push([k,.9,k%2?rt+12:rt]); }
+        else if((style==="zimmer" && sec.kind==="build") || S.pack.drive){ pat=[]; for(let k=0;k<c.dur*2;k++) pat.push([k*.5,.45,rt]); }
+        else pat=[[0,c.dur,rt]];
+        pat.forEach(([o,d,m])=>push("Bass",{t:c.t+o,dur:d,midi:clampB(m),vel:V(sec,58),pri:2}));
+      });
+    }
+    /* --- Guitar（展示会BGM: ミュートの8分） --- */
+    if(st.on.Guitar && inLvl("Guitar",sec) && free("Guitar",sec)){
+      chs.forEach(c=>{ const rt=nearestPcM(c.root,52), d=safeV([rt,rt+7].filter(m=>c.tones.includes(pcOf(m))),c.t,c.t+c.dur);
+        for(let t=c.t;t<c.t+c.dur-1e-6;t+=.5) d.forEach(m=>push("Guitar",{t,dur:.2,midi:m,vel:V(sec,(t-c.t)%1?26:34),pri:0})); });
+    }
+    /* --- Timpani --- */
+    if(P.perc && (inLvl("Timpani",sec) || (sec.kind==="build" && st.on.Timpani[0]<=4) || (isEnd && S.ending==="hits"))){
+      const tp=c=>{ const a=nearestPcM(c.root,45), b=nearestPcM((c.root+7)%12,45), m=c.tones.includes((c.root+7)%12)&&Math.abs(b-45)<Math.abs(a-45)?b:a; return Math.max(38,Math.min(57,m)); };
+      if(sec.kind==="build"){ const c0=chs[chs.length-1]; for(let t=sec.t0+(sec.nbars-2)*4;t<sec.t1-1e-6;t+=.25) push("Timpani",{t,dur:.25,midi:tp(chordAtS(S,t)),vel:clampV(50+(t-(sec.t1-8))*8),pri:1}); }
+      else chs.forEach(c=>{
+        if(cut(c)){ if(Math.abs(c.t-finalT)<1e-6){ for(let t=c.t;t<c.t+4;t+=.25) push("Timpani",{t,dur:.25,midi:tp(c),vel:clampV(70+(t-c.t)*10),pri:1}); push("Timpani",{t:c.t+4,dur:2,midi:tp(c),vel:120,pri:1}); } return; }
+        if(Math.abs(((c.t-sec.t0)%(style==="zimmer"?8:4)))>1e-6) return;
+        push("Timpani",{t:c.t,dur:1,midi:tp(c),vel:V(sec,58),pri:1});
+        if(style==="williams" && sec.lvl>=3 && Math.abs(((c.t-sec.t0)%16)-12)<1e-6) [3.333,3.667].forEach(o=>push("Timpani",{t:c.t+o,dur:.3,midi:tp(c),vel:V(sec,50),pri:1}));
+      });
+    }
+    /* --- Drums --- */
+    if(P.perc) genDrums(S,st,sec,inLvl("Drums",sec),r,finalT);
+    /* --- 強弱（CC11） --- */
+    ["Strings","Choir","Brass","Ostinato","Theme","Counter"].forEach(p=>{
+      if(sec.kind==="build"){ for(let k=0;k<=sec.nbars*2;k++) cc(p,sec.t0+k*2,60+67*k/(sec.nbars*2)); }
+      else if(sec.kind==="coda" && S.ending==="fade"){ for(let k=0;k<=sec.nbars*2;k++) cc(p,sec.t0+k*2,110-90*k/(sec.nbars*2)); }
+      else cc(p,sec.t0,sec.kind==="coda"?110:80+sec.lvl*10);
+    });
+  });
+
+  /* --- 対旋律（テーマが動けば反対へ、長い音で） --- */
+  if(P.counter) TL.secs.forEach(sec=>{
+    const key=sec.ck==="AC"?"AC":sec.id;
+    if(!st.counterLine.includes(key) || carrying[sec.id].has("Counter")) return;
+    const melN=Object.values(S.parts).flat().filter(n=>n.mel && n.t>=sec.t0-1e-6 && n.t<sec.t1-1e-6);
+    const avg=(a,b)=>{ const x=melN.filter(n=>n.t<b-1e-6 && n.t+n.dur>a+1e-6); return x.length?x.reduce((s,n)=>s+n.midi,0)/x.length:null; };
+    const [lo,hi]=st.counterRange; let prev=(lo+hi)>>1, pm=null;
+    for(let t=sec.t0;t<sec.t1-1e-6;t+=2){
+      const c=chordAtS(S,t), cand=[]; for(let m=lo;m<=hi;m++) if(c.tones.includes(pcOf(m))) cand.push(m);
+      const am=avg(t,t+2), dir=(am!=null&&pm!=null)?-Math.sign(am-pm):0;
+      const sc=m=>Math.abs(m-prev)+(dir&&Math.sign(m-prev)===-dir?3:0)+(m===prev?1.5:0);
+      const m=cand.sort((a,b)=>sc(a)-sc(b))[0]; if(m==null) continue;
+      const dur=Math.min(2,c.t+c.dur-t);
+      const l=S.parts.Counter[S.parts.Counter.length-1];
+      if(l && !l.mel && l.midi===m && Math.abs(l.t+l.dur-t)<1e-6) l.dur+=dur; else push("Counter",{t,dur,midi:m,vel:clampV(48+sec.lvl*10),pri:2});
+      prev=m; pm=am;
+    }
+  });
+}
+function chordAtS(S,t){ return S.chordAt(t); }
+
+function genDrums(S,st,sec,on,r,finalT){
+  const style=S.pack.style, D=S.parts.Drums, hit=(t,m,v)=>D.push({t,dur:.12,midi:m,vel:clampV(v+(r()*8-4))});
+  const isEnd=sec===S.TL.secs[S.TL.secs.length-1];
+  if(sec.kind==="build"){
+    if(style==="williams"||style==="morricone"||style==="expo"){ for(let t=sec.t0;t<sec.t1-1e-6;t+=.25) hit(t,DRUM.SNARE,30+(t-sec.t0)*5); }
+    else if(style==="zimmer"){ for(let t=sec.t0;t<sec.t1-1e-6;t+=.5) hit(t,(t*2)%4<2?DRUM.TOM3:DRUM.TOM2,40+(t-sec.t0)*5); }
+    else { const t0=sec.t1-4; [0,.5,1,1.5,2,2.5,3,3.5].forEach((o,i)=>hit(t0+o,[DRUM.TOM1,DRUM.TOM1,DRUM.TOM2,DRUM.TOM2,DRUM.TOM3,DRUM.TOM3,DRUM.SNARE,DRUM.SNARE][i],60+i*6)); }
+    return;
+  }
+  if(sec.climax && Math.abs(sec.t0-S.TL.secs.find(s=>s.climax).t0)<1e-6 && style!=="bacharach") hit(sec.t0,DRUM.CRASH,110), hit(sec.t0,DRUM.KICK,110);
+  if(isEnd && finalT!=null && (S.ending==="hits"||S.ending==="hold")) { hit(finalT,DRUM.CRASH,style==="bacharach"?70:112); hit(finalT,DRUM.KICK,100); }
+  if(!on) return;
+  sec.bars.forEach((b,bi)=>{
+    if(isEnd && finalT!=null && b.t>=finalT-1e-6) return;
+    const t=b.t, L=sec.lvl;
+    if(style==="williams"){
+      [[0,90],[.5,50],[.75,55],[1,70],[2,88],[2.5,50],[2.75,55],[3,70],[3.333,60],[3.667,66]].forEach(([o,v])=>hit(t+o,DRUM.SNARE,v-10+L*4));
+      hit(t,DRUM.KICK,90); hit(t+2,DRUM.KICK,80);
+      if(sec.climax && bi%4===0 && bi>0) hit(t,DRUM.CRASH,96);
+    } else if(style==="morricone"){
+      for(let k=0;k<4;k++){ hit(t+k,DRUM.RIM,70); hit(t+k+.5,DRUM.RIM,48); hit(t+k+.75,DRUM.RIM,54); }
+      hit(t,DRUM.KICK,84); hit(t+2,DRUM.KICK,74); if(sec.climax && bi%4===0 && bi>0) hit(t,DRUM.CRASH,92);
+    } else if(style==="bacharach"){
+      if(sec.kind==="intro") return;
+      hit(t,DRUM.KICK,70); hit(t+2.5,DRUM.KICK,58);
+      [1,3].forEach(o=>hit(t+o,L>=3?DRUM.SNARE:DRUM.RIM,L>=3?78:66));
+      for(let k=0;k<8;k++) hit(t+k*.5,L>=4?DRUM.RIDE:DRUM.HHC,k%2?44:58);
+    } else if(style==="zimmer"){
+      if(L<=2){ for(let k=0;k<4;k++) hit(t+k,DRUM.RIM,k===0?54:42); }
+      else { [[0,DRUM.KICK,110],[0,DRUM.TOM3,100],[1.5,DRUM.TOM3,84],[2.5,DRUM.TOM2,90],[3,DRUM.TOM3,80]].forEach(([o,m,v])=>hit(t+o,m,v)); if(bi%4===0 && bi>0) hit(t,DRUM.CRASH,86); }
+    } else if(style==="expo"){                                // 軽い4つ打ち＋2・4拍＋16分ハット（裏はオープン）
+      for(let k=0;k<4;k++) hit(t+k,DRUM.KICK,k%2?66:76);
+      [1,3].forEach(o=>hit(t+o,L>=3?DRUM.SNARE:DRUM.RIM,L>=3?68:56));
+      for(let k=0;k<16;k++) hit(t+k*.25,(L>=3&&k%4===2)?DRUM.HHO:DRUM.HHC,k%4===2?54:k%2?28:40);
+      if(sec.climax && bi%8===0 && bi>0) hit(t,DRUM.CRASH,72);
+    } else if(style==="vangelis"){
+      if(S.pack.drive){ hit(t,DRUM.KICK,92); hit(t+2,DRUM.KICK,84); hit(t+1,DRUM.SNARE,96); hit(t+3,DRUM.SNARE,96); for(let k=0;k<8;k++) hit(t+k*.5,DRUM.HHC,k%2?46:62); }
+      else { hit(t,DRUM.KICK,96); hit(t+2,DRUM.SNARE,108); if(bi%4===0 && bi>0) hit(t,DRUM.CRASH,80); }
+    }
+  });
+}
+
+/* ============================ 仕上げ ============================ */
+function fixSamePitchOverlaps(song){
+  MEL_PARTS.forEach(p=>{
+    const ns=song.parts[p].sort((a,b)=>a.t-b.t||a.midi-b.midi), last=new Map();
+    ns.forEach(n=>{ const l=last.get(n.midi); if(l && l.t+l.dur>n.t+1e-6){ if(Math.abs(l.t-n.t)<1e-6){ n.dup=true; return; } l.dur=Math.max(.05,n.t-l.t-.01); } last.set(n.midi,n); });
+    song.parts[p]=ns.filter(n=>!n.dup && n.dur>0);
+  });
+}
+function consonance(song){
+  const sc=new Scene(); MEL_PARTS.forEach(p=>song.parts[p].forEach(n=>sc.add(n)));
+  let slots=0, bad=0; const pairs=[];
+  for(let s=0;s<song.totalBeats*4;s++){
+    const on=[...sc.over(s/4+0.01,0.02)]; if(on.length<2) continue; slots++;
+    let hit=null;
+    for(let i=0;i<on.length&&!hit;i++) for(let j=i+1;j<on.length;j++){ const d=Math.abs(on[i].midi-on[j].midi); if(d===1||d===13){ hit=[on[i],on[j]]; break; } }
+    if(hit){ bad++; pairs.push(hit); }
+  }
+  return {slots,bad,rate:slots?bad/slots:0,pairs};
+}
+/* 残った衝突は優先度の低い方（オスティナート・鍵盤 → パッド）を消す。メロディは消さない */
+function fixClashes(song){
+  const kill=new Set(), moved=new Set(), mels=MEL_PARTS.flatMap(p=>song.parts[p]).filter(n=>n.mel);
+  song.check.pairs.forEach(([a,b])=>{
+    const sm=[a,b].find(n=>n.mel && n.dur<=.5 && !moved.has(n));
+    if(sm){                                                       // 短い経過音はメロディ側をコード音へ（オクターブ重ねの全パートを一緒に）
+      const ch=song.chordAt(sm.t), to=nearestIn(sm.midi,ch.tones,0), d=to-sm.midi;
+      if(d){ mels.filter(n=>Math.abs(n.t-sm.t)<1e-6 && pcOf(n.midi)===pcOf(sm.midi)).forEach(n=>{ n.midi+=d; moved.add(n); }); song.stats.resnap++; return; }
+    }
+    const lo=(a.pri||0)<=(b.pri||0)?a:b; if(!lo.mel && !kill.has(a) && !kill.has(b)) kill.add(lo);
+  });
+  MEL_PARTS.forEach(p=>{ const before=song.parts[p].length; song.parts[p]=song.parts[p].filter(n=>!kill.has(n)); song.stats.removed+=before-song.parts[p].length; });
+}
+/* リタルダンド: 最後の2小節で 1拍ごとに少しずつ遅く（最後は 80%） */
+function tempoMap(song){
+  const map=[{beat:0,bpm:song.bpm}];
+  if(song.P.rit && song.ending!=="fade" && song.ending!=="loop"){ const t0=song.totalBeats-8; for(let k=0;k<8;k++) map.push({beat:t0+k,bpm:Math.round(song.bpm*(1-0.2*(k+1)/8)*10)/10}); }
+  return map;
+}
+function secAt(song,beat){
+  let s=0; const m=song.tempo;
+  for(let i=0;i<m.length;i++){ const a=m[i].beat, b=i+1<m.length?m[i+1].beat:Infinity; if(beat<=a) break; s+=(Math.min(beat,b)-a)*60/m[i].bpm; }
+  return s;
+}
+
+/* ============================ MIDI 書き出し (SMF Fmt1) ============================ */
+const PPQ=480;
+const cc7=(song,p)=>clampV(song.vol[p]*song.vol.master/100);
+function vlq(n){ const b=[n&0x7f]; n>>=7; while(n>0){ b.unshift((n&0x7f)|0x80); n>>=7; } return b; }
+function trackChunk(events){
+  events.sort((a,b)=>a.tick-b.tick || a.ord-b.ord);
+  let out=[], last=0;
+  for(const e of events){ out.push(...vlq(e.tick-last), ...e.data); last=e.tick; }
+  out.push(0x00,0xff,0x2f,0x00);
+  const len=out.length;
+  return [0x4d,0x54,0x72,0x6b,(len>>>24)&255,(len>>>16)&255,(len>>>8)&255,len&255,...out];
+}
+function metaText(type,str){ const bytes=[...new TextEncoder().encode(str)]; return [0xff,type,...vlq(bytes.length),...bytes]; }
+/* AD2 の標準キーマップ（Third と同じ。出典: AD2 付属「Addictive Drums 2 Keymap.pdf」） */
+const AD2_MAP={ 35:36, 36:36, 38:38, 40:40, 37:42, 42:49, 44:48, 46:55, 49:77, 57:79, 52:81, 55:81, 51:60, 59:60, 53:61, 50:71, 48:71, 47:69, 45:69, 43:67, 41:67 };
+const instMode=()=>{ const e=$("optInst"); return e?e.value:"ad"; };
+function trackName(song,p){ const nm=(song.pack.names||{})[p]||song.st.names[p]; return nm && nm!=="—" ? `${p} (${nm})` : p; }
+function midiParts(song,inst){
+  const st=song.st;
+  const out=PARTS.map(p=>({p, name:trackName(song,p), notes:song.parts[p], ch:CH[p], prog:p==="Drums"?null:((song.pack.prog||{})[p]??st.prog[p])}));
+  if(inst!=="ad") return out;
+  const dr=out.find(x=>x.p==="Drums");
+  dr.notes=song.parts.Drums.map(n=>({...n,midi:(n.midi===42&&n.vel>=80)?50:(AD2_MAP[n.midi]??n.midi)}));
+  dr.name="Drums (Addictive Drums 2)";
+  if(st.modo){                                                                 // エレキベースのスタイルは MODO BASS 2 向けに単音・E0 以上・PC なし
+    const bs=out.find(x=>x.p==="Bass");
+    bs.notes=[...song.parts.Bass].sort((a,b)=>a.t-b.t).map((n,i,a)=>{ const nx=a.slice(i+1).find(x=>x.t>n.t+1e-3); let m=n.midi; while(m<28) m+=12;
+      return nx && n.t+n.dur>nx.t-0.02 ? {...n,midi:m,dur:Math.max(0.05,nx.t-n.t-0.02)} : {...n,midi:m}; });
+    bs.name="Bass (MODO BASS 2)"; bs.prog=null;
+  }
+  return out;
+}
+function buildMIDI(song,inst=instMode()){
+  const tempo=[{tick:0,ord:0,data:metaText(0x03,"Score Info")},{tick:0,ord:0,data:[0xff,0x58,0x04,4,2,24,8]}];
+  song.tempo.forEach(e=>{ const us=Math.round(60000000/e.bpm); tempo.push({tick:Math.round(e.beat*PPQ),ord:0,data:[0xff,0x51,0x03,(us>>>16)&255,(us>>>8)&255,us&255]}); });
+  song.TL.secs.forEach(s=>tempo.push({tick:Math.round(s.t0*PPQ),ord:1,data:metaText(0x06,s.en+(s.shift?` (+${s.shift})`:""))}));
+  if(song.ending==="loop") tempo.push({tick:Math.round(song.totalBeats*PPQ),ord:1,data:metaText(0x06,"Loop End -> Bar 1")});
+  const tracks=[trackChunk(tempo)];
+  for(const {p,name,notes,ch,prog} of midiParts(song,inst)){
+    if(!notes.length) continue;
+    const ev=[{tick:0,ord:0,data:metaText(0x03,name)}];
+    if(prog!=null) ev.push({tick:0,ord:0,data:[0xC0|ch,prog]});
+    ev.push({tick:0,ord:0,data:[0xB0|ch,7,cc7(song,p)]});
+    (song.cc[p]||[]).forEach(c=>ev.push({tick:Math.round(c.t*PPQ),ord:1,data:[0xB0|ch,11,c.val&127]}));
+    for(const n of notes){
+      const on=Math.round(n.t*PPQ), off=Math.max(on+1,Math.round((n.t+n.dur)*PPQ));
+      ev.push({tick:on,ord:3,data:[0x90|ch,n.midi&127,n.vel&127]});
+      ev.push({tick:off,ord:2,data:[0x80|ch,n.midi&127,0]});
+    }
+    tracks.push(trackChunk(ev));
+  }
+  const header=[0x4d,0x54,0x68,0x64,0,0,0,6,0,1,(tracks.length>>8)&255,tracks.length&255,(PPQ>>8)&255,PPQ&255];
+  return new Uint8Array([...header,...tracks.flat()]);
+}
+function download(bytes,name,mime){
+  const blob=new Blob([bytes],{type:mime||"audio/midi"}), url=URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url; a.download=name; a.style.display="none"; document.body.appendChild(a); a.click(); a.remove();
+  const link=$("saveLink"); link.href=url; link.download=name; link.style.display="inline-flex"; link.textContent=`⬇ 保存されない場合はここをタップ： ${name}`;
+  setTimeout(()=>URL.revokeObjectURL(url),120000);
+}
+
+/* ============================ ピアノロール ============================ */
+const hidden=new Set();
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function drawRoll(song){
+  const cv=$("roll"), wrap=$("rollwrap"), dpr=window.devicePixelRatio||1;
+  const W=Math.max(wrap.clientWidth-2, song.totalBeats*6), H=340, drumH=song.parts.Drums.length?40:0, melH=H-drumH-16;
+  cv.style.width=W+"px"; cv.width=W*dpr; cv.height=H*dpr;
+  const g=cv.getContext("2d"); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
+  const x=t=>t/song.totalBeats*W, lo=26, hi=96, y=m=>16+melH-((m-lo)/(hi-lo))*melH, hh=Math.max(2,melH/(hi-lo)-0.5);
+  g.strokeStyle="#1c2132"; song.TL.bars.forEach(b=>{ g.beginPath(); g.moveTo(x(b.t)+.5,16); g.lineTo(x(b.t)+.5,H); g.stroke(); });
+  g.font="11px "+css("--sans");
+  song.TL.secs.forEach(s=>{ g.strokeStyle="rgba(242,201,107,.5)"; g.setLineDash([3,3]); g.beginPath(); g.moveTo(x(s.t0)+.5,0); g.lineTo(x(s.t0)+.5,H); g.stroke(); g.setLineDash([]);
+    g.fillStyle=css("--accent2"); g.fillText(s.name+(s.shift?` +${s.shift}`:""),x(s.t0)+4,12); });
+  for(const p of ["Strings","Choir","Brass","Keys","Ostinato","Guitar","Bass","Timpani","Counter","Theme"]){
+    if(hidden.has(p)) continue;
+    song.parts[p].forEach(n=>{ g.fillStyle=n.mel?css("--rose"):css(COLOR[p]); g.globalAlpha=n.mel?1:.55; g.fillRect(x(n.t),y(n.midi),Math.max(1.5,x(n.t+n.dur)-x(n.t)-.5),n.mel?hh+1:hh); });
+  }
+  g.globalAlpha=1;
+  if(drumH && !hidden.has("Drums")){
+    const top=H-drumH; g.strokeStyle="#2b3247"; g.beginPath(); g.moveTo(0,top); g.lineTo(W,top); g.stroke();
+    const row=m=>(m===DRUM.KICK)?2:(m===DRUM.SNARE||m===DRUM.RIM||(m>=DRUM.TOM3&&m<=DRUM.TOM1))?1:0;
+    g.fillStyle=css("--drum");
+    song.parts.Drums.forEach(n=>{ g.globalAlpha=Math.max(.3,n.vel/120); g.fillRect(x(n.t),top+5+row(n.midi)*11,2.5,8); });
+    g.globalAlpha=1;
+  }
+}
+
+/* ============================ Web Audio 試聴 ============================
+   少し先の音だけを順次予約する方式（Third と同じ。WKWebView でノードを溜めすぎないため）。
+   劇伴らしさのために簡易ホール・リバーブ（ノイズから作ったインパルス応答）を通す。 */
+let actx=null, playing=false, playTimer=null, playMaster=null, revBuf=null;
+const activeSrc=new Set();
+function stopAudio(){
+  playing=false;
+  if(playTimer){ clearInterval(playTimer); playTimer=null; }
+  activeSrc.forEach(o=>{ try{o.stop();}catch(e){} }); activeSrc.clear();
+  if(playMaster){ try{ playMaster.disconnect(); }catch(e){} playMaster=null; }
+  const sb=$("stopBtn"); if(sb) sb.disabled=true;
+}
+const TIMBRE_BASE={
+  Theme:{type:"sawtooth",g:.05,atk:.05,lp:2600,rev:.35,vib:0},
+  Counter:{type:"sawtooth",g:.04,atk:.06,lp:1800,rev:.35},
+  Strings:{type:"sawtooth",g:.02,atk:.35,lp:1500,rev:.6},
+  Brass:{type:"sawtooth",g:.028,atk:.05,lp:1500,rev:.35},
+  Keys:{type:"triangle",g:.06,atk:.005,decay:1.8,rev:.35},
+  Ostinato:{type:"triangle",g:.04,atk:.005,decay:.35,rev:.3},
+  Choir:{type:"sine",g:.05,atk:.35,rev:.6,vib:4.5},
+  Guitar:{type:"triangle",g:.07,atk:.004,decay:1.4,lp:3200,rev:.6,vib:6},
+  Bass:{type:"triangle",g:.26,atk:.01,rev:.08},
+  Timpani:{type:"sine",g:.32,atk:.005,decay:.9,rev:.4}
+};
+const TIMBRE_STYLE={
+  vangelis:{ Theme:{type:"sawtooth",g:.045,atk:.25,lp:1900,rev:.7,vib:5}, Counter:{type:"sawtooth",g:.04,atk:.08,lp:1500,rev:.6,vib:5.2}, Strings:{g:.024,atk:.8,lp:1300,rev:.8}, Ostinato:{type:"sine",g:.05,decay:1.2,rev:.7}, Keys:{rev:.6} },
+  morricone:{ Theme:{type:"sine",g:.10,atk:.03,rev:.55,vib:5.5}, Counter:{type:"sawtooth",g:.045,atk:.03,lp:2600,rev:.6,vib:5}, Ostinato:{type:"sawtooth",g:.011,atk:.003,decay:.12,lp:3000,rev:.25}, Keys:{type:"sine",g:.08,decay:2.5,rev:.6}, Choir:{g:.045,atk:.08} },
+  bacharach:{ Theme:{type:"triangle",g:.08,atk:.04,lp:2200,rev:.35,vib:4.5}, Counter:{type:"sine",g:.06,atk:.04,rev:.4,vib:5}, Brass:{type:"square",g:.012,atk:.01,lp:1800,decay:.3} },
+  williams:{ Theme:{type:"sawtooth",g:.05,atk:.03,lp:3000,rev:.45}, Counter:{type:"sawtooth",g:.045,atk:.06,lp:1300,rev:.45}, Keys:{type:"triangle",g:.05,decay:1.2,rev:.5}, Ostinato:{type:"sawtooth",g:.02,decay:.2,lp:1200,rev:.3} },
+  expo:{ Theme:{type:"triangle",g:.08,atk:.005,decay:1.6,rev:.35}, Counter:{type:"sine",g:.07,atk:.005,decay:1.2,rev:.45}, Ostinato:{type:"sawtooth",g:.014,atk:.003,decay:.18,lp:2600,rev:.35}, Keys:{type:"triangle",g:.04,decay:1.0,rev:.3}, Bass:{type:"sawtooth",g:.05,atk:.005,lp:500,rev:.05}, Guitar:{type:"triangle",g:.035,decay:.15,lp:2000,rev:.2} },
+  zimmer:{ Theme:{type:"square",g:.024,atk:.08,lp:2200,rev:.7}, Ostinato:{type:"square",g:.014,atk:.01,decay:.25,lp:2400,rev:.6}, Keys:{type:"sine",g:.06,decay:.4,rev:.7}, Brass:{type:"sawtooth",g:.04,atk:.3,lp:700,rev:.5}, Counter:{type:"sawtooth",g:.035,atk:.2,lp:1300,rev:.6} }
+};
+function playSong(song,opt={}){
+  stopAudio(); actx=actx||new (window.AudioContext||window.webkitAudioContext)(); actx.resume();
+  playing=true; $("stopBtn").disabled=false;
+  const from=opt.from||0, to=opt.to||song.totalBeats, base=secAt(song,from); let T0=actx.currentTime+0.2;
+  const at=b=>T0+secAt(song,b)-base, mtof=m=>440*Math.pow(2,(m-69)/12);
+  const master=actx.createGain(); master.gain.value=0.8; master.connect(actx.destination); playMaster=master;
+  if(!revBuf){ const len=actx.sampleRate*3; revBuf=actx.createBuffer(2,len,actx.sampleRate);
+    for(let c=0;c<2;c++){ const d=revBuf.getChannelData(c); for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3.2); } }
+  const conv=actx.createConvolver(); conv.buffer=revBuf; const revOut=actx.createGain(); revOut.gain.value=0.55; conv.connect(revOut); revOut.connect(master);
+  const vf=p=>Math.pow(cc7(song,p)/127,2)*1.6;
+  const buses={};
+  const bus=p=>{ if(buses[p]) return buses[p]; const tb={...TIMBRE_BASE[p],...((TIMBRE_STYLE[song.pack.style]||{})[p]||{})};
+    const g=actx.createGain(), send=actx.createGain(); g.gain.value=1; send.gain.value=tb.rev||0; g.connect(master); g.connect(send); send.connect(conv);
+    const c=song.cc[p]; if(c){ g.gain.setValueAtTime(1,T0); c.filter(x=>x.t>=from-8).forEach(x=>{ const tt=Math.max(T0,at(x.t)); g.gain.linearRampToValueAtTime(Math.max(0.0001,x.val/110),tt); }); }
+    return buses[p]={g,tb}; };
+  const track=o=>{ activeSrc.add(o); o.onended=()=>activeSrc.delete(o); };
+  const tone=(n,p)=>{
+    const {g:dst,tb}=bus(p), st=at(n.t), dur=Math.max(0.06,at(n.t+n.dur)-st), v=Math.max(0.0002,tb.g*vf(p)*(n.vel/127)), atk=Math.min(tb.atk||.01,dur*.6);
+    const o=actx.createOscillator(), e=actx.createGain(); o.type=tb.type; o.frequency.value=mtof(n.midi);
+    e.gain.setValueAtTime(0.0001,st); e.gain.exponentialRampToValueAtTime(v,st+atk);
+    const rel=tb.decay?Math.min(dur+.3,tb.decay):dur;
+    e.gain.setValueAtTime(v,st+Math.max(atk,rel-.08)); e.gain.exponentialRampToValueAtTime(0.0001,st+Math.max(rel,atk+0.02)+.12);
+    let node=o;
+    if(tb.lp){ const f=actx.createBiquadFilter(); f.type="lowpass"; f.frequency.value=tb.lp; o.connect(f); node=f; }
+    if(tb.vib && dur>.4){ const l=actx.createOscillator(), lg=actx.createGain(); l.frequency.value=tb.vib; lg.gain.setValueAtTime(0,st); lg.gain.linearRampToValueAtTime(mtof(n.midi)*.006,st+Math.min(dur,.6)); l.connect(lg); lg.connect(o.frequency); l.start(st); l.stop(st+rel+.2); track(l); }
+    if(p==="Timpani"){ o.frequency.setValueAtTime(mtof(n.midi)*1.04,st); o.frequency.exponentialRampToValueAtTime(mtof(n.midi),st+.08); }
+    node.connect(e); e.connect(dst); o.start(st); o.stop(st+Math.max(rel,atk+0.02)+0.2); track(o);
+  };
+  const nb=actx.createBuffer(1,actx.sampleRate*0.6,actx.sampleRate), nd=nb.getChannelData(0);
+  for(let i=0;i<nd.length;i++) nd[i]=Math.random()*2-1;
+  const drumBus=actx.createGain(), dsend=actx.createGain(); drumBus.connect(master); drumBus.connect(dsend); dsend.gain.value=song.pack.style==="vangelis"?.6:.25; dsend.connect(conv);
+  const drum=n=>{
+    const st=at(n.t), v=Math.max(0.0002,n.vel/127*vf("Drums"));
+    if(n.midi===DRUM.KICK||(n.midi>=DRUM.TOM3&&n.midi<=DRUM.TOM1)){
+      const o=actx.createOscillator(), e=actx.createGain(); o.type="sine";
+      const f=n.midi===DRUM.KICK?140:n.midi===DRUM.TOM1?200:n.midi===DRUM.TOM2?150:105;
+      o.frequency.setValueAtTime(f,st); o.frequency.exponentialRampToValueAtTime(f*0.4,st+0.18);
+      e.gain.setValueAtTime(v*0.9,st); e.gain.exponentialRampToValueAtTime(0.001,st+0.32);
+      o.connect(e); e.connect(drumBus); o.start(st); o.stop(st+0.35); track(o);
+    } else {
+      const sN=actx.createBufferSource(), f=actx.createBiquadFilter(), e=actx.createGain(); sN.buffer=nb;
+      const snare=n.midi===DRUM.SNARE||n.midi===DRUM.RIM;
+      f.type=snare?"bandpass":"highpass"; f.frequency.value=n.midi===DRUM.RIM?2600:snare?1800:n.midi===DRUM.CRASH?5000:n.midi===DRUM.RIDE?6000:8000;
+      const dur=n.midi===DRUM.RIM?0.05:snare?0.16:n.midi===DRUM.CRASH?0.9:n.midi===DRUM.RIDE?0.3:0.04;
+      e.gain.setValueAtTime(v*(snare?0.55:0.28),st); e.gain.exponentialRampToValueAtTime(0.001,st+dur);
+      sN.connect(f); f.connect(e); e.connect(drumBus); sN.start(st); sN.stop(st+dur+0.02); track(sN);
+    }
+  };
+  const ev=[], on=p=>!hidden.has(p) && (!opt.only || opt.only(p));
+  MEL_PARTS.forEach(p=>{ if(on(p)) song.parts[p].forEach(n=>{ if(n.t>=from-1e-6 && n.t<to-1e-6 && (!opt.melOnly || n.mel)) ev.push([n.t,()=>tone(n,p)]); }); });
+  if(on("Drums") && !opt.melOnly) song.parts.Drums.forEach(n=>{ if(n.t>=from-1e-6 && n.t<to-1e-6) ev.push([n.t,()=>drum(n)]); });
+  ev.sort((a,b)=>a[0]-b[0]);
+  const LOOK=1.5, endAt=at(to)+3;
+  let i=0;
+  const pump=()=>{ if(!playing) return; const hz=actx.currentTime+LOOK; while(i<ev.length && at(ev[i][0])<hz){ ev[i][1](); i++; }
+    if(i>=ev.length){
+      if(opt.loop){ if(hz>at(to)){ T0+=secAt(song,to)-base; i=0; } }        // ループ再生: 曲の終わりに冒頭を隙間なくつなぐ
+      else if(actx.currentTime>endAt) stopAudio();
+    } };
+  pump(); playTimer=setInterval(pump,200);
+}
+
+/* ============================ UI ============================ */
+const $=id=>document.getElementById(id);
+const pad2=n=>String(n+1).padStart(2,"0");
+const SLOTS=[
+  {id:"pack",tag:"S",label:"スコア型（進行と編成）",who:"作曲家",list:PACKS},
+  {id:"motif",tag:"M",label:"動機（テーマの核・2小節）",who:"テーマ",list:MOTIFS},
+  {id:"tform",tag:"F",label:"テーマの形",who:"8小節の組み立て",list:TFORMS},
+  {id:"btype",tag:"B",label:"対照主題",who:"テーマとの対比",list:BTYPES}
+];
+const locks={};
+let SONG=null, lastPack=0;
+function styleLabel(x){ return x.style && STYLES[x.style] ? `［${STYLES[x.style].name}］` : x.style==="all"?"［共通］":""; }
+function renderSlots(){
+  const box=$("slots"); box.innerHTML="";
+  SLOTS.forEach(s=>{
+    const el=document.createElement("div"); el.className="slot";
+    el.innerHTML=`<div class="top"><span class="tag">${s.tag}</span><b style="font-size:13px">${s.label}</b><span class="who">${s.who}</span>
+      <button class="lock" id="lock_${s.id}" title="シャッフル時に固定">🔓</button></div>
+      <select id="sel_${s.id}">${s.list.map((x,i)=>`<option value="${i}">${s.tag}${pad2(i)} ${x.mode?(x.mode==="major"?"☀ ":"🌙 "):""}${styleLabel(x)}${x.name}</option>`).join("")}</select>
+      <div class="desc" id="desc_${s.id}"></div>`;
+    box.appendChild(el);
+    const sel=el.querySelector("select"), desc=el.querySelector(".desc"), lk=el.querySelector(".lock");
+    const upd=()=>{ const x=s.list[+sel.value]; desc.textContent=x.desc+(s.id==="pack"?`　テーマ: ${x.A.replace(/\s*\|\s*/g," | ")}　推奨 BPM ${x.bpm}`:""); if(s.id==="pack") renderRoles(); updCombo(); };
+    sel.onchange=upd; upd();
+    if(s.id==="pack") sel.addEventListener("change",()=>{ applyPackPreset(+sel.value,true); });
+    lk.onclick=()=>{ locks[s.id]=!locks[s.id]; lk.classList.toggle("on",!!locks[s.id]); lk.textContent=locks[s.id]?"🔒":"🔓"; };
+  });
+}
+/* スコア型を手で選んだら: 推奨 BPM・そのスタイルの推奨動機・テーマの形・対照主題に合わせる（ロック中のものは変えない） */
+function applyPackPreset(i,byHand){
+  const pk=PACKS[i], st=STYLES[pk.style];
+  if(byHand){
+    $("bpm").value=pk.bpm;
+    const prevStyle=PACKS[lastPack].style;                            // 展示会BGMの型に入ったらモードをオン、そこから出たらオフ（手で変えた状態は他では触らない）
+    if(pk.style==="expo") $("optExpo").checked=true; else if(prevStyle==="expo") $("optExpo").checked=false;
+    if(!locks.motif){ $("sel_motif").value=String(st.motifs[0]); $("sel_motif").onchange(); }
+    if(!locks.tform){ $("sel_tform").value=String(TFORMS.findIndex(f=>f.key===st.form)); $("sel_tform").onchange(); }
+    if(!locks.btype){ $("sel_btype").value=String(BTYPES.findIndex(b=>b.key===st.bTypes[0])); $("sel_btype").onchange(); }
+  }
+  lastPack=i; renderRoles(); updCombo();
+}
+function renderRoles(){
+  const cur=PACKS[+($("sel_pack")||{value:0}).value].style;
+  $("roles").innerHTML=STYLE_KEYS.map(k=>{ const s=STYLES[k]; return `<div class="role${k===cur?" cur":""}"><b>${s.icon} ${s.who}</b>${s.desc}</div>`; }).join("");
+}
+const VOL_DEFAULT={ master:100, Theme:110, Counter:92, Strings:84, Brass:84, Keys:78, Ostinato:74, Choir:80, Guitar:96, Bass:96, Timpani:90, Drums:90 };
+const VOL_KEYS=Object.keys(VOL_DEFAULT);
+const VOL={...VOL_DEFAULT};
+function renderVols(){
+  const box=$("vols"); box.innerHTML="";
+  VOL_KEYS.forEach(k=>{
+    const w=document.createElement("label"); w.style.cssText="display:block; font-size:12px; color:var(--muted)";
+    w.innerHTML=`<span style="display:flex; justify-content:space-between"><span>${k==="master"?"":`<i style="display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;background:var(${COLOR[k]})"></i>`}${k==="master"?"全体（%）":k}</span><b id="vv_${k}" style="color:var(--text); font-family:var(--mono)">${VOL[k]}</b></span>
+      <input type="range" min="0" max="127" value="${VOL[k]}" style="width:100%; accent-color:var(--accent)">`;
+    const inp=w.querySelector("input");
+    inp.oninput=()=>{ VOL[k]=+inp.value; $("vv_"+k).textContent=VOL[k]; if(SONG){ SONG.vol={...VOL}; SONG.P.vol=SONG.vol; saveHash(SONG.P); } };
+    box.appendChild(w);
+  });
+}
+function readParams(){
+  return { pack:+$("sel_pack").value, motif:+$("sel_motif").value, tform:+$("sel_tform").value, btype:+$("sel_btype").value,
+    key:+$("key").value, bpm:Math.max(40,Math.min(220,+$("bpm").value||72)), seed:+$("seed").value||0,
+    form:$("optForm").value, lift:$("optLift").value, inst:$("optInst").value,
+    mut:$("optMut").checked, hint:$("optHint").checked, counter:$("optCounter").checked, ost:$("optOst").checked, choir:$("optChoir").checked, perc:$("optPerc").checked, rit:$("optRit").checked, expo:$("optExpo").checked,
+    vol:{...VOL} };
+}
+function comboCode(P){ return `S${pad2(P.pack)}-M${pad2(P.motif)}-F${pad2(P.tform)}-B${pad2(P.btype)}`; }
+function keyName(P,shift=0){ const pk=PACKS[P.pack], k=(P.key+shift)%12; return (isFlatKey(k,pk.mode)?FLAT:SHARP)[k]+(pk.mode==="minor"?"m":""); }
+function updCombo(){ if(!$("sel_btype")) return; const P=readParams(); $("combo").innerHTML=`<b>${comboCode(P)}</b> · ${keyName(P)} · ${P.bpm} · s${P.seed}`; }
+function fmt(sec){ const m=Math.floor(sec/60), s=Math.round(sec%60); return `${m}:${String(s).padStart(2,"0")}`; }
+const HASH_FLAGS=[["mu","optMut"],["hi","optHint"],["co","optCounter"],["os","optOst"],["ch","optChoir"],["pe","optPerc"],["ri","optRit"],["ex","optExpo"]];
+function saveHash(P){ try{ history.replaceState(null,"",`#s=${P.pack}&m=${P.motif}&f=${P.tform}&b=${P.btype}&k=${P.key}&bpm=${P.bpm}&sd=${P.seed}&fm=${P.form}&lf=${P.lift}&in=${P.inst}&`+HASH_FLAGS.map(([k,id])=>`${k}=${+$(id).checked}`).join("&")+`&vol=${VOL_KEYS.map(k=>VOL[k]).join(".")}`); }catch(e){} }
+function loadHash(){
+  try{
+    const h=new URLSearchParams(location.hash.slice(1)); if(!h.has("s")) return false;
+    const set=(id,v)=>{ if(v!=null) $(id).value=v; };
+    set("sel_pack",h.get("s")); set("sel_motif",h.get("m")); set("sel_tform",h.get("f")); set("sel_btype",h.get("b"));
+    set("key",h.get("k")); set("bpm",h.get("bpm")); set("seed",h.get("sd"));
+    if(h.has("fm") && FORM_LABEL[h.get("fm")]) $("optForm").value=h.get("fm");
+    if(h.has("lf")) $("optLift").value=h.get("lf");
+    if(h.has("in")) $("optInst").value=h.get("in");
+    HASH_FLAGS.forEach(([k,id])=>{ if(h.has(k)) $(id).checked=h.get(k)==="1"; });
+    if(h.has("vol")){ h.get("vol").split(".").forEach((v,i)=>{ if(VOL_KEYS[i] && v!=="") VOL[VOL_KEYS[i]]=Math.max(0,Math.min(127,+v)); }); renderVols(); }
+    SLOTS.forEach(s=>$("sel_"+s.id).onchange());
+    return true;
+  }catch(e){ return false; }
+}
+
+/* テーマの分析（メロディがはっきりしているかの自己チェック） */
+function noteName(S,m){ return (S.flat?FLAT:SHARP)[pcOf(m)]+(Math.floor(m/12)-1); }
+function degLabel(d){ const o=Math.floor(d/7), n=((d%7)+7)%7+1; return n+(o>0?"'".repeat(o):o<0?",".repeat(-o):""); }
+function analyzeTheme(S){
+  const sec=S.TL.secs.find(s=>s.id==="A2"), ns=S.mel.A2;
+  const pk=Math.max(...ns.map(n=>n.m)), pkBar=Math.floor((ns.find(n=>n.m===pk).t-sec.t0)/4)+1;
+  const last=ns[ns.length-1], closed=pcOf(last.m)===S.chordAt(last.t).key;
+  const range=pk-Math.min(...ns.map(n=>n.m));
+  let leaps=0, filled=0;
+  for(let i=1;i<ns.length-1;i++){ const a=ns[i].m-ns[i-1].m; if(Math.abs(a)>=5){ leaps++; const b=ns[i+1].m-ns[i].m; if(Math.sign(b)===-Math.sign(a)||b===0) filled++; } }
+  const statements=S.TL.secs.filter(s=>s.kind==="A").length;
+  return {pk,pkBar,closed,range,leaps,filled,statements,ns,sec};
+}
+
+function doGenerate(){
+  stopAudio();
+  const P=readParams(); saveHash(P);
+  SONG=generateSong(P);
+  const S=SONG, A=analyzeTheme(S), rate=S.check.rate*100, dur=secAt(S,S.totalBeats);
+  const pkOK=A.pkBar>=5 && A.pkBar<=7;
+  $("out").classList.add("show");
+  $("meta").innerHTML=
+    `<span>スタイル <b>${S.st.icon} ${S.st.name}</b></span><span>キー <b>${keyName(P)}${S.lift?` → ${keyName(P,S.lift)}`:""}</b></span><span>BPM <b>${S.bpm}</b></span>`+
+    `<span>${S.TL.bars.length}小節 <b>${fmt(dur)}</b>（${FORM_LABEL[S.form].split("：")[0]}）</span>`+
+    `<span>テーマ最高音 <b class="${pkOK?"ok":"ng"}">${noteName(S,A.pk)}（${A.pkBar}小節目）${pkOK?"✓ 5〜7小節目":"△"}</b></span>`+
+    `<span>終止 <b class="${A.closed?"ok":"ng"}">${A.closed?"✓ 主音で閉じる":"✗"}</b></span>`+
+    `<span>テーマの音域 <b class="${A.range<=19?"ok":"ng"}">${A.range}半音${A.range<=19?" ✓ 歌える幅":" △ 広い"}</b></span>`+
+    `<span>跳躍の後の反行 <b>${A.leaps?`${A.filled}/${A.leaps}`:"跳躍なし"}</b></span>`+
+    `<span>テーマ登場 <b>${A.statements}回</b></span>`+
+    (S.ending==="loop"?(()=>{ const f=S.chords[0], l=S.chords[S.chords.length-1], ok=l.root===(f.key+7)%12 && f.tones.includes(f.key);
+      return `<span>ループ <b class="${ok?"ok":"ng"}">${ok?`✓ 最後 ${l.name} → 冒頭 ${f.name}`:"△"}</b></span>`; })():"")+
+    `<span>短2度衝突率 <b class="${rate<=5?"ok":"ng"}">${rate.toFixed(1)}%</b>${S.stats.removed||S.stats.resnap?` <span style="color:var(--faint)">(メロディ吸着 ${S.stats.resnap} / 伴奏削除 ${S.stats.removed})</span>`:""}</span>`;
+  const m=S.motif;
+  const bars=[]; for(let b=0;b<8;b++){ const x=A.ns.filter(n=>n.t>=A.sec.t0+b*4-1e-6 && n.t<A.sec.t0+b*4+4-1e-6); bars.push(`<span class="${x.some(n=>n.m===A.pk)?"pk":""}">${b+1}: ${x.map(n=>noteName(S,n.m)).join(" ")||"—"}</span>`); }
+  $("themebox").innerHTML=`動機 <b>M${pad2(P.motif)} ${MOTIFS[P.motif].name}</b>（度数 ${m.M.map(n=>degLabel(n.deg)).join("–")}／変形: ${m.op}）　テーマの形 <b>${TFORMS[P.tform].name}</b>（反復の幅 ${m.s>0?"+":""}${m.s}度）　対照主題 <b>${BTYPES[P.btype].name}</b><br>`+
+    `<span style="font-size:12px">テーマ確保（全終止）の8小節 — ピンク枠が最高音の小節</span><div class="bars">${bars.join("")}</div>`;
+  const box=$("sections"); box.innerHTML="";
+  S.TL.secs.forEach(sec=>{
+    const row=document.createElement("div"); row.className="secrow";
+    row.innerHTML=`<span class="chip lb">${sec.name} (${sec.nbars})</span>`+(S.who[sec.id]?`<span class="chip who">🎵 ${S.who[sec.id].map(p=>S.st.names[p]||p).join(" ＋ ")}</span>`:"")+(sec.shift?`<span class="chip lift">転調 +${sec.shift}</span>`:"")+
+      sec.bars.map(b=>`<span class="chip">${S.chords.filter(c=>c.t>=b.t-1e-6&&c.t<b.t+4-1e-6).map(c=>c.name).join(" ")}</span>`).join("");
+    box.appendChild(row);
+  });
+  $("varList").innerHTML=
+    `<li><b>Key</b> ${keyName(P)} ／ <b>BPM</b> ${S.bpm} ／ <b>長さ</b> ${fmt(dur)}</li>`+
+    `<li><b>スコア型</b> S${pad2(P.pack)} ${S.pack.name}</li>`+
+    `<li><b>動機</b> M${pad2(P.motif)} ${MOTIFS[P.motif].name}（${m.op}）</li>`+
+    `<li><b>テーマの形</b> ${TFORMS[P.tform].name} ／ <b>対照主題</b> ${BTYPES[P.btype].name}</li>`;
+  renderLegend(); drawRoll(S);
+  ["playBtn","themeBtn","midiBtn","memoBtn","bundleBtn"].forEach(id=>$(id).disabled=false);
+}
+function renderLegend(){
+  const lg=$("legend"); lg.innerHTML="";
+  ["Theme","Counter","Strings","Brass","Keys","Ostinato","Choir","Guitar","Bass","Timpani","Drums"].forEach(p=>{
+    const n=SONG?SONG.parts[p].length:0; if(SONG && !n) return;
+    const s=document.createElement("span"); s.className=hidden.has(p)?"off":"";
+    s.innerHTML=`<i style="background:var(${COLOR[p]})"></i>${p}${SONG&&SONG.st.names[p]?` <span style="color:var(--faint)">${SONG.st.names[p]}</span>`:""} <span style="color:var(--faint)">${n}</span>`;
+    s.onclick=()=>{ hidden.has(p)?hidden.delete(p):hidden.add(p); renderLegend(); SONG&&drawRoll(SONG); };
+    lg.appendChild(s);
+  });
+  const s=document.createElement("span"); s.style.cursor="default"; s.innerHTML=`<i style="background:var(--rose)"></i>テーマ（どの楽器が持っても同色）`; lg.appendChild(s);
+}
+
+/* ============================ 書き出し ============================ */
+const IN_APP=!!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.bundle);
+function fileBase(S){
+  const P=S.P;
+  return `Cinema_${S.st.name.replace(/\s+/g,"")}_${keyName(P)}_${comboCode(P)}_${S.form}${S.lift?`_lift${S.lift}`:""}${S.ending==="loop"?"_ExpoLoop":""}_BPM${S.bpm}_seed${P.seed}`;
+}
+function logicSteps(S){
+  const base=fileBase(S), st=S.st, parts=midiParts(S,instMode()).filter(x=>x.notes.length);
+  const ad=instMode()==="ad";
+  return [
+`■ Logic Pro への取り込み手順（${base}）`,
+``,
+`1. ${base}.mid を Logic で開く（アプリで「書き出し後に Logic Pro で開く」をオンにしていれば自動）`,
+`   → ${parts.length}トラック・テンポ ${S.bpm}${S.tempo.length>1?"（最後の2小節はリタルダンド）":""}・セクションマーカーが入った新規プロジェクトになる`,
+`2. 各トラックの音源を差し替える（${st.who} の編成。名前は目安。版によってパッチ名は異なるので近いものでよい）`,
+...parts.filter(x=>x.p!=="Drums").map(x=>`   ・${x.name}: ${(st.logic[x.p])||(x.p==="Timpani"?"ライブラリの Orchestral Percussion から Timpani":x.p==="Guitar"?"ギター音源":"GM のままでも可")}`),
+...(S.parts.Drums.length?[ad?`   ・Drums (Addictive Drums 2): [AU 音源] > [XLN Audio] > [Addictive Drums 2]。ノートは AD2 標準キーマップ。${S.pack.style==="williams"?"マーチのスネアはスネアを緩めに（Snare の Tune を下げ、OH・Room を広く）":S.pack.style==="zimmer"?"タムとキックは Room を多めに、AD2 内部でロングリバーブ":S.pack.style==="vangelis"?"スネアは AD2 内部のリバーブを長く＋ゲート（80s の Gated Reverb）":""}`:`   ・Drums: GM 配列（Drum Kit Designer などで鳴る）`]:[]),
+...(st.modo&&ad?[`   ・Bass (MODO BASS 2): '60s P-Bass・指弾き・Flat Wound・Muting 30% 前後。プログラムチェンジは入れていない`]:[]),
+`3. 空間: Aux に Space Designer（Hall, Decay ${S.pack.style==="vangelis"?"5〜6s":"2.5〜3.5s"}）を立て、Theme／Counter／Strings／Choir から Send ${S.pack.style==="vangelis"?"-6dB 前後（深め）":"-12dB 前後"}`,
+`4. バランスの優先順位: テーマを担当しているトラック（セクションごとに替わる）＞ 対旋律 ＞ 低音 ＞ パッド ＞ オスティナート`,
+`   ・テーマが替わる楽器ごとに、その区間だけ +1〜2dB のボリューム・オートメーションを書くと主旋律がはっきりする`,
+`   ・Strings・Choir・Brass には CC11（Expression）でビルドアップのクレッシェンド${S.ending==="fade"?"とコーダのフェードアウト":""}を書いてある`,
+`5. ミックスの目安: 音量バランス → EQ（パッドは 250Hz 付近を -2〜3dB、テーマ楽器は 2〜4kHz を軽く持ち上げ）→ コンプ（Bus に 2:1・GR 2dB 以内）→ 空間系`,
+``,
+...(S.ending==="loop"?[
+`6. 展示会BGM（ループ）として書き出す`,
+`   ・マーカー「Loop End -> Bar 1」が曲の終わり。そこから1小節目へ戻ると継ぎ目なくつながる（最後はⅤで止めてある）`,
+`   ・リバーブの尾までつなげたいときは、曲を2回並べてバウンスし、2周目の頭から1周ぶんを切り出すと、頭にも前の周の残響が乗った「完全ループ」になる`,
+`   ・会場では人の声が 300Hz〜3kHz を占めるので、マスターで 2〜4kHz を -2dB 前後にし、低域は 60Hz 以下をハイパスで整理すると会話を邪魔しにくい`,
+`   ・ラウドネスは -18〜-16 LUFS 前後を目安に控えめに（ブースのスピーカーで音量を上げても耳が疲れにくい）`,
+``]:[]),
+`※ 小節1の位置とテンポは動かさないこと。テンポを変えるなら Logic 側のテンポトラックで。`
+  ].join("\n");
+}
+function memoText(){
+  const S=SONG, P=S.P, A=analyzeTheme(S);
+  const lines=[`■ ${comboCode(P)}  ${S.st.who}  Key ${keyName(P)}${S.lift?`→${keyName(P,S.lift)}`:""}  BPM ${S.bpm}  seed ${P.seed}  (${fmt(secAt(S,S.totalBeats))})`,
+    `スコア型: ${S.pack.name}`,
+    `動機: M${pad2(P.motif)} ${MOTIFS[P.motif].name}（度数 ${S.motif.M.map(n=>degLabel(n.deg)).join("–")}／${S.motif.op}）`,
+    `テーマの形: ${TFORMS[P.tform].name}（反復の幅 ${S.motif.s}度） / 対照主題: ${BTYPES[P.btype].name}`,
+    `テーマ最高音: ${noteName(S,A.pk)}（${A.pkBar}小節目）/ 音域 ${A.range}半音 / 終止 ${A.closed?"主音":"—"} / テーマ登場 ${A.statements}回`, ""];
+  S.TL.secs.forEach(sec=>{
+    const bars=sec.bars.map(b=>S.chords.filter(c=>c.t>=b.t-1e-6&&c.t<b.t+4-1e-6).map(x=>x.name).join(" "));
+    lines.push(`[${sec.name}${sec.shift?` +${sec.shift}`:""}] ${bars.join(" | ")}${S.who[sec.id]?`   テーマ: ${S.who[sec.id].map(p=>S.st.names[p]||p).join("＋")}`:""}`);
+  });
+  lines.push("", `テーマ確保の8小節: `+[...Array(8)].map((_,b)=>A.ns.filter(n=>n.t>=A.sec.t0+b*4-1e-6&&n.t<A.sec.t0+b*4+4-1e-6).map(n=>noteName(S,n.m)).join(" ")).join(" | "));
+  lines.push("", `短2度衝突率 ${(S.check.rate*100).toFixed(1)}%`);
+  return lines.join("\n");
+}
+function b64(bytes){ let s=""; for(let i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000)); return btoa(s); }
+function exportBundle(){
+  if(!SONG) return;
+  const S=SONG, base=fileBase(S), mid=buildMIDI(S), memo=memoText(), steps=logicSteps(S);
+  if(IN_APP){
+    $("bundleBtn").textContent="⏳ 保存先を選んでください…";
+    window.webkit.messageHandlers.bundle.postMessage({ base, openLogic:$("optOpenLogic").checked, files:[
+      {name:base+".mid", b64:b64(mid)}, {name:base+"_設計メモ.txt", text:memo}, {name:"Logic取り込み手順.txt", text:steps} ]});
+  } else {
+    download(mid,base+".mid");
+    setTimeout(()=>download(new TextEncoder().encode(memo+"\n\n"+steps),base+"_設計メモと手順.txt","text/plain"),600);
+  }
+}
+
+window.addEventListener("DOMContentLoaded",()=>{
+  MOTIFS.forEach(M=>{ const end=Math.max(...M.n.map(n=>n[0]+n[1])); if(Math.abs(end-8)>1e-3) console.warn("motif length",M.name,end); });
+  $("key").innerHTML=SHARP.map((n,i)=>`<option value="${i}">${n}${FLAT[i]!==n?" / "+FLAT[i]:""}</option>`).join("");
+  $("key").value="2";
+  $("optForm").innerHTML=Object.entries(FORM_LABEL).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
+  renderSlots(); renderVols();
+  $("volReset").onclick=()=>{ Object.assign(VOL,VOL_DEFAULT); renderVols(); if(SONG){ SONG.vol={...VOL}; SONG.P.vol=SONG.vol; saveHash(SONG.P); } };
+  applyPackPreset(0,true);
+  if(loadHash()) applyPackPreset(+$("sel_pack").value,false);
+  updCombo();
+  ["key","bpm","seed"].forEach(id=>$(id).addEventListener("input",updCombo));
+  $("genBtn").onclick=doGenerate;
+  $("playBtn").onclick=()=>SONG&&playSong(SONG,{loop:SONG.ending==="loop"});
+  $("themeBtn").onclick=()=>{ if(!SONG) return; const s=SONG.TL.secs.find(x=>x.id==="A2"); playSong(SONG,{from:s.t0,to:s.t1,melOnly:true}); };
+  $("stopBtn").onclick=stopAudio;
+  $("diceBtn").onclick=()=>{ $("seed").value=Math.floor(Math.random()*99999); updCombo(); doGenerate(); };
+  $("shuffleBtn").onclick=()=>{
+    const mood=$("optMood").value, pool=PACKS.map((x,i)=>i).filter(i=>mood==="all"||(mood==="bright")===(PACKS[i].mode==="major"));
+    if(!locks.pack){ $("sel_pack").value=String(pick(Math.random,pool)); $("sel_pack").onchange(); applyPackPreset(+$("sel_pack").value,true); }
+    const st=STYLES[PACKS[+$("sel_pack").value].style];
+    if(!locks.motif){ $("sel_motif").value=String(Math.random()<.75?pick(Math.random,st.motifs):Math.floor(Math.random()*MOTIFS.length)); $("sel_motif").onchange(); }
+    if(!locks.tform){ $("sel_tform").value=String(Math.random()<.7?TFORMS.findIndex(f=>f.key===st.form):Math.floor(Math.random()*TFORMS.length)); $("sel_tform").onchange(); }
+    if(!locks.btype){ $("sel_btype").value=String(BTYPES.findIndex(b=>b.key===pick(Math.random,st.bTypes))); $("sel_btype").onchange(); }
+    $("seed").value=Math.floor(Math.random()*99999); updCombo(); doGenerate();
+  };
+  $("midiBtn").onclick=()=>{ if(SONG) download(buildMIDI(SONG),fileBase(SONG)+".mid"); };
+  $("bundleBtn").onclick=exportBundle;
+  window.__bundleDone=(ok,msg)=>{ $("bundleBtn").textContent=ok?"✅ 書き出しました":"⚠️ "+msg; setTimeout(()=>$("bundleBtn").textContent="📦 Logic用に一括書き出し",2200); };
+  if(IN_APP) $("openLogicWrap").style.display="flex";
+  $("memoBtn").onclick=async()=>{ const t=memoText(); try{ await navigator.clipboard.writeText(t); $("memoBtn").textContent="✅ コピーしました"; }catch(e){ prompt("設計メモ",t); }
+    setTimeout(()=>$("memoBtn").textContent="📋 設計メモ",1600); };
+  window.addEventListener("resize",()=>SONG&&drawRoll(SONG));
+  renderLegend();
+});
+</script>
+</body>
+</html>
