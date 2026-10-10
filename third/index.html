@@ -1029,14 +1029,24 @@ function chordScale(ch,keyPcs){
   return out;
 }
 
-/* 同時発音の衝突判定（実音で1半音 or ♭9=13半音を衝突とみなす） */
+/* 同時発音の衝突判定: 1半音・♭9（13半音）に加え、2オクターブ以上離れた♭9（25・37…半音＝上の音が下の音の半音上）も衝突とみなす。
+   ベースの経過音と上の和音のような、離れていても濁る組み合わせを防ぐ（2026-10-10 の監査で追加・J-POP 版と同じ）。
+   例外: そのときのコードが 7(♭9) で、2音ともコード音なら意図した♭9（Bacharach）なので許す。chordAt を渡したときだけ例外を判定する */
+function isClash(lo,hi,chordAt,t){
+  const d=Math.abs(hi-lo); if(d===1||d===13) return true;
+  if(d>13 && (Math.max(lo,hi)-Math.min(lo,hi))%12===1){
+    if(chordAt){ const ch=chordAt(t); if(ch && ch.q==="7b9" && ch.tonesAll.includes(pcOf(lo)) && ch.tonesAll.includes(pcOf(hi))) return false; }
+    return true;
+  }
+  return false;
+}
 class Scene{
-  constructor(){ this.b=new Map(); }
+  constructor(chordAt){ this.b=new Map(); this.chordAt=chordAt||null; }
   add(n){ const s=Math.floor(n.t), e=Math.floor(n.t+n.dur-1e-6); for(let k=s;k<=e;k++){ if(!this.b.has(k)) this.b.set(k,[]); this.b.get(k).push(n); } }
   over(t,dur){ const res=new Set(), s=Math.floor(t), e=Math.floor(t+dur-1e-6);
     for(let k=s;k<=e;k++){ const arr=this.b.get(k); if(!arr) continue; for(const n of arr) if(n.t<t+dur-1e-6 && n.t+n.dur>t+1e-6) res.add(n); }
     return res; }
-  clashList(m,t,dur){ const out=[]; for(const n of this.over(t,dur)){ const d=Math.abs(n.midi-m); if(d===1||d===13) out.push(n); } return out; }
+  clashList(m,t,dur){ const out=[]; for(const n of this.over(t,dur)){ if(isClash(n.midi,m,this.chordAt,Math.max(t,n.t))) out.push(n); } return out; }
   clash(m,t,dur){ return this.clashList(m,t,dur).length; }
 }
 
@@ -1158,7 +1168,7 @@ function generateSong(P){
     });
   }
   const chordAt=t=>{ for(const c of song.chords) if(t>=c.t-1e-6 && t<c.t+c.dur-1e-6) return c; return song.chords[song.chords.length-1]; };
-  song.chordAt=chordAt;
+  song.chordAt=chordAt; scene.chordAt=chordAt;
   const secOf=id=>TL.secs.find(s=>s.id===id);
 
   /* サビ前の半拍抜き（Max Martin。Second の鳴らし方）: オンならサビ直前の半拍は伴奏を全部抜く。
@@ -1226,7 +1236,7 @@ function generateSong(P){
     while(v.length<4){ const m=nextUp(v[v.length-1]); if(m==null) break; v.push(m); used.add(pcOf(m)); }
     let top=v[v.length-1];
     for(const d of keep){ for(let m=top+2;m<=74;m++) if(pcOf(m)===d && !clashIn(v,m)){ v.push(m); break; } }
-    while(v.length<6 && v[v.length-1]<66){ const m=nextUp(v[v.length-1]); if(m==null||m>72) break; v.push(m); }
+    if(!pop) while(v.length<6 && v[v.length-1]<66){ const m=nextUp(v[v.length-1]); if(m==null||m>72) break; v.push(m); }   // Taylor／Weeknd は4音までにして中低域を空ける（Oasis 系は6弦の壁のまま）
     ch.gv=[...new Set(v)].sort((a,b)=>a-b);
   }
   const STR=STRUMS[Math.floor(r()*STRUMS.length)]; song.strumIdx=STRUMS.indexOf(STR);
@@ -1387,7 +1397,7 @@ function generateSong(P){
       if(plan[n.pi]!=null){ opt.target=stepShift(motif[n.k].midi,plan[n.pi]); opt.copy=true; }
       if(sec.role==="C" && i===0){ n.level=Math.max(n.level,hookLift); opt.forceStrong=true; }            // フック
       if(sec.role==="C" && i===flat.length-1){                                                        // 主音へ解決
-        const ch=chordForNote(n).ch; opt.pool=ch.tonesMel.includes(tonic)?[tonic]:ch.tonesMel; opt.target=R[0]+5; opt.forceStrong=true;
+        const ch=chordForNote(n).ch; opt.pool=ch.tonesMel.includes(tonic)?[tonic]:ch.tonesMel; opt.target=Math.round((R[0]+R[1])/2)-1; opt.forceStrong=true;   // 音域のまん中あたりの主音で終わる（次のサビ頭へ跳びすぎない）
       }
       const m=pickPitch(n,ctx,R,T,opt);
       if(opt.copy){ song.mmStats.copies++; if(m===opt.target) song.mmStats.exact++; }
@@ -1425,6 +1435,37 @@ function generateSong(P){
     if(!cand) continue;
     const ch=chordAt(cand.t);
     for(let m=verseMax+1;m<=VR.C[1]+2;m++){ if(ch.tonesMel.includes(pcOf(m)) && scene.clash(m,cand.t,cand.dur)===0){ cand.midi=m; break; } }
+  }
+
+  /* --- 4b. セクションの境目をなめらかに（2026-10-10 の監査で追加）: 前のセクションの最後の音と次のセクションの最初の音が
+     5度を超えて跳ぶとき（間が4拍未満）、まず前の最後の音をコード音（サビの最後は主音）の近いオクターブに選び直し、
+     それでも遠ければ次のセクションの最初の音を選び直す（サビ頭のフックは動かさない）。歌いやすさ・聞き取りやすさのため --- */
+  {
+    const V=song.parts.Vocal.slice().sort((a,b)=>a.t-b.t);
+    const secRole=id=>(secOf(id)||{}).role;
+    const repick=(n,target,prevN,nextN,pool)=>{
+      const R=VR[secRole(n.sec)]||VR.A; let best=null, bs=1e9;
+      for(let m=R[0]-2;m<=R[1]+2;m++){
+        if(!pool.includes(pcOf(m))) continue;
+        if(prevN && Math.abs(m-prevN.midi)>7) continue;                    // フレーズの中ではつながりを保つ
+        if(nextN && Math.abs(m-nextN.midi)>7) continue;
+        if(scene.clashList(m,n.t,n.dur).some(x=>x!==n)) continue;
+        const sc=Math.abs(m-target); if(sc<bs){ bs=sc; best=m; }
+      }
+      return best;
+    };
+    for(let k=1;k<V.length;k++){
+      const a=V[k-1], b=V[k]; if(a.sec===b.sec) continue;
+      const gap=b.t-(a.t+a.dur); if(gap>=4 || Math.abs(b.midi-a.midi)<=7) continue;
+      const pa=V[k-2] && V[k-2].sec===a.sec ? V[k-2] : null;
+      const chA=chordForNote(a).ch, lastOfChorus=secRole(a.sec)==="C";
+      const poolA=lastOfChorus && chA.tonesMel.includes(tonic) ? [tonic] : chA.tonesMel;
+      const mA=repick(a,b.midi,pa,null,poolA); if(mA!=null) a.midi=mA;
+      if(Math.abs(b.midi-a.midi)>7 && secRole(b.sec)!=="C"){                // サビ頭（フック）以外なら次の最初の音も寄せる
+        const nb=V[k+1] && V[k+1].sec===b.sec ? V[k+1] : null;
+        const mB=repick(b,a.midi,null,nb,chordForNote(b).ch.tonesMel); if(mB!=null) b.midi=mB;
+      }
+    }
   }
 
   /* --- 5. Bass（Guigsy: 8分のルート弾きで壁を支える。コードが変わる直前だけ順次で寄る） --- */
@@ -1736,6 +1777,33 @@ function generateSong(P){
   }
 
   /* --- 9. 保険: 衝突が残っていれば優先度の低いパートから直す --- */
+  /* --- 8c. 歌を聞き取りやすく（2026-10-10 監査で追加）
+     ① Piano: 歌と同じ音（ユニゾン）を和音から省く（同時に2音以上残るときだけ）。メロディを伴奏で二重にしない
+     ② Piano: ギターの壁（48〜64 に3音以上）と重なる中低域（C4 未満）を省く（同時に2音以上残るときだけ）。中低域の団子を防ぐ
+     ③ Strings・Marr: 歌と同じ音は1オクターブ上へ（入らなければ下へ）
+     ④ ダッキング: Lead・Synth・Edge・Marr が歌と重なる間はベロシティを 85% に --- */
+  {
+    const V=song.parts.Vocal.slice().sort((a,b)=>a.t-b.t);
+    const vOver=(t0,t1)=>{ const out=[]; for(const v of V){ if(v.t>=t1-1e-6) break; if(v.t+v.dur>t0+1e-6) out.push(v); } return out; };
+    const G=song.parts.Guitar;
+    const gMid=t=>{ let c=0; for(const g of G){ if(g.t>t+1e-6) break; if(g.t+g.dur>t+1e-6 && g.midi>=48 && g.midi<=64) c++; } return c; };
+    G.sort((a,b)=>a.t-b.t);
+    const groups=new Map(); song.parts.Piano.forEach(n=>{ const k=n.t.toFixed(3); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(n); });
+    const drop=new Set();
+    for(const g of groups.values()){
+      if(g.length<3) continue;
+      const left=()=>g.filter(x=>!drop.has(x)).length;
+      for(const n of g){ if(left()<=2) break; if(vOver(n.t,n.t+n.dur).some(v=>v.midi===n.midi)) drop.add(n); }
+      if(gMid(g[0].t)>=3) for(const n of [...g].sort((a,b)=>a.midi-b.midi)){ if(left()<=2) break; if(!drop.has(n) && n.midi<60) drop.add(n); }
+    }
+    song.parts.Piano=song.parts.Piano.filter(n=>!drop.has(n)); song.stats.pianoThinned=drop.size;
+    for(const p of ["Strings","Marr"]) for(const n of song.parts[p]){
+      if(!vOver(n.t,n.t+n.dur).some(v=>v.midi===n.midi)) continue;
+      for(const d of [12,-12]){ const m=n.midi+d; if(m>=RANGE[p][0] && m<=RANGE[p][1]){ n.midi=m; break; } }
+    }
+    for(const p of ["Lead","Synth","Edge","Marr"]) for(const n of song.parts[p]) if(vOver(n.t,n.t+n.dur).length) n.vel=clampV(n.vel*0.85);
+  }
+
   cleanup(song);
   fixSamePitchOverlaps(song);
   song.check=consonance(song);
@@ -2074,7 +2142,7 @@ function fixSamePitchOverlaps(song){
   song.stats.overlapFixed=trimmed+merged;
 }
 function cleanup(song){
-  const order=["Vocal","Bass","Piano","Guitar","Marr","Strings","Synth","Lead","Edge"], sc=new Scene();
+  const order=["Vocal","Bass","Piano","Guitar","Marr","Strings","Synth","Lead","Edge"], sc=new Scene(song.chordAt);
   for(const p of order){
     const kept=[], R=RANGE[p];
     for(const n of song.parts[p].sort((a,b)=>a.t-b.t)){
@@ -2096,12 +2164,12 @@ function cleanup(song){
 /* 16分グリッドで全パートの同時発音を走査し、短2度(1半音)・♭9(13半音)を含むスロットの割合 */
 function consonance(song,extra=[]){
   const all=["Bass","Guitar","Lead","Vocal","Piano","Strings","Edge","Marr","Synth"].flatMap(p=>song.parts[p]).concat(extra);
-  const sc=new Scene(); all.forEach(n=>sc.add(n));
+  const sc=new Scene(song.chordAt); all.forEach(n=>sc.add(n));
   let slots=0, bad=0;
   for(let s=0;s<song.totalBeats*4;s++){
     const on=[...sc.over(s/4+0.01,0.02)]; if(on.length<2) continue; slots++;
     let hit=false;
-    for(let i=0;i<on.length&&!hit;i++) for(let j=i+1;j<on.length;j++){ const d=Math.abs(on[i].midi-on[j].midi); if(d===1||d===13){ hit=true; break; } }
+    for(let i=0;i<on.length&&!hit;i++) for(let j=i+1;j<on.length;j++){ if(isClash(on[i].midi,on[j].midi,song.chordAt,s/4+0.01)){ hit=true; break; } }
     if(hit) bad++;
   }
   return {slots,bad,rate:slots?bad/slots:0};
@@ -2534,7 +2602,7 @@ const HARM_MAX=72, HARM_MIN=45;                                   // 実音域�
 function makeHarmony(song, mode){
   song.harmony=[]; song.harmStats={total:0,unison:0};
   if(!mode || mode==="none") return song.harmony;
-  const sc=new Scene();
+  const sc=new Scene(song.chordAt);
   ["Bass","Guitar","Lead","Vocal","Piano","Strings","Edge","Marr","Synth"].forEach(p=>song.parts[p].forEach(n=>sc.add(n)));
   const pref={3:0,4:0,5:3,7:4.5,8:4,9:4};                          // 3度 > 4度 > 5度・6度（増4度は使わない）
   for(const sec of song.TL.secs){
