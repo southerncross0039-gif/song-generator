@@ -623,7 +623,12 @@ const DRUM={ KICK:36, SNARE:38, RIM:37, HHC:42, HHO:46, RIDE:51, CRASH:49, TOM1:
 const PARTS=["Drums","Bass","Guitar","Lead","Vocal","Piano","Strings","Edge","Marr","Synth"];
 const CH={ Drums:9, Bass:1, Guitar:2, Lead:3, Vocal:4, Piano:5, Strings:6, Edge:7, Marr:8, Synth:10 };
 const PROG={ Bass:33, Guitar:29, Lead:30, Vocal:54, Piano:0, Strings:48, Edge:27, Marr:27, Synth:81 };   // Synth は曲ごとに上書き（Saw Lead 81 ／ Brass Section 61）  // 0始まりGM: Finger Bass / Overdriven Gtr / Distortion Gtr / Synth Voice / Grand Piano / String Ens. / Clean Gtr（The Edge・Johnny Marr）
-const RANGE={ Bass:[28,52], Piano:[52,72], Guitar:[40,76], Lead:[64,91], Strings:[60,91], Vocal:[48,72], Edge:[64,91], Marr:[62,86], Synth:[60,91] };
+/* Bass は実際に鳴る高さ（4弦の開放 E＝MIDI 28 から、G 弦の15フレットあたり＝58 まで）で組み立てる。
+   MODO BASS 2 は MIDI 40（Logic 表記 E1）を4弦の開放 E として鳴らし、E1 より下と D4（74）より上は鳴らない（2026-10-11 ユーザー確認）。
+   → MODO BASS 2 向けの書き出しでは1オクターブ上げて MIDI 40〜70 にする（MODO_BASS_RANGE）。GM 向けは実際の高さのまま。
+   ルートは前のルートに近い高さを基本に、型が使うオクターブ上と下からの経過音が音域に収まる位置を選ぶ（pickRoot） */
+const MODO_BASS_RANGE=[40,74], MODO_BASS_SHIFT=12;
+const RANGE={ Bass:[28,58], Piano:[52,72], Guitar:[40,76], Lead:[64,91], Strings:[60,91], Vocal:[48,72], Edge:[64,91], Marr:[62,86], Synth:[60,91] };
 const COLOR={ Vocal:"--rose", Piano:"--accent", Guitar:"--amber", Bass:"--cyan", Strings:"--green", Lead:"--sky", Drums:"--drum", Edge:"--bad", Marr:"--marr", Synth:"--synth" };
 const LABEL={ Vocal:"Vocal", Piano:"Piano", Guitar:"Guitar", Bass:"Bass", Strings:"Strings", Lead:"Lead (Noel)", Drums:"Drums", Edge:"Edge (U2)", Marr:"Marr (Smiths)", Synth:"Synth (Weeknd / Taylor)" };
 
@@ -1493,22 +1498,31 @@ function generateSong(P){
   }
 
   /* --- 5. Bass（Guigsy: 8分のルート弾きで壁を支える。コードが変わる直前だけ順次で寄る） --- */
-  let prevRoot=40;
+  let prevRoot=40; const [BLO,BHI]=RANGE.Bass;
+  /* ルートの高さ選び: 前のルートに近い位置を基本に、下からの経過音（−2）とオクターブ上（＋12）が音域に入る位置を優先する */
+  const pickRoot=(pc,ref,t,dur)=>{ let best=null, bs=1e9;
+    for(let m=BLO;m<=BHI-7;m++){ if(pcOf(m)!==pc) continue;
+      const sc=Math.abs(m-ref)+8*Math.max(0,BLO+2-m)+3*Math.max(0,m+12-BHI)+(t!=null?scene.clash(m,t,dur)*50:0);
+      if(sc<bs){ bs=sc; best=m; } }
+    return best; };
+  /* 音域外の候補は捨てずに、同じ音名を音域内で直前のベース音にいちばん近い高さに置き直す（運指を変えて同じ音を弾く） */
+  let lastBass=40;
+  const foldBass=cands=>{ const out=[]; for(let m of cands){ if(m==null) continue;
+      if(m<BLO || m>BHI){ let b=null; for(let x=BLO+pcOf(m-BLO);x<=BHI;x+=12) if(b===null||Math.abs(x-lastBass)<Math.abs(b-lastBass)) b=x; m=b; }
+      if(!out.includes(m)) out.push(m); } return out; };
   const BASS_VEL={intro:.9,A:.85,B:.92,C:1,inter:1,outro:.95,D:.85};
   song.chords.forEach((ch,ci)=>{
     if(ch.t<bandIn-1e-6 || (ch.role==="intro" && secOf("intro").cut)) return;
     const next=song.chords[ci+1], V=BASS_VEL[ch.role]||.9;
-    const roots=[]; for(let m=28;m<=47;m++) if(pcOf(m)===ch.bass) roots.push(m);
-    roots.sort((a,b)=>(Math.abs(a-prevRoot)+scene.clash(a,ch.t,Math.min(ch.dur,1))*50)-(Math.abs(b-prevRoot)+scene.clash(b,ch.t,Math.min(ch.dur,1))*50));
-    const root=roots[0]; prevRoot=root;
+    const root=pickRoot(ch.bass,prevRoot,ch.t,Math.min(ch.dur,1)); prevRoot=root;
     const place=(t,dur,cands,vel)=>{
       dur=fitAccom(t,dur,ch); if(!dur) return null;
-      for(const m of cands){ if(m==null||m<28||m>52) continue; if(scene.clash(m,t,dur)===0){ push("Bass",{t,dur,midi:m,vel:clampV(vel*V+(r()-.5)*8)}); return m; } }
+      for(const m of foldBass(cands)){ if(scene.clash(m,t,dur)===0){ push("Bass",{t,dur,midi:m,vel:clampV(vel*V+(r()-.5)*8)}); lastBass=m; return m; } }
       return null;
     };
-    const scaleNear=target=>{ let b=null; for(let m=28;m<=52;m++) if(ch.mScale.includes(pcOf(m)) && (b===null||Math.abs(m-target)<Math.abs(b-target))) b=m; return b; };
+    const scaleNear=target=>{ let b=null; for(let m=BLO;m<=BHI;m++) if(ch.mScale.includes(pcOf(m)) && (b===null||Math.abs(m-target)<Math.abs(b-target))) b=m; return b; };
     let nextRoot=null;
-    if(next){ for(let m=28;m<=47;m++) if(pcOf(m)===next.bass && (nextRoot===null||Math.abs(m-root)<Math.abs(nextRoot-root))) nextRoot=m; }
+    if(next) nextRoot=pickRoot(next.bass,root);
     const walk = next && next.bass!==ch.bass && nextRoot!=null ? [nextRoot>root?scaleNear(nextRoot-2):scaleNear(nextRoot+2), root] : [root];
     const fifth=root+7;
     if(ch.drop || ch.role==="D"){ place(ch.t,Math.min(2,ch.dur),[root],84); if(ch.dur>2) place(ch.t+2,ch.dur-2,[fifth,root],74); return; }
@@ -1574,7 +1588,7 @@ function generateSong(P){
       return;
     }
     if(P.pedal && (ch.role==="A" || ch.role==="intro")){                // Adam Clayton: コードが変わっても主音を8分で刻む（ぶつかる所だけルート）
-      const ped=28+pcOf(tonic-28), n8=Math.round(ch.dur*2);
+      const ped=BLO+pcOf(tonic-BLO), n8=Math.round(ch.dur*2);
       for(let i=0;i<n8;i++) place(ch.t+i*0.5,0.45,[ped,ped+12,root],i%2?76:92);
       return;
     }
@@ -2749,8 +2763,9 @@ function midiParts(song,inst){
   dr.name="Drums (Addictive Drums 2)"; dr.prog=null;                      // プログラムチェンジを送らない（AD2 のキットを勝手に変えない）
   if(perc.length) out.splice(1,0,{p:"Drums", name:"Perc (GM: Clap / Tambourine)", notes:perc, ch:CH.Drums, prog:null});   // AD2 にないクラップ・タンバリンは GM のまま別トラック
   const bs=out.find(x=>x.p==="Bass");                                     // MODO BASS 2 は弦を物理モデルで鳴らす単音楽器：重なった音は次の音の直前で切る
+  const modoNote=m=>{ m+=MODO_BASS_SHIFT; while(m<MODO_BASS_RANGE[0]) m+=12; while(m>MODO_BASS_RANGE[1]) m-=12; return m; };   // MODO BASS 2 は1オクターブ上の番号で受ける（E1〜D4 だけが鳴る）
   bs.notes=[...song.parts.Bass].sort((a,b)=>a.t-b.t).map((n,i,a)=>{ const nx=a.slice(i+1).find(x=>x.t>n.t+1e-3);
-    return nx && n.t+n.dur>nx.t-0.02 ? {...n,dur:Math.max(0.05,nx.t-n.t-0.02)} : n; });
+    return {...n, midi:modoNote(n.midi), ...(nx && n.t+n.dur>nx.t-0.02 ? {dur:Math.max(0.05,nx.t-n.t-0.02)} : {})}; });
   bs.name="Bass (MODO BASS 2)"; bs.prog=null;                             // プログラムチェンジを送らない（MODO BASS 2 のプリセットを変えない）
   return out;
 }
@@ -3168,7 +3183,8 @@ function modoPreset(S){
 function instSteps(S){
   if(instMode()!=="ad") return [
 `5. Drums トラックの音源を Addictive Drums 2、Bass を MODO BASS 2、Piano を Steinway Grand、`,
-`   Strings を Studio Strings に差し替え（※ GM 配列で書き出している。AD2 で鳴らすときは「MIDI の音源想定」を AD2 にして書き出し直す）`];
+`   Strings を Studio Strings に差し替え（※ GM 配列で書き出している。AD2 で鳴らすときは「MIDI の音源想定」を AD2 にして書き出し直す）`,
+`   ・Bass は実際に鳴る高さ（4弦の開放 E＝E0 〜 A#2、Logic 表記）で書き出している。MODO BASS 2 で鳴らすときは「MIDI の音源想定」を AD2／MODO にして書き出し直す（MODO は1オクターブ上の E1〜 で受けるため）`];
   const [pre,why]=modoPreset(S), tamb=S.parts.Drums.some(n=>AD2_MAP[n.midi]==null);
   return [
 `5. Drums (Addictive Drums 2) トラック: 音源を [AU 音源] > [XLN Audio] > [Addictive Drums 2] に差し替える`,
@@ -3180,7 +3196,7 @@ function instSteps(S){
 `   ・ドラムには音色を変えるプログラムチェンジを入れていない（AD2 のキットはそのまま）`,
 `   Bass (MODO BASS 2) トラック: 音源を [AU 音源] > [IK Multimedia] > [MODO BASS 2] に差し替える`,
 `   ・おすすめプリセット: ${pre}（${why}）`,
-`   ・音域は E0〜E2（4弦の開放 E から）に収めてあるので4弦のままでよい。重なった音は次の音の直前で切ってある`,
+`   ・ノートは MODO BASS 2 が鳴らせる E1〜D4（Logic 表記）の中、E1〜A#3 に収めてある（MODO は E1 を4弦の開放 E として鳴らす）。4弦のままでよい。重なった音は次の音の直前で切ってある`,
 `   ・プログラムチェンジは入れていない（MODO BASS 2 のプリセットは変わらない）`,
 `   Piano を Steinway Grand、Strings を Studio Strings に差し替え（プロジェクト表どおり）`];
 }
