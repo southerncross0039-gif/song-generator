@@ -551,6 +551,9 @@ const DRUM={ KICK:36, SNARE:38, RIM:37, HHC:42, HHO:46, RIDE:51, CRASH:49, TOM1:
 const PARTS=["Drums","Timpani","Bass","Theme","Double","Harmony","VoxLow","Counter","Strings","Brass","Keys","Ostinato","Choir","Guitar"];
 const MEL_PARTS=PARTS.filter(p=>p!=="Drums");
 const CH={ Theme:0, Bass:1, Counter:2, Strings:3, Brass:4, Keys:5, Ostinato:6, Choir:7, Guitar:8, Drums:9, Timpani:10, Double:11, Harmony:12, VoxLow:13 };
+/* Bass は実際に鳴る高さ（4弦の開放 E＝MIDI 28 〜 55）で組み立てる。MODO BASS 2 は MIDI 40（Logic 表記 E1）を4弦の開放 E として鳴らし、
+   E1 より下と D4（74）より上は鳴らない（2026-10-11 ユーザー確認）→ MODO 向けの書き出しだけ1オクターブ上げて MODO_BASS_RANGE に収める */
+const MODO_BASS_RANGE=[40,74], MODO_BASS_SHIFT=12;
 const RANGE={ Double:[43,86], Harmony:[48,79], VoxLow:[43,72], Theme:[50,88], Counter:[45,86], Strings:[43,93], Brass:[38,79], Keys:[36,96], Ostinato:[40,91], Choir:[48,81], Guitar:[52,86], Bass:[28,55], Timpani:[38,57] };
 const COLOR={ Double:"--rose", Harmony:"--lilac", VoxLow:"--amber", Theme:"--rose", Counter:"--amber", Strings:"--green", Brass:"--brass", Keys:"--sky", Ostinato:"--cyan", Choir:"--lilac", Guitar:"--gold", Bass:"--teal", Timpani:"--drum", Drums:"--drum" };
 const ROMAN={ I:0, II:2, III:4, IV:5, V:7, VI:9, VII:11 };
@@ -651,7 +654,7 @@ const STYLES={
     names:{ Theme:"Synth Lead", Double:"Synth Lead (8vb)", Harmony:"—", VoxLow:"—", Counter:"Tenor Sax", Strings:"Synth Strings", Brass:"Synth Brass", Keys:"Electric Piano", Ostinato:"Synth Sequence", Choir:"—", Bass:"Synth Bass", Timpani:"—", Guitar:"Distortion Guitar" },
     logic:{ Theme:"Retro Synth（Analog・Saw＋ローパス、Glide 少し）か Alchemy の Lead 系", Double:"Theme と同じシンセを1オクターブ下で", Counter:"Studio Horns の Tenor Sax（Space Designer 薄め）",
       Strings:"Alchemy の Synth Strings／Retro Synth の Strings", Brass:"Retro Synth の Brass", Keys:"Vintage Electric Piano（Phaser を薄く）", Ostinato:"Retro Synth（Sync・短いエンベロープ）＋ Stereo Delay",
-      Bass:"Retro Synth の Analog Bass（または MODO BASS 2 のフレットレス）", Guitar:"Amp Designer（High Gain）＋ ChromaVerb 少し" },
+      Bass:"Retro Synth の Analog Bass（または MODO BASS 2 のフレットレス。MODO で鳴らすときは Bass リージョンを＋12 移調：MODO は E1〜D4 しか鳴らない）", Guitar:"Amp Designer（High Gain）＋ ChromaVerb 少し" },
     themeRange:[60,81], seq:[0,1,-1], form:"sentence", lift:0, motifs:[11,13,1,6], bTypes:["frag","lyric"], ending:"fade", modo:false,
     on:{ Strings:[2,4], Choir:[9,9], Brass:[3,4], Keys:[1,3], Ostinato:[2,4], Bass:[1,4], Timpani:[9,9], Drums:[1,4], Guitar:[3,4] },
     carriers:{ intro:[], V:["Theme"], build:["Theme"], C:["Theme"], inter:["Counter"], coda:["Theme"] },
@@ -1282,8 +1285,15 @@ function arrange(song,st,P,r,carrying){
       chs.forEach(c=>{
         if(cut(c) && c.t>finalT+1e-6) return;
         const rt=nearestPcM(c.bass,style==="zimmer"||style==="vangelis"?36:40), five=c.tones.includes((c.root+7)%12)?nearestPcM((c.root+7)%12,rt+4):rt;
-        const clampB=m=>{ while(m<28) m+=12; while(m>55) m-=12; return m; };
-        if(cut(c)){ push("Bass",{t:c.t,dur:endT-c.t,midi:clampB(rt),vel:80,pri:2}); return; }
+        /* 音域の中で組み立てる: リフ全体を音域に収まるオクターブへ移して形を保つ（前のコードのベースに近い高さを優先）。
+           それでもはみ出す音だけ、同じ音名を直前の音に近い高さで弾く（2026-10-11） */
+        const [BLO,BHI]=RANGE.Bass; if(S.bassPrev==null) S.bassPrev=rt;
+        const fitPat=pat=>{ let sh=0, bs=1e9;
+          for(const d of [0,12,-12,24,-24]){ const out=pat.filter(([,,m])=>m+d<BLO||m+d>BHI).length, sc=out*100+Math.abs(pat[0][2]+d-S.bassPrev)*.5+Math.abs(d); if(sc<bs){ bs=sc; sh=d; } }   // 型の高さ（rt）を基本に、はみ出すときだけ移す
+          let prev=S.bassPrev;
+          const res=pat.map(([o,d,m])=>{ m+=sh; if(m<BLO||m>BHI){ let b=null; for(let x=BLO+pcOf(m-BLO);x<=BHI;x+=12) if(b===null||Math.abs(x-prev)<Math.abs(b-prev)) b=x; m=b; } prev=m; return [o,d,m]; });
+          S.bassPrev=res[0][2]; return res; };
+        if(cut(c)){ push("Bass",{t:c.t,dur:endT-c.t,midi:fitPat([[0,0,rt]])[0][2],vel:80,pri:2}); return; }
         let pat=S.pack.riff?riffPat(S.pack.riff,c,rt):null;     // 低域の反復（型ごとのベース・リフ）
         if(pat) {}
         else if(style==="morricone") pat=c.dur>=4?[[0,2,rt],[2,2,five]]:[[0,c.dur,rt]];
@@ -1292,7 +1302,7 @@ function arrange(song,st,P,r,carrying){
         else if(style==="williams" && sec.lvl>=2){ pat=[]; for(let k=0;k<c.dur;k++) pat.push([k,.9,k%2?rt+12:rt]); }
         else if((style==="zimmer" && sec.kind==="build") || S.pack.drive){ pat=[]; for(let k=0;k<c.dur*2;k++) pat.push([k*.5,.45,rt]); }
         else pat=[[0,c.dur,rt]];
-        pat.forEach(([o,d,m])=>push("Bass",{t:c.t+o,dur:d,midi:clampB(m),vel:V(sec,58),pri:2}));
+        fitPat(pat).forEach(([o,d,m])=>push("Bass",{t:c.t+o,dur:d,midi:m,vel:V(sec,58),pri:2}));
       });
     }
     /* --- Guitar（展示会BGM: ミュートの8分） --- */
@@ -1586,9 +1596,9 @@ function midiParts(song,inst){
   const dr=out.find(x=>x.p==="Drums");
   dr.notes=song.parts.Drums.map(n=>({...n,midi:(n.midi===42&&n.vel>=80)?50:(AD2_MAP[n.midi]??n.midi)}));
   dr.name="Drums (Addictive Drums 2)";
-  if(st.modo){                                                                 // エレキベースのスタイルは MODO BASS 2 向けに単音・E0 以上・PC なし
+  if(st.modo){                                                                 // エレキベースのスタイルは MODO BASS 2 向けに単音・1オクターブ上（E1〜D4 だけが鳴る）・PC なし
     const bs=out.find(x=>x.p==="Bass");
-    bs.notes=[...song.parts.Bass].sort((a,b)=>a.t-b.t).map((n,i,a)=>{ const nx=a.slice(i+1).find(x=>x.t>n.t+1e-3); let m=n.midi; while(m<28) m+=12;
+    bs.notes=[...song.parts.Bass].sort((a,b)=>a.t-b.t).map((n,i,a)=>{ const nx=a.slice(i+1).find(x=>x.t>n.t+1e-3); let m=n.midi+MODO_BASS_SHIFT; while(m<MODO_BASS_RANGE[0]) m+=12; while(m>MODO_BASS_RANGE[1]) m-=12;
       return nx && n.t+n.dur>nx.t-0.02 ? {...n,midi:m,dur:Math.max(0.05,nx.t-n.t-0.02)} : {...n,midi:m}; });
     bs.name="Bass (MODO BASS 2)"; bs.prog=null;
   }
@@ -2023,7 +2033,7 @@ function logicSteps(S){
 `3. 各トラックの音源（名前は目安。版によってパッチ名は異なるので近いものでよい）`,
 ...parts.filter(x=>x.p!=="Drums"&&!(vox&&["Theme","Double","Harmony","VoxLow"].includes(x.p))).map(x=>`   ・${x.name}: ${(st.logic[x.p])||"GM のままでも可"}`),
 ...(S.parts.Drums.length?[ad?`   ・Drums (Addictive Drums 2): [AU 音源] > [XLN Audio] > [Addictive Drums 2]。ノートは AD2 標準キーマップ。ブレイクはタイトなキット＋Room 少なめ、AD2 内部で Snare に軽いコンプ`:`   ・Drums: GM 配列（Drum Kit Designer などで鳴る）`]:[]),
-...(st.modo&&ad?[`   ・Bass (MODO BASS 2): プログラムチェンジは入れていない。リフの形を崩さないよう、Muting を少し上げて音の長さをそろえる`]:[]),
+...(st.modo&&ad?[`   ・Bass (MODO BASS 2): プログラムチェンジは入れていない。ノートは MODO が鳴らせる E1〜D4（Logic 表記）に収めてある（MODO は E1 を4弦の開放 E として鳴らす）。リフの形を崩さないよう、Muting を少し上げて音の長さをそろえる`]:[]),
 `4. ブレイクビーツをさらに刻むとき`,
 `   ・Drums に Beat Breaker（または Remix FX の Repeater／Reverse）を挿し、イントロと間奏だけオートメーションで掛ける`,
 `   ・Drums を Bus にまとめ、Compressor（Ratio 4:1・速いアタック）でブレイクの粒をそろえる`,
