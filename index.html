@@ -27,6 +27,11 @@ body{
 header h1{font-size:26px; margin:0 0 4px; letter-spacing:.5px}
 header h1 .dot{color:var(--accent2)}
 header p{margin:0; color:var(--muted); font-size:13.5px}
+.apps{display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; margin-top:12px; font-size:13px}
+.apps span{color:var(--faint); margin-right:2px}
+.apps a{color:var(--text); text-decoration:none; background:#15121f; border:1px solid var(--line2); border-radius:999px; padding:5px 12px}
+.apps a:hover{border-color:var(--accent); color:var(--accent2)}
+.apps a b{color:var(--rose); font-size:10px; margin-left:3px; letter-spacing:.5px}
 .card{background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
   border-radius:16px; padding:20px; box-shadow:0 18px 46px rgba(0,0,0,.45); margin-top:20px}
 .grid{display:grid; gap:16px}
@@ -75,6 +80,9 @@ kbd{font-family:var(--mono); background:#15121f; border:1px solid var(--line2); 
   <header>
     <h1>ワンクリック作曲<span class="dot">.</span> <span style="color:var(--faint);font-size:14px;font-weight:400">Melody / Chords / Bass Generator</span></h1>
     <p>キー・BPM・気分を選んで Generate。メロディ＋コード＋ベースの3トラックMIDIを生成 → Logic Pro へドラッグ。</p>
+    <nav class="apps" aria-label="ほかのアプリ"><span>ほかのアプリ</span>
+      <a href="second/">Second</a><a href="third/">Third</a><a href="jpop/">J-POP <b>NEW</b></a><a href="cinema/">Cinema</a><a href="orbit/">Orbit</a>
+    </nav>
   </header>
 
   <div class="card">
