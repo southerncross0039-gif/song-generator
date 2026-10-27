@@ -1947,9 +1947,11 @@ function renderLegend(){
 }
 /* MIDI と .svp は同じ名前・同じ小節1拍目起点・同じテンポ／拍子で出す（Logic 上で並べるとそのまま揃う） */
 const IN_APP=!!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.bundle);
+/* 書き出すファイル名の先頭に作った日付（YYYY-MM-DD_）を付けて、いつ作ったか分かるようにする（2026-10-19） */
+function datePrefix(){ const d=new Date(), z=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}_`; }
 function fileBase(S){
   const P=S.P;
-  return `${keyName(P)}_${comboCode(P)}${P.ext==='last'?'_LastChorus':P.ext==='dmelo'?'_Dmelo':P.ext==='full'?'_3min':''}${P.introCut?'_IntroCut':''}${P.u2?'_U2break':''}_${LYR[S.themeIdx].en.replace(/\s+/g,'')}_BPM${S.bpm}_seed${P.seed}`;
+  return datePrefix()+`${keyName(P)}_${comboCode(P)}${P.ext==='last'?'_LastChorus':P.ext==='dmelo'?'_Dmelo':P.ext==='full'?'_3min':''}${P.introCut?'_IntroCut':''}${P.u2?'_U2break':''}_${LYR[S.themeIdx].en.replace(/\s+/g,'')}_BPM${S.bpm}_seed${P.seed}`;
 }
 function logicSteps(S){
   const base=fileBase(S);
