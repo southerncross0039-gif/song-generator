@@ -101,6 +101,11 @@ kbd{font-family:var(--mono); background:#15121f; border:1px solid var(--line2); 
 .lyrbody .ja{display:block; color:var(--muted); font-size:12px; line-height:1.5; margin:0 0 4px}
 .lyrbody small{color:var(--faint); font-family:var(--mono); font-size:10.5px; margin-left:6px}
 .footer{color:var(--faint); font-size:11.5px; margin-top:26px; text-align:center}
+.starttg{display:flex; align-items:center; gap:8px; background:#15121f; border:1px solid var(--line2); border-radius:10px; padding:9px 11px; font-size:14px; color:var(--text); cursor:pointer; min-height:42px}
+.starttg input{accent-color:var(--accent); width:16px; height:16px; margin:0}
+.starttg:has(input:checked){border-color:var(--accent)}
+.lockbar{margin:12px 0 4px; padding:10px 12px; border:1px solid var(--accent); border-radius:10px; font-size:13px; line-height:1.6; color:var(--muted); background:#15121f}
+.lockbar b{color:var(--text)}
 .fold{margin-top:14px}
 .fold > summary{cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:14px; font-weight:700; color:var(--accent2); letter-spacing:.4px; user-select:none}
 .fold > summary::-webkit-details-marker{display:none}
@@ -119,13 +124,13 @@ header details summary{cursor:pointer; color:var(--faint); font-size:12px}
 <body>
 <div class="wrap">
   <header>
-    <h1>ワンクリック作曲<span class="dot">.</span> J-POP <small title="YOASOBI × 米津玄師 × ぼっち・ざ・ろっく！ ＋ Jangle &amp; Anthem（Third の全機能）モジュール作曲システム">YOASOBI × 米津玄師 × 結束バンド</small></h1>
+    <h1>ワンクリック作曲<span class="dot">.</span> J-POP <small title="YOASOBI × 米津玄師 × ぼっち・ざ・ろっく！ × BOØWY・COMPLEX・布袋寅泰 ＋ Jangle &amp; Anthem（Third の全機能）モジュール作曲システム">YOASOBI × 米津玄師 × 結束バンド × BOØWY</small></h1>
     <p class="lead">曲（進行）を選んで ✨ Generate。MIDI・SynthV（日本語／英語）・MP3 を書き出せます。</p>
-    <details data-fold="about"><summary>このアプリについて</summary><p style="margin:6px 0 0">コード進行75（J-POP 21：YOASOBI 8＋米津玄師 6＋結束バンド 7 ／ Jersey club 3＋Creepy Nuts「Bling-Bang-Bang-Born」1 ／ Third の50：Oasis・U2・The Smiths・Bacharach・Taylor Swift・The Weeknd）× Aメロ28 × Bメロ26 × サビ26（× 12キー × seed）。J-POP の曲を選ぶと、その曲の鳴らし方（YOASOBI のピアノ・リフと打ち込み、米津玄師のファンク／バラード／暴走ロック、結束バンドの4ピース・ギターロック）、原曲テンポ、最後のサビの転調、<b>日本語詞</b>（SynthV の日本語ボイス）に自動で切り替わります。<b>Jersey club</b>（キック5発・3拍目クラップ・3連の跳ね・ベッドのきしみ・ボーカル・チョップ）は曲ごとに「なし／サビだけ／全編」を選べます。英語詞（全単語1音節）も選べます。</p></details>
+    <details data-fold="about"><summary>このアプリについて</summary><p style="margin:6px 0 0">コード進行92（J-POP 21：YOASOBI 8＋米津玄師 6＋結束バンド 7 ／ ビートロック 12：BOØWY 6＋COMPLEX 3＋布袋寅泰 3 ／ 王道進行（IV–V–IIIm–VIm）の変形 5 ／ Jersey club 3＋Creepy Nuts「Bling-Bang-Bang-Born」1 ／ Third の50：Oasis・U2・The Smiths・Bacharach・Taylor Swift・The Weeknd）× Aメロ28 × Bメロ26 × サビ26（× 12キー × seed）。J-POP の曲を選ぶと、その曲の鳴らし方（YOASOBI のピアノ・リフと打ち込み、米津玄師のファンク／バラード／暴走ロック、結束バンドの4ピース・ギターロック、BOØWY／COMPLEX／布袋寅泰のリフ・ギター＋8分ルート＋タイトな8ビート）、原曲テンポ、最後のサビの転調、<b>日本語詞</b>（SynthV の日本語ボイス）に自動で切り替わります。<b>Jersey club</b>（キック5発・3拍目クラップ・3連の跳ね・ベッドのきしみ・ボーカル・チョップ）は曲ごとに「なし／サビだけ／全編」を選べます。英語詞（全単語1音節）も選べます。</p></details>
   </header>
 
   <details class="card fold" data-fold="roles">
-    <summary>役割分担（テンプレート） <span class="sumhint">24人のプレイヤーがどのパートを担当するか</span></summary>
+    <summary>役割分担（テンプレート） <span class="sumhint">28人のプレイヤーがどのパートを担当するか</span></summary>
     <div class="roles">
       <div class="role"><i style="background:var(--amber)"></i><b>Noel / Bonehead</b> ＝ 開放弦コードのストローク＋ドローン（Guitar・進行）</div>
       <div class="role"><i style="background:var(--rose)"></i><b>Liam</b> ＝ ロングトーンのフック（Vocal）</div>
@@ -149,6 +154,10 @@ header details summary{cursor:pointer; color:var(--faint); font-size:12px}
       <div class="role"><i style="background:var(--accent)"></i><b>YOASOBI（Ayase）</b> ＝ ピアノの16分リフ／王道・丸サ進行／打ち込みの4つ打ち＋クラップ／最後のサビで転調／16分で詰め込む歌（J-POP）</div>
       <div class="role"><i style="background:var(--synth)"></i><b>米津玄師</b> ＝ 経過の減7・借用コード／ファンクのシャッフル（感電）・バラード（Lemon）・暴走ロック（KICK BACK）／ボーカル・チョップ（J-POP）</div>
       <div class="role"><i style="background:var(--marr)"></i><b>結束バンド</b> ＝ ぼっちのリード（add9・m11 の分散）＋喜多のカッティング＋リョウの動くベース＋虹夏の疾走8ビート（J-POP）</div>
+      <div class="role"><i style="background:var(--amber)"></i><b>布袋寅泰</b> ＝ 1本のギターでリフ・パワーコードの刻み・16分のミュートを弾き分ける（Guitar）。間奏のソロ（Lead）</div>
+      <div class="role"><i style="background:var(--cyan)"></i><b>松井常松</b> ＝ ピックの8分ルート弾き（Bass）</div>
+      <div class="role"><i style="background:var(--drum)"></i><b>高橋まこと</b> ＝ タイトな8ビート・サビでハイハットを開く（Drums）</div>
+      <div class="role"><i style="background:var(--rose)"></i><b>氷室京介／吉川晃司</b> ＝ 中低域の男声で8分に言葉を置き、サビで伸ばす（Vocal）</div>
       <div class="role"><i style="background:var(--drum)"></i><b>Creepy Nuts</b> ＝ Jersey club のキック5発の上に16分のラップ、サビはキックと同じ5発のリズムでフックを連呼（Bling-Bang-Bang-Born・J-POP）</div>
       <div class="role"><i style="background:var(--synth)"></i><b>The Weeknd</b> ＝ 80s シンセ・リフ／パルス・ベース／LinnDrum 風の4つ打ち（Blinding Lights）</div>
     </div>
@@ -181,6 +190,11 @@ header details summary{cursor:pointer; color:var(--faint); font-size:12px}
       <div><label class="f" for="optExt">曲の長さ（拡張）</label><select id="optExt"></select></div>
       <div><label class="f" for="optTheme">テーマ（歌詞）</label><div style="display:flex; gap:8px"><select id="optTheme"></select><button class="btn ghost" id="themeDice" title="テーマだけサイコロで変える（曲はそのまま）" style="padding:8px 12px">🎲</button></div></div>
       <div><label class="f" for="optLang" title="J-POP の曲を選ぶと日本語に切り替わる">歌詞の言語</label><select id="optLang"><option value="en">英語（全単語1音節・SynthV 英語）</option><option value="ja">日本語（1音符＝1音・SynthV 日本語）</option></select></div>
+      <div><label class="f" for="optCut" title="イントロなし（U2 ブレイク）: イントロを省き、「Until The End Of The World」のドラム・ブレイク1小節から即スタート（2小節目から歌）。U2 ブレイクもなし: その1小節も省いて1小節目から A メロ（歌が前の小節から食って入る曲だけ、その1小節を歌の入りとして残す）">始まり方</label><select id="optCut">
+        <option value="0">イントロから</option><option value="1">U2 ブレイク1小節から</option><option value="2">すぐ A メロから</option></select></div>
+      <div><label class="f" for="optEnd" title="フェードアウト: アウトロの最後の8小節で音をだんだん小さくする（ベロシティと CC11 Expression を下げる。試聴・MP3・WAV も同じ）">終わり方</label><select id="optEnd">
+        <option value="ring">最後のコードを伸ばして終わる</option><option value="fade">フェードアウト</option></select></div>
+      <div><label class="f" for="optBreath" title="SynthV（.svp）のフレーズ頭と休みのあとに息継ぎ（br）を入れる。テンポに合わせて 0.1〜0.6 秒。休みなしで長く歌う所は前の音を少し短くして吸う間を作る（.svp だけ・MIDI の Vocal はそのまま）。ハモリにも入る">ボーカルの息継ぎ</label><label class="starttg"><input type="checkbox" id="optBreath" checked> 息継ぎ（br）を入れる</label></div>
       <div><label class="f" for="optJersey" title="キック5発・3拍目クラップ・ボーカル・チョップ。曲を選ぶとその曲の既定に切り替わる">Jersey club</label><select id="optJersey"><option value="off">なし</option><option value="chorus">サビだけ（ドロップ）</option><option value="all">全編（イントロ＝チョップとハット／Bメロ＝ビルド／サビ＝ドロップ／Dメロ＝ブレイク）</option></select></div>
       <div><label class="f" for="optHarm" title="SynthV の2トラック目〜と MIDI の Vocal Harmony トラックに入る。リードギターのオブリガードは詳細オプション">サビのハモリ</label><select id="optHarm"><option value="up">上3度（Noel が上）</option><option value="down">下3度</option><option value="both">上下3度を同時（2本・左右に少し振る）</option><option value="low">サビの長い音に3〜5度下のコード音（右に振る）</option><option value="none">なし</option></select></div>
     </div>
@@ -197,6 +211,7 @@ header details summary{cursor:pointer; color:var(--faint); font-size:12px}
       <label><input type="checkbox" id="optPedal" checked> Adam Clayton（Aメロは主音ペダルを8分で刻む）</label>
       <label><input type="checkbox" id="optMM" checked> Melodic Math（Max Martin）：最初のフレーズを A A' B A'' で反復・Bメロはせり上げ・短い音は順次／歌詞1行＝1フレーズで対句の音節数をそろえ、サビはタイトルで始めてタイトルで終わる</label>
       <label><input type="checkbox" id="optMarr"> Johnny Marr（ルートレス＋9th の分散和音／Marr トラック。オンのときは歪みギターをサビ・間奏の8分だけに引っ込める）</label>
+      <label><input type="checkbox" id="optHotei"> 布袋寅泰（1本のギターでリフ・パワーコード・16分ミュートを弾き分ける／Guitar トラックを置き換え。どの曲調にも重ねられる）</label>
       <label><input type="checkbox" id="optRourke"> Andy Rourke（8分で動き回るメロディックなベース）</label>
       <label><input type="checkbox" id="optBDBreak" checked> Beautiful Day ブレイク（原曲 MIDI のサビ前フィルをそのまま：3拍目からタム3連→4拍目スネア）</label>
       <label><input type="checkbox" id="optJamerson"> James Jamerson（16分・経過音・クロマチックで動くベース。Second のベース）</label>
@@ -204,7 +219,6 @@ header details summary{cursor:pointer; color:var(--faint); font-size:12px}
       <label><input type="checkbox" id="optHalfDrop"> サビ前の半拍抜き（Max Martin：サビ直前の半拍だけ全楽器を止める。U2／Beautiful Day ブレイク使用時は無効）</label>
       <label><input type="checkbox" id="optOdd"> 変拍子：Bメロ最終小節を 2/4 に（Bacharach）</label>
       <label><input type="checkbox" id="optRecycle"> メロディ・リサイクル：サビ＝Aメロの輪郭を表拍化（E.T.方式）</label>
-      <label><input type="checkbox" id="optCut"> イントロカット（イントロを省き、ドラムだけの U2 ブレイク1小節で即スタート）</label>
       <label><input type="checkbox" id="optBDGroove"> Beautiful Day グルーヴ（原曲のドラムを全編に：Aメロ＝エレクトリック・スネア＋タンバリン、サビ＝オープンハット＋クラッシュ。Beautiful Day 型を選ぶと自動でオン）</label>
       <label><input type="checkbox" id="optBuild"> サビ前はスネア連打のビルドアップ（Rock 'n' Roll Star 型。オフならタム回し）</label>
       <label><input type="checkbox" id="optPop"> Max Martin ポップ・ドラム＋ベース（Taylor／Weeknd の曲ごとの型：Shake It Off のドラムライン・Blank Space のハーフタイム・Blinding Lights の4つ打ちとパルス・ベース）</label>
@@ -214,13 +228,23 @@ header details summary{cursor:pointer; color:var(--faint); font-size:12px}
       <label><input type="checkbox" id="optPfRiff"> ピアノ・リフ（YOASOBI：イントロ・間奏は16分の分散リフ、サビは裏拍のスタッカート和音）</label>
       <label><input type="checkbox" id="optBigStop"> ラスサビ前の1小節ブレイク（We Are Never Ever の「Like, ever」型：歌だけ残して全楽器を止める）</label>
       <label>リードギターのオブリガード（MIDI の Lead トラック・サビの下で長い音の合いの手）<select id="optObb" style="width:auto; padding:5px 9px; margin-left:4px"><option value="off">なし</option><option value="gaps">歌の休みだけ（歌と重ならない合いの手）</option><option value="full">歌の休み＋歌の長い音の下</option></select></label>
-      <label><input type="checkbox" id="optSvpOct" checked> SynthV(.svp) は1オクターブ上げる（Mai 2 など女声ボイス用。MIDI の Vocal は Liam の実音域）</label>
+      <label><input type="checkbox" id="optSvpOct" checked> SynthV(.svp) の高さを歌える範囲（G3〜D5）に自動で合わせる（Mai 2 用。曲ごとにオクターブを選び、ハモリも E3〜D5。オフ＝MIDI の Vocal と同じ高さ）</label>
       <label>MIDI の音源想定<select id="optInst" style="width:auto; padding:5px 9px; margin-left:4px"><option value="ad">Drums＝Addictive Drums 2 ／ Bass＝MODO BASS 2</option><option value="gm">GM（Logic 標準音源・他の DAW 用）</option></select></label>
+      <label>ドラムの MIDI マップ<select style="width:auto; padding:5px 9px; margin-left:4px" id="optDrumMap" title="Logic の AD2 の画面右上 Map で選んでいるマップに合わせる。今の Logic プロジェクトの AD2 はすべて General MIDI">
+        <option value="gm">AD2 の Map＝General MIDI（今の設定）</option><option value="ad2">AD2 の Map＝AD2 標準（初期設定）</option></select></label>
     </div>
     </details>
 
+    <div id="lockBar" class="lockbar" style="display:none">📂 リアレンジ中：<b id="lockName"></b>
+      <button class="btn ghost sm" id="lockOff" style="margin-left:8px">解除</button><br>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin:4px 0">
+        <label style="flex:1;min-width:140px">歌メロ <select id="lockMel"><option value="keep">読み込んだまま</option><option value="new">作り直す</option></select></label>
+        <label style="flex:1;min-width:140px">歌詞 <select id="lockLyr"><option value="keep">読み込んだまま</option><option value="new">作り直す</option></select></label></div>
+      <div id="lockNote"></div></div>
     <div class="row">
       <button class="btn primary" id="genBtn">✨ Generate</button>
+      <button class="btn ghost" id="loadBtn" title="このアプリで書き出した MIDI を読み込み、歌メロ・歌詞・コードはそのまま伴奏だけを作り直す（ファイルをページにドラッグしても読み込める）">📂 読み込んでリアレンジ</button>
+      <input type="file" id="loadFile" accept=".mid,.midi,audio/midi" style="display:none">
       <button class="btn ghost" id="shuffleBtn">🎰 シャッフル（🔒以外）</button>
       <button class="btn ghost" id="playBtn" disabled>▶ 試聴</button>
       <button class="btn ghost" id="stopBtn" disabled>■ 停止</button>
@@ -252,7 +276,6 @@ header details summary{cursor:pointer; color:var(--faint); font-size:12px}
         <button class="btn ghost sm" id="themeDice2">🎲 テーマを変える</button>
         <button class="btn ghost sm" id="lyrReroll">🎲 歌詞だけ作り直す</button>
         <button class="btn ghost sm" id="lyrCopy">📋 歌詞をコピー</button>
-        <label style="font-size:12px; color:var(--muted); display:flex; gap:6px; align-items:center"><input type="checkbox" id="optBreath" checked style="accent-color:var(--accent)" title="フレーズ頭と長い休みのあとに br を入れる。休みなしで5秒以上歌い続けたら行替えで前の音を少し削って息継ぎ。ハモリにも入る"> 息継ぎ（br）を入れる</label>
       </div>
       <div id="lyrics" class="lyrbody"></div>
     </div>
@@ -986,7 +1009,96 @@ const PACKS=[
     tpl:{a:"16分ラップ（Creepy Nuts）", b:"畳みかけラップ（Creepy Nuts）", c:"5発チャント（BBBB）"}, themeEn:"No Magic Needed",
     desc:"Im⇄V7 の2コードだけ（Am なら Am-E7。原曲 157 BPM）で、Jersey club のキック5発の上を16分のラップが走り、サビはキックと同じ5発のリズムでフックを連呼する",
     A:"Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7", B:"Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | V7",
-    C:"Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7", D:"Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | V7" }
+    C:"Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7", D:"Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | Im V7 | V7" },
+  /* ---- BOØWY × COMPLEX × 布袋寅泰（2026-10-18。ChordWiki・U-フレットで確認。企画_YOASOBI米津ぼっち/02 を参照）
+     布袋のギター1本（リフ・パワーコード・16分ミュート）＋8分ルートのベース＋タイトな8ビート。ピアノ・ストリングスは鳴らさない（4ピース）。
+     riff＝イントロ・間奏の単音リフ（HOTEI_RIFF）、gpat＝Aメロの刻み（HOTEI_PAT.verse の番号） ---- */
+  { name:"B・BLUE 型（BOØWY）", bpm:168, band:"hotei", mode:"major", drum:"beat", bass:"eight", riff:"blue", names:{Guitar:"Guitar (Hotei)", Bass:"Bass (Matsui)", Drums:"Drums (Takahashi)", Lead:"Lead Gt (Hotei)"},
+    desc:"I→V→VIm→V ／ IV→I/III→IIm の疾走ビートロック（A なら A-E-F♯m-E ／ D-A/C♯-Bm。原曲 168 BPM）。Bメロは I→Imaj7/VII→I7/♭VII→IIm のラインクリシェ、サビは VIm→IIm→V→I",
+    A:"I V VIm V | IV I/III IIm | I V VIm V | IV I/III IIm V | I V VIm V | IV I/III IIm | I V VIm V | IV I/III IIm V",
+    B:"I Imaj7/VII | I7/bVII IIm | IIm/#I IIm7/I | V/VII V7 | I Imaj7/VII | I7/bVII IIm | IIm/#I IIm7/I | V/VII V7",
+    C:"VIm IIm | V I/VII | VIm IIm | V Isus2 | VIm IIm | V I/VII | VIm IIm | V bVII" },
+  { name:"MARIONETTE 型（BOØWY）", bpm:159, band:"hotei", mode:"minor", drum:"beat", bass:"eight", riff:"marionette", names:{Guitar:"Guitar (Hotei)", Bass:"Bass (Matsui)", Drums:"Drums (Takahashi)", Lead:"Lead Gt (Hotei)"},
+    desc:"Im→V→♭VI→♭III ／ ♭VII→IVm→♭VI→♭VII のマイナー疾走（G♯m なら G♯m-D♯-E-B ／ F♯-C♯m-E-F♯。原曲 159 BPM）。Bメロは ♭II→♭VI/I→♭V/♭VII→♭VI で浮き、サビは Im→IVm→♭VII→♭III",
+    A:"Im V | bVI bIII | bVII IVm | bVI bVII | Im V | bVI bIII | bVII IVm | bVI bVII",
+    B:"bII bVI/I | bV/bVII bVI | bII bVI | bV bVI7 | bII bVI/I | bV/bVII bVI | bII bVI | IV V",
+    C:"Im IVm | bVII bIII | Im IVm | bVII bIII | Im IVm | bVII bIII | bVI bVII | Im" },
+  { name:"ONLY YOU 型（BOØWY）", bpm:182, band:"hotei", mode:"major", drum:"beat", bass:"eight", names:{Guitar:"Guitar (Hotei)", Bass:"Bass (Matsui)", Drums:"Drums (Takahashi)", Lead:"Lead Gt (Hotei)"},
+    desc:"I→IIIm7→IV→III7→VIm7→II7 の歌謡ロック（E なら E-G♯m7-A-G♯7-C♯m7-F♯7。原曲 182 BPM）。Bメロから短3度下へ転調し、サビは VI→II（C♯-F♯）の繰り返し",
+    A:"I IIIm7 | IV III7 VIm7 II7 | I I/VII VIm7 VIm7/V | IV I/III II7 | I IIIm7 | IV III7 VIm7 II7 | I VIm7 | VIIm7b5 III7 VIm V7",
+    B:"#IVm | #Im7 III | #IVm | #Im7 III | #IVm | #Im7 III | #IVm | #Im7 III",
+    C:"VI II | VI II | VI II | VI II | VI II | VI II | VI II | VI III" },
+  { name:"季節が君だけを変える 型（BOØWY）", bpm:96, band:"hotei", mode:"minor", drum:"shuffle", bass:"eight", riff:"season", names:{Guitar:"Guitar (Hotei)", Bass:"Bass (Matsui)", Drums:"Drums (Takahashi)", Lead:"Lead Gt (Hotei)"},
+    desc:"♭III→IVm→Vm→Im のシャッフル（Bm なら D-Em-F♯m-Bm。16分の跳ねで、8分で数えると約189 BPM）。Bメロは ♭II→♭VI→♭III→♭VII ／ IVm7→V7→I7sus4→I、サビは Im7→♭VII ／ IV/♯VI→♭VI→♭VII",
+    A:"bIII IVm | Vm Im | bIII IVm | Vm Im | bIII IVm | Vm Im | bIII IVm | Vm Im",
+    B:"bII bVI | bIII bVII | IVm7 V7 | I7sus4 I | bII bVI | bIII bVII | IVm7 V7 | I7sus4 I",
+    C:"Im7 bVII | IV/#VI bVI bVII | Im7 bVII | IV/#VI bVI bVII | Im7 bVII | IV/#VI bVI bVII | bVI bVII | Im7" },   // サビの最後は Im7 で落ち着かせる（原曲はループのまま次へ）
+  { name:"わがままジュリエット 型（BOØWY）", bpm:119, band:"hotei", mode:"major", drum:"beat", bass:"eight", names:{Guitar:"Guitar (Hotei)", Bass:"Bass (Matsui)", Drums:"Drums (Takahashi)", Lead:"Lead Gt (Hotei)"},
+    desc:"I→V→VIm7→IIIm7 ／ IV→I→IIm7→V のミディアム・バラード（B なら B-F♯-G♯m7-D♯m7 ／ E-B-C♯m7-F♯。原曲 119 BPM）。Bメロは IIIm7⇄IVmaj7、サビは VIm7→IVmaj7→V→VIm7",
+    A:"I V | VIm7 IIIm7 | IV I | IIm7 V | I V | VIm7 IIIm7 | IV I | IIm7 V",
+    B:"IIIm7 | IVmaj7 | IIIm7 | IVmaj7 IV/V | IIIm7 | IVmaj7 | I V VIm7 | IV V",
+    C:"VIm7 IVmaj7 | V VIm7 | IVmaj7 V | VIm7 | VIm7 IVmaj7 | V VIm7 | IVmaj7 V | I" },
+  { name:"BAD FEELING 型（BOØWY）", bpm:133, band:"hotei", mode:"minor", drum:"beat", bass:"eight", riff:"bad", gpat:3, names:{Guitar:"Guitar (Hotei)", Bass:"Bass (Matsui)", Drums:"Drums (Takahashi)", Lead:"Lead Gt (Hotei)"},
+    desc:"Im7→IV9 の2コードだけ（Am なら Am7-D9。原曲 133 BPM）で、ドリアンの16分カッティングとリフで押し切る。Bメロは IVm7→Im9 ／ II7→IIm7♭5/♭VI→V、サビは Im7→♭VII→♭VImaj7（アウトロのソロの進行）",
+    A:"Im7 IV9 | Im7 IV9 | Im7 IV9 | Im7 IV9 | Im7 IV9 | Im7 IV9 | Im7 IV9 | Im7 IV9",
+    B:"IVm7 | Im9 Im7 | II7 | IIm7b5/bVI V | IVm7 | Im9 Im7 | II7 IIm7b5/bVI | V IV/V",
+    C:"Im7 IV9 | Im7 IV9 | Im7 bVII | bVImaj7 V | Im7 IV9 | Im7 IV9 | Im7 bVII | bVImaj7 V" },
+  { name:"BE MY BABY 型（COMPLEX）", bpm:127, band:"hotei", mode:"major", drum:"beat", bass:"eight", riff:"baby", names:{Guitar:"Guitar (Hotei)", Lead:"Lead Gt (Hotei)"},
+    desc:"I→♭VII/I のリフ（A なら A-G/A）から VIm⇄I のAメロ、サビは IV→V→IV→V ／ I→V/I→IV→I→V→♭VII（D-E-D-E ／ A-E/A-D-A-E-G。原曲 127 BPM）",
+    A:"I bVII/I | I | VIm | I | VIm | I | VIm | IV V",
+    B:"IV | IIm7 | IIm7/V V | IIIm VIm | IV | IIm7 | IIm7/V | V",
+    C:"IV V | IV V | I V/I | IV I | IV V | IV V | IV bVII | I" },
+  { name:"1990 型（COMPLEX）", bpm:150, band:"hotei", mode:"major", drum:"beat", bass:"eight", riff:"r1990", names:{Guitar:"Guitar (Hotei)", Lead:"Lead Gt (Hotei)"},
+    desc:"I⇄Vm7 のミクソリディアン・ロック（E なら E-Bm7）。イントロは I→♭VI→IV→♭VII→V、サビは ♭VI⇄Vm7 から IVm7→♭VII7→♭III（C-Bm7 ／ Am7-D7-G）。BPM は資料がなく推定",
+    A:"I Vm7 | I Vm7 | I Vm7 | bVI bIII V | I Vm7 | I Vm7 | I Vm7 | bVI bIII",
+    B:"bVI bIII | bVI bIII | bVI bIII | bVI Vm7 | Im7 | bII | V | V",
+    C:"bVI Vm7 | bVI Vm7 | bVI Vm7 | I | bVI Vm7 | bVI Vm7 | IVm7 bVII7 | bIII V" },
+  { name:"恋をとめないで 型（COMPLEX）", bpm:170, band:"hotei", mode:"major", drum:"beat", bass:"eight", names:{Guitar:"Guitar (Hotei)", Lead:"Lead Gt (Hotei)"},
+    desc:"I→IIIm→VIm→IIIm ／ IV→I→II→V の明るい疾走（C なら C-Em-Am-Em ／ F-C-D-G。原曲 170 BPM）。サビは I→V→VIm ／ V→IV ／ I→IIm→V",
+    A:"I IIIm | VIm IIIm | IV I | II V | I IIIm | VIm IIIm | IV I | IIm V",
+    B:"VIm IIIm | IV I | VIm IIIm | IIm V | VIm IIIm | IV I | VIm IIIm | IIm V",
+    C:"I V | VIm V | IV | I IIm V | I V | VIm V | IV | IIm V" },
+  { name:"スリル 型（布袋寅泰）", bpm:175, band:"hotei", mode:"major", drum:"beat", bass:"eight", riff:"thrill", names:{Guitar:"Guitar (Hotei)", Lead:"Lead Gt (Hotei)"},
+    desc:"IV→IV→♯IV→V の半音で上がるリフ（F なら B♭-B♭-B-C。原曲 175 BPM）。サビは I→III7 ／ VIm→I7 ／ IV ／ III7 ／ VIm ／ IIm→V、Aメロは IIm→IIm(maj7)→IIm7→V のラインクリシェ",
+    A:"I | III7 | VIm | IIm | IIm IIm/#I | IIm7/I V | IIIm7 VIm | IIm V",
+    B:"V IV | IV #IV | V IV | IV #IV | V IV | IV #IV | V | V",
+    C:"I III7 | VIm I7 | IV | III7 | VIm | IIm V | I III7 | VIm I7" },
+  { name:"バンビーナ 型（布袋寅泰）", bpm:134, band:"hotei", mode:"major", drum:"beat", bass:"eight", riff:"bambina", names:{Guitar:"Guitar (Hotei)", Lead:"Lead Gt (Hotei)"},
+    desc:"I の上で 8→♭7→6→5（E なら E-D-C♯-B）と下りる単音リフ（原曲 134 BPM）。Bメロは IIm→IV→V→I、サビは IV→V→I ／ IIm→V→I→IIm ／ ♭IIIm→I/III",
+    A:"I | I | IV | I | I | I | IV | I",
+    B:"IIm | IV | V | I | IIm | IV | V | I",
+    C:"IV | V | I | I | IIm | V | I IIm | bIIIm I/III" },
+  { name:"BATTLE WITHOUT HONOR OR HUMANITY 型（布袋寅泰）", bpm:95, band:"hotei", mode:"minor", drum:"beat", bass:"eight", riff:"battle", names:{Guitar:"Guitar (Hotei)", Lead:"Lead Gt (Hotei)"},
+    desc:"Im の上の単音リフ→♭III→IV（Em なら E-G-A。原曲 95 BPM・『キル・ビル』のテーマ）。中間は IV⇄♭III、最後は Im→♭III→IV ／ Vm→♭VII→Im。原曲はインスト（ここでは歌メロを付ける）",
+    A:"Im | Im | Im bIII IV | Im | Im | Im | Im bIII IV | Im",
+    B:"IV bIII | IV bIII | IV bIII | Im | IV bIII | IV bIII | IV bIII | Im",
+    C:"Im bIII IV | Vm bVII Im | Im bIII IV | Vm bVII Im | Im bIII IV | Vm bVII Im | Im bIII IV | Vm bVII Im" },
+  /* ---- 王道進行（IV–V–IIIm–VIm、4536）のバリエーション（2026-10-22）。特定の曲の採譜ではない汎用の型。どれもサビの最後は I で落ち着かせる ---- */
+  { name:"王道進行・基本（4536）", bpm:128, band:"oudou", mode:"major", drum:"never", bass:"eight",
+    desc:"サビは IVmaj7→V7→IIIm7→VIm7 を2回し、IIm7→V7→I で解決（C なら FM7-G7-Em7-Am7 ／ Dm7-G7-C）。Aメロはカノン進行風 I→V/VII→VIm→IIIm/V",
+    A:"I | V/VII | VIm | IIIm/V | IV | I/III | IIm7 | V7",
+    B:"IIm7 | IIIm7 | IVmaj7 | V | IIm7 | IIIm7 | IVmaj7 | V7sus4 V7",
+    C:"IVmaj7 V7 | IIIm7 VIm7 | IVmaj7 V7 | IIIm7 VIm7 | IVmaj7 V7 | IIIm7 VIm7 | IIm7 V7 | Iadd9" },
+  { name:"王道進行→解決（4536-251）", bpm:120, band:"oudou", mode:"major", drum:"never", bass:"eight",
+    desc:"1小節1コードの王道のあと IIm7→V7→Isus4→I でしっかり解決（C なら FM7-G7-Em7-Am7-Dm7-G7-Csus4-C）。Aメロは I→IIIm7→VIm7→I7→IVmaj7→IVm6 のサブドミナント・マイナー",
+    A:"I | IIIm7 | VIm7 | I7 | IVmaj7 | IVm6 | IIIm7 VIm7 | IIm7 V7",
+    B:"IVmaj7 | V | IIIm7 | VIm | IIm7 | IIIm7 | IVmaj7 | V7sus4",
+    C:"IVmaj7 | V7 | IIIm7 | VIm7 | IIm7 | V7 | Isus4 | I" },
+  { name:"王道進行・分数コード（IV–V/IV–IIIm7–VIm7）", bpm:96, band:"oudou", mode:"major", drum:"never", bass:"eight",
+    desc:"V をベース IV の上で鳴らす V/IV にして、ベースが IV→IV→III→VI と下りる（C なら FM7-G/F-Em7-Am7）。Aメロは Imaj7→Imaj7/III→IVmaj7→IVm6 のベース上行",
+    A:"Imaj7 | Imaj7/III | IVmaj7 | IVm6 | IIIm7 | VIm7 | IIm7 | V7sus4",
+    B:"IVmaj7 V/IV | IIIm7 VIm7 | IIm7 IIIm7 | IVmaj7 V/IV | IIIm7 VIm7 | IIm7 | IVmaj7 | IV/V",
+    C:"IVmaj7 | V/IV | IIIm7 | VIm7 | IIm7 V/IV | IIIm7 VIm7 | IIm7 V7 | I" },
+  { name:"王道進行×丸サ（4536 ／ 4-3-6）", bpm:132, band:"oudou", mode:"major", drum:"never", bass:"eight",
+    desc:"王道 IVmaj7→V→IIIm7→VIm と丸サ IVmaj7→III7→VIm→I7 を交互に（C なら FM7-G-Em7-Am ／ FM7-E7-Am-C7）。Aメロは VIm7 始まりの切ないループ",
+    A:"VIm7 | VIm7/V | IVmaj7 | V7sus4 V7 | VIm7 | VIm7/V | IVmaj7 | V7",
+    B:"IVmaj7 III7 | VIm7 Vm7 I7 | IVmaj7 III7 | VIm7 | IIm7 | IIIm7 | IVmaj7 | V7sus4 V7",
+    C:"IVmaj7 V | IIIm7 VIm | IVmaj7 III7 | VIm I7 | IVmaj7 V | IIIm7 VIm | IIm7 V7 | I" },
+  { name:"王道進行・sus4 の浮遊（IV–Vsus4–IIIm7–VIm7）", bpm:140, band:"oudou", mode:"major", drum:"never", bass:"eight",
+    desc:"V を sus4 のままにして解決を引き延ばし、最後だけ Iadd9 で明るく着地（C なら FM7-Gsus4-Em7-Am7 ／ Dm7-Gsus4-Cadd9）。Aメロは add9 と分数の淡い響き",
+    A:"Iadd9 | Vsus4/VII | VIm7 | IIIm7 | IVmaj7 | Iadd9/III | IIm7 | Vsus4",
+    B:"IIm7 | Iadd9/III | IVmaj7 | Vsus4 V | IIm7 | Iadd9/III | IVmaj7 | Vsus4",
+    C:"IVmaj7 Vsus4 | IIIm7 VIm7 | IVmaj7 Vsus4 | IIIm7 VIm7 | IVmaj7 Vsus4 | IIIm7 VIm7 | IIm7 Vsus4 | Iadd9" }
 ];
 
 /* ============================ モジュール: メロディ 各10種（Liam Gallagher 型） ============================
@@ -1183,6 +1295,18 @@ const STRUMS=[
   { name:"ロングリング", pat:"D-------D---D-u-" },
   { name:"アップ・アクセント", pat:"D-uUD-uUD-uUD-uU" }
 ];
+/* 布袋寅泰のギター（BOØWY・COMPLEX・ソロ）: 1本でリフ・パワーコードの刻み・16分のミュートを弾き分ける（16ステップ）。
+   P＝パワーコード（ルート＋5度＋オクターブ、次の音まで伸ばす）・p＝短いパワーコード・m＝ミュートの刻み（ルート）・
+   r＝ルート・3＝コードの3度・4＝4度・5＝5度・6＝6度・7＝♭7（コードに7度があればそれ）・8＝オクターブ・-＝伸ばす・.＝休み。
+   単音のリフはイントロ・間奏・アウトロで1オクターブ上を重ねる（布袋のダブリング） */
+const HOTEI_RIFF={
+  battle:"r..r..3.4...5.4.", bambina:"8.8.8.8.r.7.6.5.", bad:"r.r7r.r5r.r7r.r4", marionette:"r.5.8.5.r.5.8.7.",
+  blue:"r.r.5.r.8.r.5.7.", season:"8..7..5.r..3..4.", baby:"P.P.r.7.P.P.r.5.", r1990:"r.r.8.r.7.r.5.4.", thrill:"P.p.P.p.PpP.p.P." };
+const HOTEI_PAT={
+  verse:["P.mmP.mmP.mmP.mm","r.mmr.mm5.mmr.mm","P-mmmmmmP-mmmmmm","m.mmP.mmm.mmP.mm","p.p.mmp.p.p.mmp."],   // 3＝BAD FEELING の16分カッティング
+  pre:["P---P---P.P.P---","P-P-P-P-P-P-P-P-","P--.P--.P-P-P-P-"],
+  chorus:["P.P.P.P.P.P.P.P.","P--.P-P-P--.P-P-","P.PpP.PpP.PpP.Pp"],
+  bridge:["P-------P-------","P-------P---P---"] };
 /* The Edge の8分アルペジオ（数字 = ルート・5度・9度ヴォイシングの低い方からの番号）。付点8分ディレイを掛ける前提 */
 const LEADPAT=["0121","2101","0212","1020","2120"];
 /* Johnny Marr の分散和音（16分16ステップ。数字＝ルートレス・ヴォイシングの低い方からの番号、c＝短いカッティング）。
@@ -1279,6 +1403,13 @@ const INTRO_BARS={ half:8 };                                        // それ以
 /* アウトロは最後の主和音を2小節鳴らしっぱなしにして終わる（最終小節は叩き直さない）ので、どの長さも +1 小節 */
 const OUTRO_BARS={ none:5, last:5, dmelo:5, full:9, half:13 };
 const EXT_LABEL={ none:"標準（61小節）", last:"ラスサビ追加（サビ×2回し / 77小節）", dmelo:"Dメロ＋落ちサビ＋ラスサビ（85小節）", full:"3分構成：Dメロ＋落ちサビ＋ラスサビ×2＋アウトロ9（97小節・BPM128で約3:02）", half:"3分半構成：イントロ8＋ギターソロ8＋Dメロ＋落ちサビ＋ラスサビ×2＋アウトロ13（113小節・BPM128で約3:32）" };
+/* SynthV（Mai 2）で無理なく歌える高さ G3〜D5（推定。公式の推奨音域は未確認）。.svp は曲ごとに歌メロがこの範囲に一番よく収まる
+   オクターブ（0／+12／−12）を選び（svShiftFor）、ハモリもこの上限を超えないように作る（2026-10-17） */
+const SV_RANGE=[55,74];
+function svShiftFor(notes){ let best=0, bs=1e9;
+  for(const sh of [0,12,-12]){ let sc=0; for(const n of notes){ const m=n.midi+sh; if(m>SV_RANGE[1]) sc+=(m-SV_RANGE[1])*2; else if(m<SV_RANGE[0]) sc+=SV_RANGE[0]-m; }   // 高すぎる方を重く見る
+    if(sc<bs-1e-9){ bs=sc; best=sh; } }
+  return best; }
 const VOCAL_RANGE={ A:[50,62], B:[52,65], C:[55,69], D:[52,65] };   // Liam の実音域（D3〜A4）。サビで上に開く
 /* Dメロ: 1フレーズ8音（歌詞1行＝8語前後にぴったり）。英語の「弱・強」に合わせ、偶数番目の音（強）を長くする:
    弱1・強2・弱1 | 強2・弱1・強(1＋タイ1) | 弱1・強(2＋タイ3) … 最後の1拍で息継ぎ。
@@ -1324,7 +1455,23 @@ function sectionTokens(pack,sec){
 }
 
 /* ============================ 生成本体 ============================ */
-function generateSong(P){
+/* 最後のサビの転調の区間（8b と、リアレンジで読み込んだ歌メロを元の高さに戻すときに共通で使う） */
+function modPlanFor(TL,pack,P){
+  if(!(P.mod && pack.mod)) return [];
+  const secs=TL.secs; let i=secs.length-1; while(i>=0 && secs[i].role==="outro") i--;
+  let j=i; while(j>=0 && secs[j].role==="C") j--;
+  const group=secs.slice(j+1,i+1), full=group.filter(x=>!x.drop), end=TL.total;
+  if(!group.length) return [];
+  const m=pack.mod, plan=[];
+  if(m==="down1up2"){
+    if(group[0].drop && full.length){ plan.push({t0:group[0].t0,t1:full[0].t0,shift:-1}); plan.push({t0:full[0].t0,t1:end,shift:2}); }
+    else plan.push({t0:group[0].t0,t1:end,shift:2});
+  } else if(m==="step" && full.length>=2){ plan.push({t0:full[0].t0,t1:full[1].t0,shift:1}); plan.push({t0:full[1].t0,t1:end,shift:2}); }
+  else plan.push({t0:(full[0]||group[0]).t0,t1:end,shift:m==="up2"?2:1});
+  return plan;
+}
+/* LOCK（リアレンジ）: 読み込んだ曲の歌メロ・歌詞をそのまま使い、伴奏だけを作り直す。{vocal:[{t,dur,midi,vel,lyric,ph,k}], off} */
+function generateSong(P,LOCK=null){
   const pack=PACKS[P.pack], TA=A_TPL[P.a], TB=B_TPL[P.b];
   let TC=C_TPL[P.c];
   const r=rng((P.seed*2654435761)%2147483647+P.pack*101+P.a*13+P.b*7+P.c*3+P.key*17+11);
@@ -1332,14 +1479,15 @@ function generateSong(P){
   const keyPcs=SCALE[mode].map(x=>(x+tonic)%12);
   const bach=pack.band==="bacharach";                                         // Bacharach（Second）型の曲か
   const pop=pack.band==="taylor"||pack.band==="weeknd"||pack.band==="jersey", weeknd=pack.band==="weeknd";   // Jersey club 型も Max Martin ポップと同じ扱い（ギターの壁・Noel のリードなし）   // Taylor Swift ／ The Weeknd 型の曲か
-  const yoasobi=pack.band==="yoasobi", yonezu=pack.band==="yonezu", kessoku=pack.band==="kessoku", jpop=yoasobi||yonezu||kessoku;   // J-POP 型の曲か
+  const yoasobi=pack.band==="yoasobi", yonezu=pack.band==="yonezu", kessoku=pack.band==="kessoku", hotei=pack.band==="hotei", jpop=yoasobi||yonezu||kessoku;
+  const hGtr=hotei||!!P.hotei;                                                // 布袋のギター（布袋の型、または「布袋寅泰」ボタン）   // J-POP 型の曲か
   const VR=(bach||pop||yoasobi||kessoku)?VOCAL_RANGE_BACH:VOCAL_RANGE;          // ikura・喜多（女声）は SynthV にそのままの高さ、米津玄師（男声）は Liam と同じ中低域                           // Second と Taylor／Weeknd は SynthV の女声にそのまま渡せる高さで書く
   const TL=buildTimeline(P.ext||"none",P.introCut,P.odd);
   const song={ P, pack, mode, tonic, flatKey, keyPcs, TL, bpm:P.bpm, totalBeats:TL.total, vol:{...(P.vol||VOL_DEFAULT)},
     parts:{Drums:[],Bass:[],Guitar:[],Lead:[],Vocal:[],Piano:[],Strings:[],Edge:[],Marr:[],Synth:[]}, cc:{Strings:[]},
     chords:[], phrases:{}, stats:{fixed:0,removed:0}, mmForm:{}, mmStats:{copies:0,exact:0}, harmMax:(bach||pop||yoasobi||kessoku)?81:72,
     prog: pop ? {Guitar:weeknd?27:25} : yoasobi ? {Guitar:27} : kessoku ? {Marr:29} : {},   // YOASOBI はクリーン、ぼっちのリードはクランチ
-    names: kessoku ? {Marr:"Lead Gt (Bocchi)", Guitar:"Rhythm Gt (Kita)", Bass:"Bass (Ryo)", Drums:"Drums (Nijika)"} : {} };                                  // Taylor はアコギ、Weeknd はクリーン・ギター
+    names: pack.names ? {...pack.names} : kessoku ? {Marr:"Lead Gt (Bocchi)", Guitar:"Rhythm Gt (Kita)", Bass:"Bass (Ryo)", Drums:"Drums (Nijika)"} : {} };                                  // Taylor はアコギ、Weeknd はクリーン・ギター
   const scene=new Scene();
   const push=(part,n)=>{ song.parts[part].push(n); if(part!=="Drums") scene.add(n); };
 
@@ -1351,10 +1499,14 @@ function generateSong(P){
       if(ending && i===sec.bars.length-1){ song.chords[song.chords.length-1].dur+=bar.beats; return; }
       const bt=ending ? (mode==="minor"?["Im7"]:["Iadd9"]) : toks[i%toks.length];
       const use=bar.beats<4 ? bt.slice(0,1).concat(bt.length>1?[bt[1]]:[]) : bt;
-      const seg=bar.beats/use.length;
+      /* 1小節の割り方: 2・4コードは均等。3コードは 2拍＋1拍＋1拍（2/4 は 1＋半＋半）、5コード以上は8分の格子で配る。
+         均等に3分割すると切り替わりが 1.33拍 になり、コードの頭から刻むベースがキックとずれる（2026-10-19 修正） */
+      const lens=(()=>{ const n=use.length, B=bar.beats; if(n===1||n===2||n===4) return Array(n).fill(B/n); if(n===3) return [B/2,B/4,B/4];
+        const u=Math.round(B*2), base=Math.floor(u/n); let rem=u-base*n; return Array.from({length:n},()=>{ const x=base+(rem>0?1:0); rem--; return Math.max(1,x)/2; }); })();
+      let pos=bar.t;
       use.forEach((tok,j)=>{
         const ch=parseChord(tok,tonic,flatKey);
-        ch.t=bar.t+j*seg; ch.dur=seg; ch.sec=sec.id; ch.role=sec.role; ch.n=sec.n||1; ch.drop=!!sec.drop;
+        ch.t=pos; ch.dur=lens[j]; pos+=lens[j]; ch.sec=sec.id; ch.role=sec.role; ch.n=sec.n||1; ch.drop=!!sec.drop;
         ch.mScale=chordScale(ch,keyPcs);
         song.chords.push(ch);
       });
@@ -1400,7 +1552,7 @@ function generateSong(P){
   /* --- 2. Guitar（Noel / Bonehead: 開放弦コードのストローク＋ドローン。曲の背骨なので最初に置く） ---
      ドローン = 長調なら主音と5度、短調なら平行長調の主音と5度（Em なら G と D＝Wonderwall の3弦目押さえ）。
      全コードの上で鳴らし続け、3度と半音でぶつかるときは3度を抜いて sus 化する（D → Dsus4） */
-  const drones=P.drone ? (mode==="major"?[tonic,(tonic+7)%12]:[(tonic+3)%12,(tonic+10)%12]) : [];
+  const drones=(P.drone && !hGtr) ? (mode==="major"?[tonic,(tonic+7)%12]:[(tonic+3)%12,(tonic+10)%12]) : [];
   const semi=(a,b)=>{ const d=pcOf(a-b); return d===1||d===11; };
   const clashIn=(v,m)=>v.some(x=>{ const d=Math.abs(x-m); return d===0||d===1||d===13; });
   for(const ch of song.chords){
@@ -1448,7 +1600,40 @@ function generateSong(P){
     return STR.pat;
   };
   const GTR_VEL={intro:.85,A:.8,B:.9,C:1,inter:1,outro:.92,D:.75};
+  /* 布袋寅泰の型: リフ・パワーコード・16分ミュートの1本のギター（Strum の壁の代わり） */
+  const hRiffKey= pack.riff || (hGtr ? pick(r,["blue","marionette","r1990","bad","bambina","battle","season"]) : null);   // 布袋の型以外ではリフを seed で選ぶ
+  const HP= hGtr ? { verse:HOTEI_PAT.verse[pack.gpat!=null?pack.gpat:Math.floor(r()*HOTEI_PAT.verse.length)], pre:pick(r,HOTEI_PAT.pre), chorus:pick(r,HOTEI_PAT.chorus), bridge:pick(r,HOTEI_PAT.bridge) } : null;
+  if(hGtr){ song.hoteiPat=HP; song.hoteiRiff=hRiffKey; if(!song.names.Guitar) song.names.Guitar="Guitar (Hotei)"; }
+  const hRoot=ch=>40+pcOf(ch.root-40);                                     // 低音弦の E2〜D#3
+  const hIv=(ch,c)=>{ const has=i=>ch.iv.includes(i), ok=i=>ch.mScale.includes(pcOf(ch.root+i))||ch.tonesAll.includes(pcOf(ch.root+i));
+    if(c==="7") return has(11)?11:10;                                       // ♭7 はロックのリフの音（長3和音の上でもミクソリディアンとして使う。maj7 のコードだけ7度）
+    if(c==="6") return ok(9)?9:ok(8)?8:9;                                    // 6度はキーに合わせて長6度／短6度
+    const want={r:0, "8":12, "5":has(7)?7:has(6)?6:has(8)?8:7, "3":has(3)?3:has(4)?4:has(5)?5:2, "4":5}[c];
+    return want==null ? 0 : (ok(want)||want===0||want===12) ? want : 0; };
+  const hoteiBar=(bar,sec)=>{
+    const V=GTR_VEL[sec.role]*(sec.drop?.75:1), steps=bar.beats*4;
+    const last2=sec.role==="outro" && bar.idx>=sec.bars.length-2;
+    let pat= last2 ? (bar.idx===sec.bars.length-2?"P---------------":"") : (sec.drop||sec.role==="D") ? HP.bridge
+           : (sec.role==="intro"||sec.role==="inter"||sec.role==="outro") ? (HOTEI_RIFF[hRiffKey]||HP.chorus)
+           : sec.role==="A" ? HP.verse : sec.role==="B" ? HP.pre : HP.chorus;
+    const riffy=(sec.role==="intro"||sec.role==="inter"||sec.role==="outro") && !!HOTEI_RIFF[hRiffKey];
+    const ring=(sec.role==="outro" && bar.idx===sec.bars.length-2) ? bar.beats : 0;
+    for(let k=0;k<steps;k++){
+      const c=pat[k%16]; if(!c || c==="."||c==="-") continue;
+      let e=k+1; while(e<steps && pat[e%16]==="-") e++;
+      const t=bar.t+k/4, ch=chordAt(t), rt=hRoot(ch);
+      if(c==="m"){ const dur=fitAccom(t,0.1,ch); if(dur) push("Guitar",{t,dur,midi:rt,vel:clampV(46*V+(r()-.5)*8)}); continue; }
+      if(c==="P"||c==="p"){
+        const len=c==="p"?0.2:Math.min(2,(e-k)/4)*0.95+ring, fifth=hIv(ch,"5");
+        [rt,rt+fifth,rt+12].forEach((m,j)=>{ const dur=fitAccom(t,len,ch); if(dur) push("Guitar",{t,dur,midi:m,vel:clampV((c==="p"?82:100)*V+(r()-.5)*8-j*2)}); });   // パワーコードは3音同時（ずらすと前の音の終わりと重なって数えられる）
+        continue;
+      }
+      const m=rt+hIv(ch,c), len=Math.min(1.5,(e-k)/4)*0.9;
+      [m,...(riffy?[m+12]:[])].forEach(x=>{ if(x>RANGE.Guitar[1]) return; const dur=fitAccom(t,len,ch); if(dur) push("Guitar",{t,dur,midi:x,vel:clampV(94*V+(r()-.5)*8)}); });
+    }
+  };
   for(const bar of TL.bars){
+    if(hGtr){ const sec=secOf(bar.sec); if(!sec.cut) hoteiBar(bar,sec); continue; }
     const sec=secOf(bar.sec), pat=secPat(sec,bar), V=GTR_VEL[sec.role]*(sec.drop?.75:1), steps=bar.beats*4;
     if(sec.cut) continue;                                                   // イントロカット: ギターは鳴らさない
     const ring=(sec.role==="outro" && bar.idx===sec.bars.length-2) ? bar.beats : 0;   // 最後のジャーンは次の小節まで鳴らしっぱなし
@@ -1494,7 +1679,7 @@ function generateSong(P){
   /* The Weeknd 型: Piano トラックを80s のシンセ・パッドとして使う（全音符のロングトーン。A1 から鳴らす） */
   const PIANO_PAT_PAD={ A1:[[0,4,.7]], A2:[[0,4,.75]], B:[[0,4,.8]], C:[[0,2,.9],[2,2,.85]], inter:[[0,4,.85]], outro:[[0,4,.75]], D:[[0,4,.8]], drop:[[0,4,.85]] };
   let antChord=null;
-  for(const bar of TL.bars){
+  for(const bar of (hotei?[]:TL.bars)){                                    // 布袋の型（BOØWY・COMPLEX）はピアノなし
     const sec=secOf(bar.sec), PP=bach?PIANO_PAT_B:weeknd?PIANO_PAT_PAD:PIANO_PAT, PV=bach?PIANO_VEL_B:PIANO_VEL;
     let pat= sec.drop ? PP.drop : sec.role==="A" ? PP["A"+sec.n] : (bach && sec.role==="inter") ? PP.C : PP[sec.role];
     /* ピアノ・リフ（YOASOBI）: イントロ・間奏・アウトロは16分の分散リフ（イントロ頭はピアノ1本）、サビは裏拍のスタッカート和音 */
@@ -1622,6 +1807,8 @@ function generateSong(P){
     }));
   }
   const vocalT={A:TA,B:TB,C:TC,D:D_TPL};
+  const keepMel=!!(LOCK && LOCK.mel!=="new");                               // リアレンジ: 歌メロを読み込んだまま使うか（"new"＝型と seed から作り直す）
+  if(!keepMel){
   for(const sec of TL.secs){
     if(!vocalT[sec.role]) continue;
     const T=vocalT[sec.role];
@@ -1672,6 +1859,44 @@ function generateSong(P){
       }
     }
   }
+
+  } else {                                                                 /* リアレンジ（歌メロ固定）: 読み込んだ歌メロを、転調前の高さ・セクションの頭からの位置（LOCK.secs）で持っているので、
+       今の構成の同じセクション（なければ同じ役割の最初のセクション）に置き直す。キーを変えたぶんだけ移調し、
+       コード進行（型）・小節の長さが元と違うセクションでは、強拍・長い音をコード音に、ほかを音階の音に、ぶつからない近い高さへ寄せる */
+    let ks=((P.key-LOCK.P0.key)%12+12)%12; if(ks>5) ks-=12;
+    const pack0=PACKS[LOCK.P0.pack], tok=(pk,sc)=>JSON.stringify(sectionTokens(pk,sc));
+    const barAt=t=>TL.bars.find(b=>t>=b.t-1e-6 && t<b.t+b.beats-1e-6)||TL.bars[TL.bars.length-1];
+    song.mmStats=song.mmStats||{copies:0,exact:0}; song.relocked={fit:0,moved:0,gen:[]};
+    for(const sec of TL.secs){
+      if(!vocalT[sec.role]) continue;
+      const src=LOCK.secs.find(x=>x.id===sec.id && x.notes.length) || LOCK.secs.find(x=>x.role===sec.role && x.notes.length);
+      if(!src){                                                              // 元の曲にない役割のセクション（Dメロを足したなど）だけ新しく作る
+        const phr=genVocal(sec,vocalT[sec.role]); song.relocked.gen.push(sec.id);
+        phr.forEach((ph,pi)=>ph.forEach((n,k)=>push("Vocal",{t:n.t,dur:n.dur,midi:n.midi,vel:n.vel,sec:sec.id,ph:1000+pi,k}))); continue;
+      }
+      const len=sec.t1-sec.t0, fit=mode!==pack0.mode || Math.abs(len-src.len)>1e-6 || tok(pack,sec)!==tok(pack0,src.sec);
+      let prev=null;
+      for(const v of src.notes){
+        if(v.rel>=len-1e-6) continue;
+        const t=sec.t0+v.rel, dur=Math.min(v.dur,sec.t1-t); let m=v.midi+ks;
+        if(fit){
+          const n={t,dur,bar:barAt(t)}, {ch,ant}=chordForNote(n), lp=t-n.bar.t;
+          const strong=ant || Math.abs(lp)<1e-6 || Math.abs(lp-2)<1e-6 || dur>=1;
+          const pool=strong?ch.tonesMel:ch.mScale;
+          if(!pool.includes(pcOf(m)) || scene.clash(m,t,dur)){
+            let best=null, bs=1e9;
+            for(let x=m-4;x<=m+4;x++){ if(!pool.includes(pcOf(x))) continue;
+              let sc=Math.abs(x-m)+scene.clash(x,t,dur)*80; if(prev!=null && Math.abs(x-prev)>7) sc+=3;
+              if(sc<bs){ bs=sc; best=x; } }
+            if(best!=null && best!==m){ m=best; song.relocked.moved++; }
+          }
+          song.relocked.fit++;
+        }
+        push("Vocal",{t,dur,midi:m,vel:v.vel,sec:sec.id,ph:v.ph,k:v.k,lyric:v.lyric,line:v.line,locked:true}); prev=m;
+      }
+    }
+  }
+  if(LOCK) song.locked=true;
 
   /* --- 5. Bass（Guigsy: 8分のルート弾きで壁を支える。コードが変わる直前だけ順次で寄る） --- */
   let prevRoot=40; const [BLO,BHI]=RANGE.Bass;
@@ -1828,7 +2053,7 @@ function generateSong(P){
   };
   const cc=(t,v)=>song.cc.Strings.push({t,val:clampV(v)});
   let sv=null;
-  for(const sec of TL.secs){
+  for(const sec of (hotei?[]:TL.secs)){                                    // 布袋の型はストリングスなし
     const chs=song.chords.filter(c=>c.sec===sec.id);
     if(sec.role==="A" && sec.n===2){ cc(sec.t0,72); chs.forEach(ch=>{ sv=padTones(ch,2,67,84,sv); sv.forEach(m=>sPush(ch.t,ch.dur,m,54,ch)); }); }
     if(sec.role==="B"){
@@ -2024,8 +2249,12 @@ function generateSong(P){
         }
         if(!brk && !intro && !(build && i<sec.bars.length-4)){                // 808: キックに合わせた短いベース（元のベースは消す）
           song.parts.Bass=song.parts.Bass.filter(n=>!(n.t>=s-1e-6 && n.t<e-1e-6));
+          const sounding=(t,d)=>Object.keys(song.parts).filter(p=>p!=="Drums"&&p!=="Bass").flatMap(p=>song.parts[p].filter(n=>n.t<t+d-1e-6&&n.t+n.dur>t+1e-6));
           JERSEY.bass.forEach(([bt,up])=>{ if(bt>=b.beats) return; const t=s+bt, ch=chordAt(t); let m=RANGE.Bass[0]+pcOf(ch.bass-RANGE.Bass[0])+up; if(m>RANGE.Bass[1]) m-=12;
-            const dur=fitAccom(t,0.22,ch); if(dur) song.parts.Bass.push({t,dur,midi:m,vel:clampV(102+(r()-.5)*8)}); });
+            const dur=fitAccom(t,0.22,ch); if(!dur) return;
+            const on=sounding(t,dur), ok=x=>x>=RANGE.Bass[0]&&x<=RANGE.Bass[1]&&!on.some(n=>isClash(Math.min(n.midi,x),Math.max(n.midi,x),chordAt,t));   // 808 も上のパートと半音・短9度でぶつからない高さを選ぶ
+            const pickM=[m,m+12,m-12,RANGE.Bass[0]+pcOf(ch.root-RANGE.Bass[0])].find(ok);
+            if(pickM!=null) song.parts.Bass.push({t,dur,midi:pickM,vel:clampV(102+(r()-.5)*8)}); });
         }
         if(!brk){                                                              // ボーカル・チョップ（Synth トラック）
           song.parts.Synth=song.parts.Synth.filter(n=>!(n.t>=s-1e-6 && n.t<e-1e-6));
@@ -2050,12 +2279,7 @@ function generateSong(P){
     let j=i; while(j>=0 && secs[j].role==="C") j--;
     const group=secs.slice(j+1,i+1), full=group.filter(x=>!x.drop), end=TL.total;
     if(group.length){
-      const m=pack.mod, plan=[];
-      if(m==="down1up2"){
-        if(group[0].drop && full.length){ plan.push({t0:group[0].t0,t1:full[0].t0,shift:-1}); plan.push({t0:full[0].t0,t1:end,shift:2}); }
-        else plan.push({t0:group[0].t0,t1:end,shift:2});
-      } else if(m==="step" && full.length>=2){ plan.push({t0:full[0].t0,t1:full[1].t0,shift:1}); plan.push({t0:full[1].t0,t1:end,shift:2}); }
-      else plan.push({t0:(full[0]||group[0]).t0,t1:end,shift:m==="up2"?2:1});
+      const plan=modPlanFor(TL,pack,P);
       const shiftAt=t=>{ for(const q of plan) if(t>=q.t0-1e-6 && t<q.t1-1e-6) return q.shift; return 0; };
       const bounds=[...new Set(plan.flatMap(q=>[q.t0,q.t1]))];
       for(const p of PARTS){
@@ -2107,13 +2331,64 @@ function generateSong(P){
     for(const p of ["Lead","Synth","Edge","Marr"]) for(const n of song.parts[p]) if(vOver(n.t,n.t+n.dur).length) n.vel=clampV(n.vel*0.85);
   }
 
+  /* --- 8d. 始まり方「U2 ブレイクもなし」（introCut=2）: カウントの1小節を省いて1小節目から A メロにする（2026-10-17）
+     カウント小節（ドラムの U2 ブレイクだけ）のドラムを消し、ほかのパートの音がなければ曲全体を1小節前へ詰める。
+     歌が前の小節から食って入る（弱起）ときだけ、その1小節を「歌の入り」として残す（ドラムなし） --- */
+  if(P.introCut==2 && TL.secs[0].cut){
+    const c0=TL.secs[0], L=c0.t1;
+    const hadBreak=song.parts.Drums.some(n=>n.t<L-1e-6); song.parts.Drums=song.parts.Drums.filter(n=>n.t>=L-1e-6);
+    if(hadBreak && song.u2Count) song.u2Count--;                                // カウントの U2 ブレイクは数えない
+    const early=Object.keys(song.parts).some(p=>p!=="Drums" && song.parts[p].some(n=>n.t<L-1e-6));
+    if(early){ c0.noDrums=true; c0.name="歌の入り"; c0.en="Pickup"; song.pickupBar=true; }
+    else {
+      const sh=n=>{ n.t-=L; };
+      Object.values(song.parts).forEach(a=>a.forEach(sh)); Object.values(song.cc).forEach(a=>a.forEach(sh));
+      song.chords=song.chords.filter(c=>c.t>=L-1e-6); song.chords.forEach(sh);
+      Object.values(song.phrases).forEach(phr=>phr.forEach(ph=>ph.forEach(sh)));
+      (song.mods||[]).forEach(m=>{ for(const k of ["t0","t1","t"]) if(typeof m[k]==="number") m[k]-=L; });
+      TL.bars.shift(); TL.bars.forEach(b=>{ b.t-=L; });
+      TL.secs.shift(); TL.secs.forEach(s=>{ s.t0-=L; s.t1-=L; s.startBar-=1; });
+      TL.total-=L; song.totalBeats=TL.total; song.trimmedCount=true;
+    }
+  }
+
+  /* --- 8e. 終わり方「フェードアウト」（2026-10-19）: アウトロの最後の8小節（短ければアウトロ全体）で音をだんだん小さくする。
+     ① ベロシティを始まりの位置に応じて 100%→20% に ② 全パートに CC11（Expression）を 127→0 で書く（伸ばしている音も消える。Strings の既存の CC11 とは掛け合わせる）
+     ③ 頭に CC11=127 を置く（Logic で頭から再生し直したとき音が消えたままにならないように）。試聴・MP3・WAV は全体の音量を同じ区間で下げる --- */
+  if(P.fade){
+    const out=TL.secs.filter(x=>x.role==="outro").at(-1);
+    if(out){
+      const bs=out.bars.slice(-8), f0=bs[0].t, f1=TL.total, prog=t=>Math.max(0,Math.min(1,(t-f0)/(f1-f0))), curve=t=>Math.pow(1-prog(t),1.6);
+      for(const p of Object.keys(song.parts)) for(const n of song.parts[p]) if(n.t>=f0-1e-6) n.vel=clampV(n.vel*(1-0.8*prog(n.t)));
+      const base=(arr,t)=>{ let v=127; for(const c of arr) if(c.t<=t+1e-6) v=c.val; return v; };
+      for(const p of Object.keys(song.parts)){
+        const old=song.cc[p]||[], keep=old.filter(c=>c.t<f0-1e-6), ramp=[];
+        for(let t=f0;t<=f1+1e-6;t+=0.5) ramp.push({t:Math.min(t,f1-0.01),val:clampV(base(old,t)*curve(t))});
+        ramp[ramp.length-1].val=0;
+        song.cc[p]=[...(keep.some(c=>c.t<1e-6)?[]:[{t:0,val:127}]), ...keep, ...ramp];
+      }
+      song.fade={t0:f0,t1:f1};
+    }
+  }
+
   cleanup(song);
   fixSamePitchOverlaps(song);
   song.check=consonance(song);
   song.lang=P.lang==="ja"?"ja":"en";                                        // 歌詞の言語（en＝英語・全単語1音節／ja＝日本語・1音符＝1音）
+  const keepLyr=!!(LOCK && LOCK.lyr!=="new");                               // リアレンジ: 歌詞を読み込んだまま使うか
+  if(keepLyr && LOCK.lang) song.lang=LOCK.lang;
   const LSET=lyrSet(song.lang).L, autoTheme=Math.floor(r()*LSET.length);
-  song.themeIdx=(P.theme>=0 && P.theme<LSET.length)?P.theme:autoTheme; song.theme=[LSET[song.themeIdx].t, LSET[song.themeIdx].hook];
-  makeLyrics(song,P.lyricSeed||0);
+  song.themeIdx=(keepLyr && LOCK.themeIdx!=null) ? LOCK.themeIdx : (P.theme>=0 && P.theme<LSET.length)?P.theme:autoTheme; song.theme=[LSET[song.themeIdx].t, LSET[song.themeIdx].hook];
+  if(keepLyr && keepMel){                                                    // 歌メロも歌詞も読み込んだまま
+    const gen=song.relocked.gen;
+    if(gen.length){ const keep=song.parts.Vocal.map(n=>[n,n.lyric]); makeLyrics(song,P.lyricSeed||0); const gl={}; gen.forEach(id=>gl[id]=song.lyrics[id]);
+      keep.forEach(([n,l])=>{ if(!gen.includes(n.sec)) n.lyric=l; }); lockLyrics(song); Object.assign(song.lyrics,gl); }
+    else lockLyrics(song); }
+  else if(keepLyr) refitLyrics(song,LOCK);                                   // 新しい歌メロに、読み込んだ歌詞の行を割り当て直す
+  else makeLyrics(song,P.lyricSeed||0);
+  song.svShift=svShiftFor(song.parts.Vocal);                                 // .svp の高さ（歌える範囲に合わせる）
+  song.harmMax=Math.min(song.harmMax, SV_RANGE[1]-song.svShift);              // ハモリも .svp で D5 を超えない（超えそうな所は下にハモる）
+  song.harmMin=SV_RANGE[0]-3-song.svShift;                                    // 下は .svp で E3 まで（下ハモ・3〜5度下が低くなりすぎない）
   makeHarmony(song,P.harm);
   makeObbligato(song,P.obb||"off");
   song.hookLift=hookLift;
@@ -2258,6 +2533,16 @@ const POP_KITS={
     pre:  {k:"x.x.x.x.x.x.x.x.", s:"....x..x.x..x.xx", c:"", h:"o.o.o.o.o.o.o.o."},
     chorus:{k:"x.........x.x...", s:"........x.......", c:"", h:"o...o...o...o..."},
     bridge:{k:"x...x...x...x...", s:"....x.......x...", c:"", h:"x.x.x.x.x.x.x.x."} },
+  beat:{ name:"BOØWY（高橋まことのタイトな8ビート）", preFill:"tom80",
+    verse:{k:"x.....x.x.......", s:"....x.......x...", c:"", h:"x.x.x.x.x.x.x.x."},
+    pre:  {k:"x.....x.x.x.....", s:"....x.......x...", c:"", h:"x.x.x.x.x.x.x.x."},
+    chorus:{k:"x.....x.x.....x.", s:"....x.......x...", c:"", h:"x.o.x.o.x.o.x.o."},
+    bridge:{k:"x.......x.......", s:"........x.......", c:"", h:"x...x...x...x..."} },
+  shuffle:{ name:"季節が君だけを変える（16分のシャッフル）", preFill:"tom80", swing:0.08, keep16:true,
+    verse:{k:"x.....x...x.....", s:"....x.......x...", c:"", h:"x.xxx.xxx.xxx.xx"},
+    pre:  {k:"x.....x...x...x.", s:"....x.......x...", c:"", h:"x.xxx.xxx.xxx.xx"},
+    chorus:{k:"x.....x.x.x.....", s:"....x.......x...", c:"", h:"o.x.o.x.o.x.o.x."},
+    bridge:{k:"x.........x.....", s:"........x.......", c:"", h:"x.x.x.x.x.x.x.x."} },
   rock8:{ name:"結束バンド（疾走8ビート＋サビ4つ打ち）", preFill:"tom80",
     verse:{k:"x.....x.x.......", s:"....x.......x...", c:"", h:"x.x.x.x.x.x.x.x."},
     pre:  {k:"x...x.x.x...x.x.", s:"....x.......x...", c:"", h:"x.x.x.x.x.x.x.x."},
@@ -2855,46 +3140,46 @@ const LYR_SPARE_P=LYR_SPARE.map((l,i)=>parseLyric(l,LYR_SPARE_JA[i]));
    各テーマは Aメロ1→Bメロ1→サビ→Aメロ2→Bメロ2→Dメロの順に物語が進む。サビの1行目は必ずフックで始まる。 */
 const LYR_JP=[
   { t:"夜の向こうへ駆けるふたり", en:"Midnight Run", hook:"よるの むこうへ",
-    A1:["(ねえ) (まよなかの ほどうきょうで) (きみが) てを ふる","(あかい しんごうが) (なんども) まばたく","(ぼくは) (なにも いえずに) (ただ) たちつくす","(とおくで) (でんしゃが) (さいごの) うたを うたう","(このまま) (ふたりで) (どこかへ) いけたら","(ねえ) きこえる"],
-    B1:["(だれも しらない ばしょまで) はしりだす","(つめたい かぜを) きりさいて (ふたりで)","(どうか) (この てを) はなさないで","(まちの ひかりが) (うしろへ) (ながれて) きえて いく","(いまなら) とべる (きが した)","(さあ) いこう"],
-    C:["よるの むこうへ (よるの むこうへ) (ふたりで) (かけて ゆけ)","(まだ みぬ あさを) (この てで) つかむまで","(なみだも) (いたみも) (ぜんぶ) ひかりに かえて","(ほら) (いま) (ぼくらは) (どこまでも) かがやける"],
-    A2:["(きのうの ことは) (もう) わすれて (いいよ)","(ぎんいろの つきが) (ビルの あいだで) わらう","(きみの) (こえが) (ぼくの) (むねで) ひびく","(すこし) (こわいけど) (それでも) まえを むく","(ほら) (よあけの) においが する","(もう) とまらない"],
-    B2:["(ねえ) (もしも) (せかいが) (きょう) おわる なら","(さいごに) (きみと) (この みちを) はしりたい","(いつまでも) (となりで) ほほえんで いて","(よるが) (ふたりを) (やさしく) つつんで いく","(さあ) (てを) のばして","(いま) とびこもう"],
-    D:["(いつか) (この よるを) おもいだして (ほしい)","(きみと かけた) みちの (ひかりの) ことを"] },
+    A1:["(ねえ) (まよなかの ほどうきょうで) (きみが) てを ふる","(あかい) しんごうが (なんども) まばたく","(ぼくは) (なにも いえずに) (ただ) たちつくす","(とおくで) (でんしゃが) (さいごの) うたを うたう","(このまま) (ふたりで) どこかへ いけたら","(ねえ) きこえる"],
+    B1:["(だれも しらない ばしょまで) はしりだす","(つめたい) かぜを きりさいて (ふたりで)","(どうか) (この てを) はなさないで","(まちの ひかりが) (うしろへ) (ながれて) きえて いく","(いまなら) とべる (きが した)","(さあ) いこう"],
+    C:["よるの むこうへ (よるの むこうへ) (ふたりで) (かけて ゆけ)","(まだ みぬ) あさを (この てで) つかむまで","(なみだも) (いたみも) (ぜんぶ) ひかりに かえて","(ほら) (いま) (ぼくらは) (どこまでも) かがやける"],
+    A2:["(きのうの ことは) (もう) わすれて (いいよ)","(ぎんいろの) つきが (ビルの あいだで) わらう","(きみの) こえが (ぼくの むねで) ひびく","(すこし) (こわいけど) (それでも) まえを むく","(ほら) (よあけの) においが する","(もう) とまらない"],
+    B2:["(ねえ) (もしも) (せかいが) (きょう) おわる なら","(さいごに) (きみと) (この みちを) はしりたい","(いつまでも) (となりで) ほほえんで いて","(よるが) (ふたりを) (やさしく) つつんで いく","(さあ) てを のばして","(いま) とびこもう"],
+    D:["(いつか) (この よるを) おもいだして (ほしい)","(きみと) かけた みちの (ひかりの) ことを"] },
   { t:"青く染める絵の具", en:"Blue Paint", hook:"あおく そめて",
-    A1:["(あさの きょうしつで) (ひとり) ふでを とる","(しろい キャンバスが) (ぼくを) みつめて いる","(なにを) かけば いいの (わからない まま)","(みんなの えが) (まぶしく) みえて しまう","(ほんとうは) (ぼくも) (かきたい) ものが ある","(まだ) いえない"],
-    B1:["(すきな ことを) (すきと) いえる ように","(ふるえる てで) (いちど) せんを ひく","(へたでも いい) (ぼくの) いろで いい","(すこしずつ) (せかいが) (あおく) ひかりだす","(もう) にげない","(さあ) かこう"],
-    C:["あおく そめて (あおく そめて) (この せかいを)","(だれにも まねできない) (ぼくだけの) いろで","(なみだの あとも) (ぜんぶ) えのぐに なる","(さあ) (いま) かきだそう (ぼくらの みらいを)"],
-    A2:["(ゆうぐれの) (びじゅつしつに) きみが くる","(ぼくの えを) (しずかに) みつめて いる","(きれいな) あおだね と (きみは) いう","(その ひとことが) (ぼくの) すべてに なる","(いつか) (この えを) (だれかに) とどけたい","(ねえ) みていて"],
+    A1:["(あさの きょうしつで) (ひとり) ふでを とる","(しろい キャンバスが) (ぼくを) みつめて いる","(なにを) かけば いいの (わからない まま)","(みんなの えが) (まぶしく) みえて しまう","(ほんとうは) (ぼくも) かきたい ものが ある","(まだ) いえない"],
+    B1:["(すきな ことを) (すきと) いえる ように","(ふるえる てで) (いちど) せんを ひく","(へたでも いい) ぼくの いろで いい","(すこしずつ) (せかいが) (あおく) ひかりだす","(もう) にげない","(さあ) かこう"],
+    C:["あおく そめて (あおく そめて) (この せかいを)","(だれにも まねできない) ぼくだけの いろで","(なみだの あとも) (ぜんぶ) えのぐに なる","(さあ) (いま) かきだそう (ぼくらの みらいを)"],
+    A2:["(ゆうぐれの) (びじゅつしつに) きみが くる","(ぼくの えを) (しずかに) みつめて いる","(きれいな) あおだね と (きみは) いう","その ひとことが (ぼくの) すべてに なる","(いつか) (この えを) (だれかに) とどけたい","(ねえ) みていて"],
     B2:["(くらい よるも) (あおい) ほしが ある","(まけそうな ひも) (ぼくは) ふでを おかない","(なんども) (なんども) かきなおして (いく)","(いつか) (ほんとうの いろに) であえる まで","(さあ) すすもう","(まだ) おわらない"],
-    D:["(だれかと くらべるのは) もう やめた","(この あおが) (ぼくの) こたえ だから"] },
+    D:["(だれかと くらべるのは) もう やめた","(この あおが) ぼくの こたえ だから"] },
   { t:"忘れないレモン色の光", en:"Lemon Light", hook:"わすれないよ",
     A1:["(まどの そとで) (きいろい) はなが ゆれる","(きみの いない) この へやは (すこし) ひろい","(のこされた) (コーヒーが) (まだ) あたたかい","(いつもの こえを) (なんども) さがして しまう","(もしも) (いま) めが さめたら (きみが いる)","(そんな) きがして"],
     B1:["(にがい あじが) (いまも) むねに のこる","(あの ひの) (ことばが) (まだ) とどかない","(なきたい よるは) (きみの) うたを うたう","(それでも) あしたは (かならず) くる (から)","(ほら) かぜが ふく","(また) あえる"],
-    C:["わすれないよ (わすれないよ) (きみが くれた ひかりを)","(にがくて あまい きおくを) (むねに) だいて","(どこに いても) (きみの) こえが きこえる","(だから) (ぼくは) (きょうも) あるいて いく"],
-    A2:["(ふたりで あるいた) (かわの) みちを ゆく","(なつの) (ひかりが) (みずに) とけて いく","(きみが すきな) (あの) うたが ながれる","(すこしだけ) わらえる ように なれたよ","(きみの ぶんまで) (この せかいを) みたい","(ねえ) みてる"],
-    B2:["(かなしみは) (いつか) (やさしさに) かわる","(きみが) (そう) おしえて くれた (から)","(さよならの かわりに) (この) うたを おくる","(そらの) むこうまで とどくと いいな","(ほら) はれた","(また) あした"],
+    C:["わすれないよ (わすれないよ) (きみが くれた ひかりを)","(にがくて あまい) きおくを (むねに) だいて","(どこに いても) (きみの) こえが きこえる","(だから) (ぼくは) (きょうも) あるいて いく"],
+    A2:["(ふたりで あるいた) (かわの) みちを ゆく","(なつの) (ひかりが) (みずに) とけて いく","(きみが すきな) (あの) うたが ながれる","(すこしだけ) わらえる ように なれたよ","(きみの ぶんまで) この せかいを みたい","(ねえ) みてる"],
+    B2:["かなしみは (いつか) (やさしさに) かわる","(きみが) (そう) おしえて くれた (から)","(さよならの かわりに) (この) うたを おくる","(そらの) むこうまで とどくと いいな","(ほら) はれた","また あした"],
     D:["(もう いちど だけ) (きみに) あえるなら","(ありがとうと) (ちゃんと) つたえたい"] },
   { t:"しびれる夜の街", en:"Electric Town", hook:"しびれる よるに",
-    A1:["(ネオンの ひかる) うらみちを ぬけて","(ぼくらは) (あてもなく) (まちを) さまよう","(てのひらの コインを) (そらに) なげて みる","(おもてが でたら) (きみの) かちで いい","(どうせ) (この よるは) (まだ) ながい (から)","(さあ) はじめよう"],
-    B1:["(からだの おくで) (なにかが) はじけて","(とめられない リズムが) (ぼくらを) うごかす","(ルールなんて) (いまは) (ぜんぶ) わすれて","(おどりだしたら) もう とまらない","(ほら) なりだした","(さあ) こいよ"],
-    C:["しびれる よるに (しびれる よるに) (きみと) (おどりたい)","(まちの あかりが) (すべて) ぼくらの ステージ","(あしたの ことは) (あしたに) まかせて","(いまは) (ただ) (このまま) ゆれて いたい"],
-    A2:["(しんごうが かわる たびに) きみが わらう","(サイレンの おとも) (ぼくらには) うたに なる","(よぞらに) (ひとつ) (ながれぼしが) おちる","(ねがいごとは) (まだ) ひみつ (だよ)","(だれかの まねじゃない) (ぼくらの) やりかたで","(ほら) みてて"],
-    B2:["(つかれた かおは) (ここに) おいて いこう","(むねの さわぎを) (そのまま) うたに して","(あさが くる まで) (このまちを) かけぬけろ","(さいごの いちびょうまで) (ぼくらは) いきてる","(さあ) ならせ","(まだ) たりない"],
+    A1:["(ネオンの ひかる) うらみちを ぬけて","(ぼくらは) (あてもなく) (まちを) さまよう","(てのひらの) コインを (そらに) なげて みる","(おもてが でたら) きみの かちで いい","(どうせ) この よるは (まだ) ながい (から)","(さあ) はじめよう"],
+    B1:["(からだの おくで) なにかが はじけて","(とめられない) リズムに (からだが) うごく","(ルールなんて) (いまは) (ぜんぶ) わすれて","(おどりだしたら) もう とまらない","(ほら) なりだした","(さあ) こいよ"],
+    C:["しびれる よるに (しびれる よるに) (きみと) (おどりたい)","(まちの あかりが) (すべて) ぼくらの ステージ","(あしたの ことは) あしたに まかせて","(いまは) (ただ) (このまま) ゆれて いたい"],
+    A2:["(しんごうが かわる たびに) きみが わらう","(よるの) サイレンも (ぼくらには) うたに なる","(よぞらに) (ひとつ) ながれぼしが おちる","(ねがいごとは) (まだ) ひみつ だよ","(だれかの まねじゃない) ぼくらの やりかたで","(ほら) みてて"],
+    B2:["(きょうの) つかれは (ここに) おいて いこう","(むねの) ときめきを (そのまま) うたに して","(あさが くる まで) (このまちを) かけぬけろ","(さいごの いちびょうまで) (ぼくらは) いきてる","(さあ) ならせ","(まだ) たりない"],
     D:["(ひとりじゃ こわい) (よるも) きみと なら","(ほら) (こんなに) あかるい"] },
   { t:"ひとりぼっちのギター", en:"Lonely Guitar", hook:"かきならせ",
-    A1:["(へやの すみで) (きょうも) ギターを だく","(だれにも) みせない (ぼくだけの) うた","(まどの そとは) (いつも) まぶしすぎて","(カーテンを) (しずかに) しめて しまう","(ほんとうは) (だれかと) (おとを) あわせたい","(ねえ) だれか"],
-    B1:["(ふるえる ゆびで) (はじめて) こえを かけた","(ちいさな スタジオの) (おもい) ドアを あける","(ドラムと ベースが) (ぼくを) まちわびて いた","(へたでも いい) (いまは) ひくしか ない","(さあ) いくよ","(ワン ツー) スリー フォー"],
-    C:["かきならせ (かきならせ) (ぼくの この おとを)","(とどかない ままの こえを) (いま) ひびかせて","(ひとりじゃ ないと) (いまは) しんじられる","(ほら) (このまま) (どこまでも) ならして いこう"],
-    A2:["(ステージの ライトが) (まぶしくて) めを とじる","(ひざが ふるえて) (ゆびも) (うまく) うごかない","(それでも) (となりで) きみが うなずく","(だから) (ぼくは) (いちばん たかい) おとを だす","(かんきゃくの こえが) (すこしずつ) おおきく なる","(ほら) きこえる"],
-    B2:["(あのころの ぼくに) (いまなら) いえる","(へやの すみで) (かいた) うたも むだじゃ ない","(ひとつ) (ひとつ) おとを つないで (いく)","(ぼくらの うたが) (だれかを) すくう (かも)","(さあ) ならそう","(まだ) おわらない"],
+    A1:["(へやの すみで) (きょうも) ギターを だく","(だれにも) みせない (ぼくだけの) うた","(まどの そとは) (いつも) まぶしすぎて","(カーテンを) (しずかに) しめて しまう","(ほんとうは) (だれかと) おとを あわせたい","(ねえ) だれか"],
+    B1:["(ふるえる ゆびで) (はじめて) こえを かけた","(ちいさな スタジオの) (おもい) ドアを あける","(ドラムと ベースが) (ぼくを) まちわびて いた","(へたでも いい) (いまは) ひくしか ない","(さあ) いくよ","ワン ツー スリー フォー"],
+    C:["かきならせ (かきならせ) (ぼくの この おとを)","(とどかない ままの) こえを (いま) ひびかせて","(ひとりじゃ ないと) (いまは) しんじられる","(ほら) (このまま) (どこまでも) ならして いこう"],
+    A2:["(ステージの ライトが まぶしくて) めを とじる","(ひざが ふるえて) (ゆびも) (うまく) うごかない","(それでも) (となりで) きみが うなずく","(だから) (ぼくは) (いちばん たかい) おとを だす","(かんきゃくの) こえが (すこしずつ) おおきく なる","(ほら) きこえる"],
+    B2:["(あのころの ぼくに) (いまなら) いえる","(へやの すみで かいた) うたも むだじゃ ない","(ひとつ) (ひとつ) おとを つないで (いく)","(ぼくらの) うたが (だれかを) すくう (かも)","(さあ) ならそう","(まだ) おわらない"],
     D:["(ひとりで ひいた) (あの よるの) メロディ","(いまは) (みんなで) (おおきな) こえで うたう"] },
   { t:"雨上がりの電気の冒険", en:"Spark Adventure", hook:"ぱちぱち はじけて",
-    A1:["(あめあがりの) (みちに) (ちいさな) あしあと","(くさむらの かげで) (なにかが) ひかる","(どきどき しながら) (てを) のばして みる","(ぱちりと) めが あう (ちいさな きみと)","(きょうから) (ふたりは) なかまに なる","(さあ) いこう"],
-    B1:["(ちずの ない) (ぼうけんが) はじまる","(やまを こえて) (かわを) わたる","(つよい かぜも) (きみと なら) へいき","(ジリジリ てりつける) (たいようにも) まけない","(ほら) もうすぐ","(ヒリヒリ) するね"],
+    A1:["(あめあがりの) (みちに) (ちいさな) あしあと","(くさむらの かげで) なにかが ひかる","(どきどき しながら) てを のばして みる","(ぱちりと) めが あう (ちいさな きみと)","(きょうから) (ふたりは) なかまに なる","(さあ) いこう"],
+    B1:["(ちずの ない) (ぼうけんが) はじまる","(やまを こえて) かわを わたる","(つよい かぜも) (きみと なら) へいき","(ジリジリ てりつける) たいようにも まけない","(ほら) もうすぐ","ヒリヒリ するね"],
     C:["ぱちぱち はじけて (ぱちぱち はじけて) (ひかりの ほうへ)","(ぼくらの) (この) ゆうきが (そらに) とどく まで","(きらきら かがやく) (あめあがりの) にじを こえて","(どこまでも) (きみと) かけて ゆこう"],
-    A2:["(まけて) (なみだを ながした) よるも ある","(きみは) (となりで) (ちいさく) ないた","(なんども) (なんども) たちあがり","(ぼくらは) (すこし) (つよく) なれた","(どきどき) (ふるえる) (この) むねの おと","(ねえ) きこえる"],
-    B2:["(あたらしい まちの) (あたらしい) ともだち","(わらいごえが) (そらに) ひろがり ゆく","(きみと であえた ことが) (ぼくの) たからもの","(いつかの) わかれも こわく ない (よ)","(さあ) いこうよ","(もう) いちど"],
+    A2:["(まけて) (ひとりで) ないた よるも ある","(きみは) (となりで) (ちいさく) ないた","(なんども) (なんども) たちあがり","(ぼくらは) (すこし) つよく なれた","(どきどき) (ふるえる) (この) むねの おと","(ねえ) きこえる"],
+    B2:["(あたらしい まちの) (あたらしい) ともだち","(わらいごえが) (そらに) ひろがり ゆく","(きみと であえた ことが) (ぼくの) たからもの","(いつかの) わかれも こわく ない (よ)","(さあ) いこうよ","もう いちど"],
     D:["(あめの あとには) (かならず) にじが でる","(だから) (きょうも) (ぼくらは) あるきだす"] }
 ];
 LYR_JP.push(
@@ -2905,10 +3190,14 @@ LYR_JP.push(
     A2:["(ちいさな まちの かたすみで) ゆめを みた","(だれも しんじない) ゆめを まもりぬく","(きずだらけの てで) (なんども) たちあがる","(まけた ひの くやしさも) ちからに かえる","(ビートに あわせ) (ことばを) うちこめ","(ほら) ならせ"],
     B2:["(だれかの まねじゃ ない) ぼくの やりかたで","(つよがりも) (いつか) ほんとうに なる","(ステージの まんなかで) (おおきく) さけべ","(こえが かれる まで) うたいつづけろ","(さあ) くるぞ","(いまだ) いけ"],
     D:["(まほうの ない せかいでも) (ぼくは) いきてく","(この からだ ひとつで) (ぜんぶ) くつがえす"] });
-const LYR_SPARE_JP=["(ねえ) (いまも) おぼえてる","(ほら) ここに いて","(どうか) はなさないで","(よるは) つづいて いく"];
+const LYR_SPARE_JP=["(ねえ) (いまも) おぼえてる","(ほら) ここに いて","(どうか) はなさないで","(よるは) つづいて いく","(さあ) いこう","(ねえ) きこえる","(まだ) とまらない","(きっと) とどく"];   // 短いフレーズ用（3〜4音）も入れる
 /* かなを音（モーラ）に分ける。小書きの ゃゅょぁぃぅぇぉ は前の音に付け、「ー」は前の音を伸ばす "-" */
 const SMALL_KANA="ゃゅょぁぃぅぇぉゎャュョァィゥェォヮ";
 function moraSplit(w){ const out=[]; for(const c of w){ if(c==="ー") out.push("-"); else if(SMALL_KANA.includes(c) && out.length) out[out.length-1]+=c; else out.push(c); } return out; }
+/* フックを N 音に入れる: 単語の区切りで切り、「〜の」で終わる形（「よるの」）は使わない。1語も入らなければ空（予備の行へ） */
+function hookFitJA(hook,N){ const out=[], ws=[]; for(const wd of hook.split(/\s+/)){ const m=moraSplit(wd); if(out.length+m.length>N) break; out.push(...m); ws.push(wd); }
+  while(ws.length && /の$/.test(ws[ws.length-1])){ const m=moraSplit(ws.pop()); out.splice(out.length-m.length,m.length); } return out; }
+function hookTextJA(hook,n){ let t="",c=0; for(const wd of hook.split(/\s+/)){ const k=moraSplit(wd).length; if(c+k>n) break; t+=(t?" ":"")+wd; c+=k; } return t; }
 function parseLyricJP(s){
   const items=[]; const re=/\(([^)]*)\)|([^\s()]+)/g; let m;
   while((m=re.exec(s))){ const src=(m[1]!=null?m[1]:m[2]).trim(); items.push({w:src.split(/\s+/).flatMap(moraSplit), disp:src, opt:m[1]!=null}); }
@@ -2920,18 +3209,43 @@ const LYR_SPARE_JP_P=LYR_SPARE_JP.map(l=>parseLyricJP(l));
 const lyrSet=lang=>lang==="ja" ? {L:LYR_JP, P:LYR_JP_P, SP:LYR_SPARE_JP_P, fill:"ら"} : {L:LYR, P:LYR_P, SP:LYR_SPARE_P, fill:"oh"};
 
 
-/* N 語ちょうどに伸縮: ( ) を左から優先して省く組み合わせを探し、足りない分は最後の語を伸ばす("-") */
+/* 日本語詞で ( ) を省く順番（2026-10-25）: 以前は左の ( ) から省いていたため、主語・目的語（〜が・〜を）が先に消えて
+   「ぼくらには うたに なる」「そらに なげて みる」のような行になっていた。
+   飾り（ねえ・ほら・いま・まだ 等）→ 場所や時（〜で・〜へ・〜まで）→ 主題（〜は・〜も）→ 主語・目的語（〜が・〜を）の順に省く。
+   残した「〜の」がかかる次の語は必ず残す（「きみの ぼくの むねで」のように宙に浮かせない） */
+const LIGHT_JA=new Set(["ねえ","ほら","さあ","ああ","もう","まだ","いま","いまは","ただ","すこし","なんども","きょうも","いつも","ぜんぶ","どうせ","このまま","だから","それでも","また","かならず","そっと","ずっと","きっと","いまなら","どうか","すこしずつ","ほんとうは","もしも","いつか","いつまでも","やさしく","しずかに","おおきく","たかく","はやく","ひとつ","まだ","ふたりで","ひとりで","ゆっくり","まっすぐ","いちど","すぐ","もっと"]);
+function dropWeightJA(it,i,n){
+  const d=it.disp;
+  if(LIGHT_JA.has(d)) return 0.2;
+  if(i===n-1 && !/(を|が|は|も|に|で|へ|の)$/.test(d)) return 0.8;     // 文末の補い（から・だよ・ほしい・けど など）
+  if(/(を|が)$/.test(d)) return 4;
+  if(/(には|では|とは|にも|でも)$/.test(d)) return 3;
+  if(/(は|も)$/.test(d)) return 3.5;
+  if(/の$/.test(d)) return 0.6;
+  if(/に$/.test(d)) return 1.5;
+  return 1;
+}
+/* N 語ちょうどに伸縮: ( ) を省く組み合わせを探し、足りない分は最後の語を伸ばす("-")。英語は左の ( ) から、日本語は dropWeightJA の軽い順に省く */
 function realizeLine(L, N){
   if(L.min>N) return null;
-  const opts=L.items.map((it,i)=>it.opt?i:-1).filter(i=>i>=0);
+  const opts=L.items.map((it,i)=>it.opt?i:-1).filter(i=>i>=0), ja=L.lang==="ja", n=L.items.length;
   let best=null, bs=1e9;
   for(let mask=0; mask<(1<<opts.length); mask++){
     let cnt=L.max, pen=0;
-    opts.forEach((ix,b)=>{ if(mask&(1<<b)){ cnt-=L.items[ix].w.length; pen+=b*0.6; } });
+    opts.forEach((ix,b)=>{ if(mask&(1<<b)){ cnt-=L.items[ix].w.length; pen+= ja ? dropWeightJA(L.items[ix],ix,n)+b*0.01 : b*0.6; } });
     if(cnt>N) continue;
+    if(ja){                                                                  // 残した「〜の」の次（「〜の」でない最初の語）を省いていたら不可
+      const dropped=i=>{ const b=opts.indexOf(i); return b>=0 && !!(mask&(1<<b)); };
+      let bad=false;
+      for(let i=0;i<n-1 && !bad;i++){ if(dropped(i) || !/の$/.test(L.items[i].disp)) continue;
+        let j=i+1; while(j<n && /の$/.test(L.items[j].disp) && dropped(j)) j++;
+        if(j<n && dropped(j)) bad=true; }
+      if(bad) continue;
+    }
     const sc=(N-cnt)*3+pen;
     if(sc<bs){ bs=sc; best=mask; }
   }
+  if(best===null) return null;                                                 // 「〜の」の決まりを守れる組み合わせがない長さ
   const words=[];
   L.items.forEach((it,i)=>{ const b=opts.indexOf(i); if(b>=0 && (best&(1<<b))) return; words.push(...it.w); });
   const mel=N-words.length;
@@ -2973,6 +3287,10 @@ function makeLyrics(song, lseed){
     let blocks=segmentNotes(notes);
     if(mm){                                                                  // Melodic Math: 歌詞1行＝メロディ1フレーズ（同じ長さのフレーズは同じ語数になる）
       const g=[]; notes.forEach(n=>{ if(!g.length || g[g.length-1][0].ph!==n.ph) g.push([]); g[g.length-1].push(n); });
+      if(song.lang==="ja"){                                                 // 日本語: 3〜5音の短いフレーズは次と合わせて1行に（短すぎて入る行がなく「よるの」「さあ いくよ」の繰り返しになるのを防ぐ）
+        for(let i=0;i<g.length-1;){ if(g[i].length<6 && g[i].length+g[i+1].length<=12){ g[i]=g[i].concat(g[i+1]); g.splice(i+1,1); } else i++; }
+        if(g.length>1 && g[g.length-1].length<6 && g[g.length-2].length+g[g.length-1].length<=12){ g[g.length-2]=g[g.length-2].concat(g.pop()); }
+      }
       if(g.every(x=>x.length>=3 && x.length<=14)) blocks=g;
     }
     const sig=b=>b.map(n=>n.midi).join(",");
@@ -2998,7 +3316,7 @@ function makeLyrics(song, lseed){
     }       // 作り直しでは行の割り当てをずらす（サビ頭のフックは固定）
     blocks.forEach((b,j)=>{
       let ln=null;
-      if(mm && sec.role==="C" && j>0 && j===blocks.length-1 && b.length===blocks[0].length) ln={...L[0]};   // Melodic Math: サビはタイトル（フック）で始めてタイトルで終わる
+      if(mm && sec.role==="C" && j>0 && (song.lang!=="ja"||blocks.length>=3) && j===blocks.length-1 && b.length===blocks[0].length) ln={...L[0]};   /* 2行しかないサビでは使わない（フックだけになる） */   // Melodic Math: サビはタイトル（フック）で始めてタイトルで終わる
       else if(!mm && sec.role==="C" && j>0 && sig(b)===sig(blocks[0])) ln={...L[0]};  // 同じメロディには同じ言葉
       else {
         const order=sec.role==="C"&&j===0 ? [0] : [...list.keys()].map(k=>(p+k)%list.length);
@@ -3008,7 +3326,12 @@ function makeLyrics(song, lseed){
           if(bestK>=0){ p=bestK+1; used.add(bestK); }
         } else
         for(const k of order){ ln=realizeLine(list[k],b.length); if(ln){ p=k+1; break; } }
-        if(!ln && sec.role==="C" && j===0){ const hw=song.lang==="ja"?th.hook.split(/\s+/).flatMap(moraSplit):th.hook.split(" "); const w=hw.slice(0,b.length); ln={words:w,ja:th.C[0].ja,units:[...w,...Array(b.length-w.length).fill("-")],text:w.join(song.lang==="ja"?"":" ")+" ~"}; }
+        if(!ln && sec.role==="C" && j===0){ const w=song.lang==="ja"?hookFitJA(th.hook,b.length):th.hook.split(" ").slice(0,b.length);   // 日本語のフックは単語の途中や「〜の」で切らない
+          if(w.length) ln={words:w,ja:th.C[0].ja,units:[...w,...Array(b.length-w.length).fill("-")],text:song.lang==="ja"?hookTextJA(th.hook,w.length)+(b.length>w.length?" ~":""):w.join(" ")+" ~"}; }
+        if(!ln && sec.role==="C" && j>0 && song.lang==="ja"){              // サビの短いフレーズに合う行がなければ、フックを単語の区切りで入るだけ歌う（「ららら」にしない）
+          const hw=hookFitJA(th.hook,b.length);
+          if(hw.length) ln={words:hw,ja:"",units:[...hw,...Array(b.length-hw.length).fill("-")],text:hookTextJA(th.hook,hw.length)+(b.length>hw.length?" ~":"")};
+        }
         if(!ln) for(const s of LS.SP){ ln=realizeLine(s,b.length); if(ln) break; }
         if(!ln){ const w=Array(b.length).fill(LS.fill); ln={words:w,units:w,text:w.join(song.lang==="ja"?"":" ")}; }
       }
@@ -3018,6 +3341,57 @@ function makeLyrics(song, lseed){
     lines[sec.id]=L;
   }
   song.lyrics=lines;
+}
+/* リアレンジ: 読み込んだ歌詞（ノートごと）をセクション・フレーズごとの行にまとめる（表示・メモ・.svp 用） */
+function lockLyrics(song){
+  const lines={}; song.phrases={};
+  for(const sec of song.TL.secs){
+    const ns=song.parts.Vocal.filter(n=>n.sec===sec.id).sort((a,b)=>a.t-b.t); if(!ns.length) continue;
+    let groups;
+    if(ns.some(n=>n.line!=null)){ groups=[]; ns.forEach(n=>{ if(!groups.length || n.line!=null) groups.push([]); groups[groups.length-1].push(n); }); }   // 埋め込んだ行の区切り
+    else {                                                                   // 古いファイル: 行を作るときと同じ基準（6〜11音・フレーズの切れ目）で区切る。語尾を伸ばした「-」のあとも行の切れ目とみなす
+      let q=0; const tmp=ns.map((n,i)=>{ const pv=ns[i-1]; if(pv && (pv.ph!==n.ph || (pv.lyric==="-" && n.lyric!=="-"))) q++; return {n,ph:q}; });
+      groups=segmentNotes(tmp).map(g=>g.map(x=>x.n));
+    }
+    song.phrases[sec.id]=groups;
+    lines[sec.id]=groups.map(g=>{ const u=g.map(n=>n.lyric||"-"), w=u.filter(x=>x!=="-");
+      const ln=g[0].line!=null?g[0].line.split("\t"):null;
+      return { words:w, units:u, ja:ln&&ln[1]||"", text:ln ? ln[0] : (song.lang==="ja"?w.join(""):w.join(" "))+(u.length>w.length?" ~":"") }; });
+  }
+  song.lyrics=lines;
+}
+/* リアレンジ（歌詞固定・歌メロ作り直し）: 読み込んだ歌詞の行（LOCK.lines）を、新しい歌メロの音符に割り当て直す。
+   セクションの音符を行の数に区切り直し（元の行の音符数に近く・フレーズの切れ目で）、行がテーマの歌詞の行から作ったものなら
+   realizeLine で新しい音符数に合わせて言い直す（省ける語を足し引きする）。合わないときは語を順に置き、余った音符は伸ばす（"-"） */
+function refitLyrics(song,LK){
+  makeLyrics(song,song.P.lyricSeed||0);                                      // 読み込んだ歌詞がないセクション（足したDメロなど）用
+  const LS=lyrSet(song.lang), th=LS.P[song.themeIdx];
+  const pool=[...["A1","B1","C","A2","B2","D"].flatMap(k=>th[k]||[]), ...LS.SP];
+  const isSub=(w,full)=>{ let i=0; for(const x of full){ if(i<w.length && x===w[i]) i++; } return i===w.length; };
+  const source=w=>{ let best=null, bs=1e9; for(const L of pool){ const full=L.items.flatMap(it=>it.w); if(L.min<=w.length && full.length>=w.length && isSub(w,full)){ const d=full.length-w.length; if(d<bs){ bs=d; best=L; } } } return best; };
+  for(const sec of song.TL.secs){
+    const src=LK.lines[sec.id] || (LK.secs.find(x=>x.role===sec.role && LK.lines[x.id]) ? LK.lines[LK.secs.find(x=>x.role===sec.role && LK.lines[x.id]).id] : null);
+    const ns=song.parts.Vocal.filter(n=>n.sec===sec.id).sort((a,b)=>a.t-b.t);
+    if(!src || !src.length || !ns.length) continue;
+    const T=ns.length, Ln=Math.min(T,Math.max(src.length,segmentNotes(ns).length));   // 新しい歌メロのほうが長い（行が足りない）ときは、読み込んだ行を頭から繰り返す
+    const info=[...Array(Ln).keys()].map(j=>src[j%src.length]).map(l=>{ const P=source(l.words); return {l,P,min:P?P.min:l.words.length,tgt:Math.max(1,l.units.length)}; });
+    const cut=i=>i>0 && i<T && ns[i].ph!==ns[i-1].ph;
+    const D=[...Array(Ln+1)].map(()=>Array(T+1).fill(Infinity)), B=[...Array(Ln+1)].map(()=>Array(T+1).fill(-1)); D[0][0]=0;
+    for(let j=0;j<Ln;j++) for(let i=0;i<T;i++){ if(D[j][i]===Infinity) continue;
+      for(let e=i+1;e<=T-(Ln-1-j);e++){ const L=e-i, f=info[j];
+        if(j===Ln-1 && e!==T) continue;
+        const c=D[j][i]+Math.abs(L-f.tgt)+(L<f.min?(f.min-L)*20:0)+(e<T && !cut(e)?3:0);
+        if(c<D[j+1][e]){ D[j+1][e]=c; B[j+1][e]=i; } } }
+    const bounds=[]; let e=T; for(let j=Ln;j>0;j--){ const i=B[j][e]; bounds.unshift([i,e]); e=i; }
+    const out=bounds.map(([i,e],j)=>{ const f=info[j], N=e-i, blk=ns.slice(i,e);
+      let ln=f.P ? realizeLine(f.P,N) : null;
+      if(ln) ln={...ln, ja:f.l.ja||ln.ja};
+      else { const w=f.l.words.slice(0,N), mel=N-w.length, base=f.l.text.replace(/\s*~$/,"");
+        ln={words:w, ja:f.l.ja, units:[...w,...Array(mel).fill("-")], text:(w.length===f.l.words.length?base:(song.lang==="ja"?w.join(""):w.join(" ")))+(mel?" ~":"")}; }
+      blk.forEach((n,k)=>n.lyric=ln.units[k]??"-");
+      return ln; });
+    song.lyrics[sec.id]=out;
+  }
 }
 function lyricsText(song){
   const th=lyrSet(song.lang).L[song.themeIdx];
@@ -3033,7 +3407,7 @@ function uuid(){ return (crypto.randomUUID ? crypto.randomUUID() : "xxxxxxxx-xxx
    メロディと同じリズム・同じ歌詞で、上3度（Noel が上）または下3度を付ける。
    強拍・長い音はコードトーンのみ。3度が使えないときは4度→5度に逃がし、全パート＋メロディ本体と
    半音（1半音・♭9）でぶつからないものを選ぶ。どれも無理な音だけメロディとユニゾンにする。
-   落ちサビ（drop）はソロのまま。音高は MIDI の Vocal と同じ実音域で持ち、.svp 書き出し時にだけオクターブを上げる */
+   落ちサビ（drop）はソロのまま。音高は MIDI の Vocal と同じ実音域で持ち、.svp 書き出し時にだけ歌える範囲へオクターブを合わせる（svShift） */
 const HARM_MAX=72, HARM_MIN=45;                                   // 実音域の上限 C5 ／下限 A2
 /* mode: up＝上3度／down＝下3度／both＝上下3度を同時（2本・左右に少し振る）／
          low＝サビの長い音（1拍以上）だけに3〜5度下のコード音（右に振る）。リードギターのオブリガードは別の選択（makeObbligato）
@@ -3060,7 +3434,7 @@ function makeHarmony(song, mode){
         for(const d of (opt.strict?[dir]:[dir,-dir])){
           for(const iv of ivs){
             const m=n.midi+d*iv;
-            if(m>(song.harmMax||HARM_MAX) || m<HARM_MIN || !pool.includes(pcOf(m)) || sc.clash(m,n.t,n.dur)) continue;
+            if(m>(song.harmMax||HARM_MAX) || m<Math.max(HARM_MIN, song.harmMin||0) || !pool.includes(pcOf(m)) || sc.clash(m,n.t,n.dur)) continue;
             const sco=(pref[iv]??0)+(d===dir?0:6)+(prevH!=null?Math.abs(m-prevH)*0.2:0);
             if(sco<bs){ bs=sco; best=m; }
           }
@@ -3162,7 +3536,7 @@ function buildSVP(song, breath, oct, chopOnly){
   const V= chopOnly ? chopNotes(song).map(n=>({t:n.t, dur:n.dur, midi:n.midi>=72?n.midi-12:n.midi, lyric:chopLyric(song,n), k:1}))   // チョップは Synth の音域（C5〜）なので1オクターブ下げて女声に
                     : [...song.parts.Vocal].sort((a,b)=>a.t-b.t);
   if(chopOnly) for(let i=0;i+1<V.length;i++) if(V[i].t+V[i].dur>V[i+1].t) V[i].dur=Math.max(0.05,V[i+1].t-V[i].t);   // SynthV は重なった音符を嫌うので詰める
-  const up=(oct && !chopOnly)?12:0;   // 日本語詞は Mai 2 の日本語（かなをそのまま歌詞に）   // Liam の実音域を女声ボイス用に1オクターブ上げる
+  const up=(oct && !chopOnly)?(song.svShift??12):0;   // 歌える範囲（SV_RANGE）に合わせたオクターブ。オフなら MIDI の Vocal と同じ高さ   // 日本語詞は Mai 2 の日本語（かなをそのまま歌詞に）   // Liam の実音域を女声ボイス用に1オクターブ上げる
   const note=(t,dur,pitch,lyric)=>({ musicalType:"singing", onset:Math.round(t*BLICK), duration:Math.round(dur*BLICK),
     lyrics:lyric, phonemes:"", accent:"", pitch, detune:0, instantMode:false,
     attributes:{dF0Left:0.0, dF0Right:0.0, dF0Vbr:0.0, evenSyllableDuration:true} });
@@ -3220,14 +3594,19 @@ const AD2_MAP={ 35:36, 36:36,                          // キック
   49:77, 57:79, 52:81, 55:81,                           // クラッシュ → Cymbal 1 / 2 / 3
   51:60, 59:60, 53:61,                                  // ライド Ride 1 Tip ／ Bell
   50:71, 48:71, 47:69, 45:69, 43:67, 41:67 };           // タム → Tom 1 / 2 / 3（3タムのキットでも鳴るように Tom 4 は使わない）
+/* AD2 の MIDI マップ（2026-10-21）: ユーザーの Logic プロジェクトの AD2 はすべて Map＝General MIDI 型（ProjectData の MidiFilterMap_MAP_KeyMap を読んで確認）。
+   既定は GM の番号のまま書き出す（gm）。AD2 を初期設定（標準マップ）で使うときだけ AD2 標準の番号に変換する（ad2）。
+   AD2_GM_OK＝GM 型マップで AD2 の打ち分けが割り当てられている番号。ここにない音（39 クラップ・54 タンバリン・79 きしみ など）は鳴らない */
+const drumMap=()=>{ const e=typeof document!=="undefined" && $("optDrumMap"); return e&&e.value==="ad2"?"ad2":"gm"; };
+const AD2_GM_OK=new Set([31,35,36,37,38,40,41,42,43,44,45,46,47,48,49,50,51,52,53,55,56,57,59]);
 const instMode=()=>{ const e=$("optInst"); return e?e.value:"ad"; };
-function ad2Note(n){ return n.midi===42 && n.vel>=80 ? 50 : AD2_MAP[n.midi]; }    // アクセントのクローズドハット（上位1割ほど）はシャフト（Closed 1 Shaft）で太く
+function ad2Note(n){ if(drumMap()==="gm") return AD2_GM_OK.has(n.midi)?n.midi:undefined; return n.midi===42 && n.vel>=80 ? 50 : AD2_MAP[n.midi]; }   // GM 型マップなら番号はそのまま（割り当てのない音は Perc へ）    // アクセントのクローズドハット（上位1割ほど）はシャフト（Closed 1 Shaft）で太く
 function midiParts(song,inst){
   const out=PARTS.map(p=>({p, name:(song.names&&song.names[p])||(p==="Synth"?(song.synthName||"Synth"):p), notes:song.parts[p]||[], ch:CH[p], prog:(song.prog&&song.prog[p]!=null)?song.prog[p]:PROG[p]}));
   if(inst!=="ad") return out;
   const dr=out.find(x=>x.p==="Drums"), perc=[];
   dr.notes=song.parts.Drums.flatMap(n=>{ const m=ad2Note(n); if(m==null){ perc.push(n); return []; } return [{...n,midi:m}]; });
-  dr.name=song.names&&song.names.Drums?"Drums (Nijika · Addictive Drums 2)":"Drums (Addictive Drums 2)"; dr.prog=null;                      // プログラムチェンジを送らない（AD2 のキットを勝手に変えない）
+  dr.name=song.names&&song.names.Drums?song.names.Drums.replace(/\)$/," - Addictive Drums 2)"):"Drums (Addictive Drums 2)";   // 型ごとの名前（Nijika・Takahashi など）を残す dr.prog=null;                      // プログラムチェンジを送らない（AD2 のキットを勝手に変えない）
   if(perc.length) out.splice(1,0,{p:"Drums", name:"Perc (GM: Clap / Tambourine / Squeak)", notes:perc, ch:CH.Drums, prog:null});   // AD2 にないクラップ・タンバリンは GM のまま別トラック
   const bs=out.find(x=>x.p==="Bass");                                     // MODO BASS 2 は弦を物理モデルで鳴らす単音楽器：重なった音は次の音の直前で切る
   const modoNote=m=>{ m+=MODO_BASS_SHIFT; while(m<MODO_BASS_RANGE[0]) m+=12; while(m>MODO_BASS_RANGE[1]) m-=12; return m; };   // MODO BASS 2 は1オクターブ上の番号で受ける（E1〜D4 だけが鳴る）
@@ -3238,7 +3617,7 @@ function midiParts(song,inst){
 }
 function buildMIDI(song,inst=instMode()){
   const us=Math.round(60000000/song.bpm);
-  const tempo=[{tick:0,ord:0,data:[0xff,0x51,0x03,(us>>>16)&255,(us>>>8)&255,us&255]}, {tick:0,ord:0,data:metaText(0x03,"Song Info")}];
+  const tempo=[{tick:0,ord:0,data:[0xff,0x51,0x03,(us>>>16)&255,(us>>>8)&255,us&255]}, {tick:0,ord:0,data:metaText(0x03,"Song Info")}, {tick:0,ord:0,data:metaText(0x01,"OCC-JPOP "+hashOf(song.P))}];   // 設定を埋め込む（📂 読み込んでリアレンジ用）
   let prevBeats=0;
   song.TL.bars.forEach(b=>{ if(b.beats!==prevBeats){ tempo.push({tick:Math.round(b.t*PPQ),ord:0,data:[0xff,0x58,0x04,b.beats,2,24,8]}); prevBeats=b.beats; } });
   song.TL.secs.forEach(s=>tempo.push({tick:Math.round(s.t0*PPQ),ord:1,data:metaText(0x06,s.en)}));
@@ -3250,6 +3629,10 @@ function buildMIDI(song,inst=instMode()){
     if(prog!=null) ev.push({tick:0,ord:0,data:[0xC0|ch,prog]});
     ev.push({tick:0,ord:0,data:[0xB0|ch,7,cc7(song,p)]});                                    // CC7 = トラック音量
     (song.cc[p]||[]).forEach(c=>ev.push({tick:Math.round(c.t*PPQ),ord:1,data:[0xB0|ch,11,c.val&127]}));
+    if(p==="Vocal" && notes===song.parts.Vocal && song.lyrics){            // 歌詞の行の始まりと行の文字（📂 読み込んでリアレンジで行を戻す）
+      for(const sec of song.TL.secs){ const ns=notes.filter(n=>n.sec===sec.id).sort((a,b)=>a.t-b.t); let i=0;
+        for(const l of (song.lyrics[sec.id]||[])){ if(!ns[i]) break; ev.push({tick:Math.round(ns[i].t*PPQ),ord:2.4,data:metaText(0x01,"OCC-LINE "+l.text+(l.ja?"\t"+l.ja:""))}); i+=l.units.length;   /* 英語詞は日本語訳もタブで続ける */ } }
+    }
     for(const n of notes){
       const on=Math.round(n.t*PPQ), off=Math.max(on+1,Math.round((n.t+n.dur)*PPQ));
       if(p==="Vocal" && n.lyric) ev.push({tick:on,ord:2.5,data:metaText(0x05,n.lyric)});   // 歌詞イベント（SynthV の MIDI 読み込み用）
@@ -3324,6 +3707,7 @@ function playSong(song,popt={}){
   const ctx=OFF||actx;
   const spb=60/song.bpm, t0=OFF?0:actx.currentTime+0.2, mtof=m=>440*Math.pow(2,(m-69)/12);
   const master=ctx.createGain(); master.gain.value=0.8; master.connect(ctx.destination); if(!OFF) playMaster=master;
+  if(song.fade){ master.gain.setValueAtTime(0.8,t0+song.fade.t0*spb); master.gain.linearRampToValueAtTime(0.0001,t0+song.fade.t1*spb); }   // 終わり方「フェードアウト」
   const bus=(g)=>{ const n=ctx.createGain(); n.gain.value=g; n.connect(master); return n; };
   const strBus=bus(1);
   const cc=song.cc.Strings; strBus.gain.setValueAtTime(0.8,t0); cc.forEach(c=>strBus.gain.linearRampToValueAtTime(Math.max(0.0001,c.val/127),t0+c.t*spb));
@@ -3455,15 +3839,17 @@ const locks={};
 let curBand="oasis", lastPack=0;                                                         // いまどのスタイルの設定になっているか
 /* スタイルごとの自動設定（その系統の曲を手で選んだときだけ当てる。あとから個別に変えてよい） */
 const BAND_PRESET={
-  oasis:    {optDrone:1,optEdge:1,optLarry:1,optPedal:1,optU2:1,optBDBreak:1,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:0,optOdd:0,optSvpOct:1,optTamb:1,optPop:0,optClap:0,optSynth:0,optBigStop:0,optMod:0,optPfRiff:0,optLang:"en"},
-  smiths:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:1,optRourke:1,optJamerson:0,optCopeland:0,optHalfDrop:0,optOdd:0,optSvpOct:1,optTamb:1,optPop:0,optClap:0,optSynth:0,optBigStop:0,optMod:0,optPfRiff:0,optLang:"en"},
-  bacharach:{optDrone:0,optEdge:1,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:1,optRourke:0,optJamerson:1,optCopeland:1,optHalfDrop:1,optOdd:1,optSvpOct:0,optTamb:0,optPop:0,optClap:0,optSynth:0,optBigStop:0,optMod:0,optPfRiff:0,optLang:"en"},
-  taylor:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:0,optTamb:0,optPop:1,optClap:1,optSynth:1,optBigStop:1,optMod:0,optPfRiff:0,optLang:"en"},
-  yoasobi:  {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:0,optTamb:0,optPop:1,optClap:1,optSynth:1,optBigStop:0,optMod:1,optPfRiff:1,optLang:"ja"},
-  yonezu:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:1,optTamb:0,optPop:1,optClap:1,optSynth:1,optBigStop:0,optMod:1,optPfRiff:0,optLang:"ja"},
-  kessoku:  {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:1,optRourke:1,optJamerson:0,optCopeland:0,optHalfDrop:0,optOdd:0,optSvpOct:0,optTamb:0,optPop:1,optClap:0,optSynth:0,optBigStop:0,optMod:1,optPfRiff:0,optLang:"ja"},
-  jersey:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:0,optTamb:0,optPop:1,optClap:1,optSynth:1,optBigStop:0,optMod:0,optPfRiff:0,optLang:"ja"},
-  weeknd:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:0,optTamb:0,optPop:1,optClap:0,optSynth:1,optBigStop:0,optMod:0,optPfRiff:0,optLang:"en"}
+  oasis:    {optDrone:1,optEdge:1,optLarry:1,optPedal:1,optU2:1,optBDBreak:1,optHotei:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:0,optOdd:0,optSvpOct:1,optTamb:1,optPop:0,optClap:0,optSynth:0,optBigStop:0,optMod:0,optPfRiff:0,optLang:"en"},
+  smiths:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optHotei:0,optMarr:1,optRourke:1,optJamerson:0,optCopeland:0,optHalfDrop:0,optOdd:0,optSvpOct:1,optTamb:1,optPop:0,optClap:0,optSynth:0,optBigStop:0,optMod:0,optPfRiff:0,optLang:"en"},
+  bacharach:{optDrone:0,optEdge:1,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optHotei:0,optMarr:1,optRourke:0,optJamerson:1,optCopeland:1,optHalfDrop:1,optOdd:1,optSvpOct:1,optTamb:0,optPop:0,optClap:0,optSynth:0,optBigStop:0,optMod:0,optPfRiff:0,optLang:"en"},
+  taylor:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optHotei:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:1,optTamb:0,optPop:1,optClap:1,optSynth:1,optBigStop:1,optMod:0,optPfRiff:0,optLang:"en"},
+  oudou:    {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optHotei:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:1,optTamb:0,optPop:1,optClap:0,optSynth:0,optBigStop:0,optMod:0,optPfRiff:0,optLang:"ja"},   // 王道進行のバリエーション: ポップのドラム＋8分ルート
+  yoasobi:  {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optHotei:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:1,optTamb:0,optPop:1,optClap:1,optSynth:1,optBigStop:0,optMod:1,optPfRiff:1,optLang:"ja"},
+  yonezu:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optHotei:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:1,optTamb:0,optPop:1,optClap:1,optSynth:1,optBigStop:0,optMod:1,optPfRiff:0,optLang:"ja"},
+  hotei:    {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optHotei:1,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:0,optOdd:0,optSvpOct:1,optTamb:0,optPop:1,optClap:0,optSynth:0,optBigStop:0,optMod:0,optPfRiff:0,optLang:"ja"},
+  kessoku:  {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optHotei:0,optMarr:1,optRourke:1,optJamerson:0,optCopeland:0,optHalfDrop:0,optOdd:0,optSvpOct:1,optTamb:0,optPop:1,optClap:0,optSynth:0,optBigStop:0,optMod:1,optPfRiff:0,optLang:"ja"},
+  jersey:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optHotei:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:1,optTamb:0,optPop:1,optClap:1,optSynth:1,optBigStop:0,optMod:0,optPfRiff:0,optLang:"ja"},
+  weeknd:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optHotei:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:1,optTamb:0,optPop:1,optClap:0,optSynth:1,optBigStop:0,optMod:0,optPfRiff:0,optLang:"en"}
 };
 let SONG=null;
 const $=id=>document.getElementById(id);
@@ -3523,7 +3909,7 @@ function renderVols(){
 function readParams(){
   return { pack:+$("sel_pack").value, a:+$("sel_a").value, b:+$("sel_b").value, c:+$("sel_c").value,
     key:+$("key").value, bpm:Math.max(40,Math.min(260,+$("bpm").value||128)), seed:+$("seed").value||0,
-    drone:$("optDrone").checked, drums:$("optDrums").checked, tamb:$("optTamb").checked, build:$("optBuild").checked, oct:$("optSvpOct").checked, u2:$("optU2").checked, edge:$("optEdge").checked, larry:$("optLarry").checked, pedal:$("optPedal").checked, bdBreak:$("optBDBreak").checked, bdGroove:$("optBDGroove").checked, introCut:$("optCut").checked, marr:$("optMarr").checked, mm:$("optMM").checked, rourke:$("optRourke").checked, jamerson:$("optJamerson").checked, copeland:$("optCopeland").checked, halfDrop:$("optHalfDrop").checked, odd:$("optOdd").checked, recycle:$("optRecycle").checked, pop:$("optPop").checked, clap:$("optClap").checked, synth:$("optSynth").checked, bigStop:$("optBigStop").checked, mod:$("optMod").checked, pfRiff:$("optPfRiff").checked, lang:$("optLang").value, jersey:$("optJersey").value, obb:$("optObb").value, harm:$("optHarm").value, inst:$("optInst").value,
+    drone:$("optDrone").checked, drums:$("optDrums").checked, tamb:$("optTamb").checked, build:$("optBuild").checked, oct:$("optSvpOct").checked, u2:$("optU2").checked, edge:$("optEdge").checked, larry:$("optLarry").checked, pedal:$("optPedal").checked, bdBreak:$("optBDBreak").checked, bdGroove:$("optBDGroove").checked, introCut:+$("optCut").value, fade:$("optEnd").value==="fade", breath:$("optBreath").checked, marr:$("optMarr").checked, hotei:$("optHotei").checked, mm:$("optMM").checked, rourke:$("optRourke").checked, jamerson:$("optJamerson").checked, copeland:$("optCopeland").checked, halfDrop:$("optHalfDrop").checked, odd:$("optOdd").checked, recycle:$("optRecycle").checked, pop:$("optPop").checked, clap:$("optClap").checked, synth:$("optSynth").checked, bigStop:$("optBigStop").checked, mod:$("optMod").checked, pfRiff:$("optPfRiff").checked, lang:$("optLang").value, jersey:$("optJersey").value, obb:$("optObb").value, harm:$("optHarm").value, inst:$("optInst").value,
     ext:$("optExt").value, vol:{...VOL}, theme:+$("optTheme").value, lyricSeed:+($("optTheme").dataset.lseed||0) };
 }
 function comboCode(P){ return `P${pad2(P.pack)}-A${pad2(P.a)}-B${pad2(P.b)}-C${pad2(P.c)}`; }
@@ -3540,18 +3926,22 @@ function initFolds(){
 }
 function updCombo(){ updOptCount(); if(!$("sel_c")) return; const P=readParams(); $("combo").innerHTML=`<b>${comboCode(P)}</b> · ${keyName(P)} · ${P.bpm} · s${P.seed}`; }
 function fmt(sec){ const m=Math.floor(sec/60), s=Math.round(sec%60); return `${m}:${String(s).padStart(2,"0")}`; }
-function saveHash(P){ try{ history.replaceState(null,"",`#p=${P.pack}&a=${P.a}&b=${P.b}&c=${P.c}&k=${P.key}&bpm=${P.bpm}&s=${P.seed}&dn=${+P.drone}&dr=${+P.drums}&tb=${+P.tamb}&bu=${+P.build}&oc=${+P.oct}&u2=${+P.u2}&ed=${+P.edge}&lm=${+P.larry}&pd=${+P.pedal}&bb=${+P.bdBreak}&bg=${+P.bdGroove}&cut=${+P.introCut}&mr=${+P.marr}&mm=${+P.mm}&rk=${+P.rourke}&jm=${+P.jamerson}&cp=${+P.copeland}&hd=${+P.halfDrop}&od=${+P.odd}&rc=${+P.recycle}&pp=${+P.pop}&cl=${+P.clap}&sy=${+P.synth}&bs=${+P.bigStop}&md=${+P.mod}&pr=${+P.pfRiff}&lg=${P.lang}&js=${P.jersey}&ob=${P.obb}&hm=${P.harm}&in=${P.inst}&th=${P.theme}&ls=${P.lyricSeed}&ext=${P.ext}&vol=${VOL_KEYS.map(k=>VOL[k]).join(".")}`); }catch(e){} }
-function loadHash(){
+function hashOf(P){ return `p=${P.pack}&a=${P.a}&b=${P.b}&c=${P.c}&k=${P.key}&bpm=${P.bpm}&s=${P.seed}&dn=${+P.drone}&dr=${+P.drums}&tb=${+P.tamb}&bu=${+P.build}&oc=${+P.oct}&u2=${+P.u2}&ed=${+P.edge}&lm=${+P.larry}&pd=${+P.pedal}&bb=${+P.bdBreak}&bg=${+P.bdGroove}&cut=${+P.introCut}&en=${P.fade?"fade":"ring"}&br=${+P.breath}&mr=${+P.marr}&ht=${+P.hotei}&mm=${+P.mm}&rk=${+P.rourke}&jm=${+P.jamerson}&cp=${+P.copeland}&hd=${+P.halfDrop}&od=${+P.odd}&rc=${+P.recycle}&pp=${+P.pop}&cl=${+P.clap}&sy=${+P.synth}&bs=${+P.bigStop}&md=${+P.mod}&pr=${+P.pfRiff}&lg=${P.lang}&js=${P.jersey}&ob=${P.obb}&hm=${P.harm}&in=${P.inst}&dm=${drumMap()}&th=${P.theme}&ls=${P.lyricSeed}&ext=${P.ext}&vol=${VOL_KEYS.map(k=>VOL[k]).join(".")}`; }   // 設定の文字列（URL と、書き出す MIDI の Song Info に埋め込む）
+function saveHash(P){ try{ history.replaceState(null,"","#"+hashOf(P)); }catch(e){} }
+function loadHash(str){
   try{
-    const h=new URLSearchParams(location.hash.slice(1)); if(!h.has("p")) return;
+    const h=new URLSearchParams(str!=null?str:location.hash.slice(1)); if(!h.has("p")) return;
     const set=(id,v)=>{ if(v!=null) $(id).value=v; };
     set("sel_pack",h.get("p")); set("sel_a",h.get("a")); set("sel_b",h.get("b")); set("sel_c",h.get("c"));
     set("key",h.get("k")); set("bpm",h.get("bpm")); set("seed",h.get("s"));
     if(h.has("hm") && ["up","down","both","low","none"].includes(h.get("hm"))) $("optHarm").value=h.get("hm");
     if(h.get("hm")==="obb"){ $("optHarm").value="none"; $("optObb").value="full"; }   // 古い URL（ハモリの選択肢にオブリガードがあった頃）
     if(h.has("ob") && ["off","gaps","full"].includes(h.get("ob"))) $("optObb").value=h.get("ob");
-    [["dn","optDrone"],["dr","optDrums"],["tb","optTamb"],["bu","optBuild"],["oc","optSvpOct"],["u2","optU2"],["ed","optEdge"],["lm","optLarry"],["pd","optPedal"],["bb","optBDBreak"],["bg","optBDGroove"],["cut","optCut"],["mr","optMarr"],["mm","optMM"],["rk","optRourke"],["jm","optJamerson"],["cp","optCopeland"],["hd","optHalfDrop"],["od","optOdd"],["rc","optRecycle"],["pp","optPop"],["cl","optClap"],["sy","optSynth"],["bs","optBigStop"],["md","optMod"],["pr","optPfRiff"]].forEach(([k,id])=>{ if(h.has(k)) $(id).checked=h.get(k)==="1"; });
+    [["dn","optDrone"],["dr","optDrums"],["tb","optTamb"],["bu","optBuild"],["oc","optSvpOct"],["u2","optU2"],["ed","optEdge"],["lm","optLarry"],["pd","optPedal"],["bb","optBDBreak"],["bg","optBDGroove"],["br","optBreath"],["mr","optMarr"],["ht","optHotei"],["mm","optMM"],["rk","optRourke"],["jm","optJamerson"],["cp","optCopeland"],["hd","optHalfDrop"],["od","optOdd"],["rc","optRecycle"],["pp","optPop"],["cl","optClap"],["sy","optSynth"],["bs","optBigStop"],["md","optMod"],["pr","optPfRiff"]].forEach(([k,id])=>{ if(h.has(k)) $(id).checked=h.get(k)==="1"; });
+    if(h.has("en") && ["ring","fade"].includes(h.get("en"))) $("optEnd").value=h.get("en");   // 終わり方
+    if(h.has("cut")) $("optCut").value=["0","1","2"].includes(h.get("cut"))?h.get("cut"):"0";   // 始まり方（0 イントロ／1 U2 ブレイク／2 すぐ A メロ）
     if(h.has("in") && ["ad","gm"].includes(h.get("in"))) $("optInst").value=h.get("in");
+    if(h.has("dm") && ["gm","ad2"].includes(h.get("dm"))) $("optDrumMap").value=h.get("dm");
     if(h.has("js") && ["off","chorus","all"].includes(h.get("js"))) $("optJersey").value=h.get("js");
     if(h.has("lg") && ["en","ja"].includes(h.get("lg"))){ $("optLang").value=h.get("lg"); fillThemes(); }
     if(h.has("th")) $("optTheme").value=h.get("th");
@@ -3562,10 +3952,132 @@ function loadHash(){
   }catch(e){}
 }
 
+/* ============================ 📂 読み込んでリアレンジ（2026-10-25） ============================
+   このアプリで書き出した MIDI を読み、歌メロ・歌詞・コード・キー・構成はそのまま、伴奏（ドラム・ベース・ギター・ピアノ・ハモリなど）だけを作り直す。
+   設定は MIDI の Song Info に埋め込んだ文字列（OCC-JPOP …）から。埋め込みのない古いファイルはファイル名から戻す（ファイル名に出ない設定は型の既定） */
+let LOCKED=null;
+function parseSMF(u8){
+  const dv=new DataView(u8.buffer,u8.byteOffset,u8.byteLength); let p=0;
+  const str=(at,n)=>{ let t=""; for(let i=0;i<n;i++) t+=String.fromCharCode(u8[at+i]); return t; };
+  if(str(0,4)!=="MThd") throw new Error("MIDI ファイルではありません");
+  const hl=dv.getUint32(4), ntr=dv.getUint16(10), ppq=dv.getUint16(12); p=8+hl;
+  const tracks=[], dec=new TextDecoder();
+  for(let k=0;k<ntr && p+8<=u8.length;k++){
+    if(str(p,4)!=="MTrk") break;
+    const len=dv.getUint32(p+4); let q=p+8; const end=q+len; let tick=0, run=0, name=""; const ev=[];
+    const vlq=()=>{ let v=0,b; do{ b=u8[q++]; v=(v<<7)|(b&0x7f); }while(b&0x80); return v; };
+    while(q<end){
+      tick+=vlq(); let st=u8[q];
+      if(st===0xff){ q++; const ty=u8[q++], l=vlq(), txt=dec.decode(u8.subarray(q,q+l)); q+=l; if(ty===0x03 && !name) name=txt; ev.push({tick,meta:ty,text:txt}); continue; }
+      if(st===0xf0||st===0xf7){ q++; q+=vlq(); continue; }
+      if(st&0x80){ run=st; q++; } else st=run;
+      const hi=st&0xf0, d1=u8[q++], d2=(hi===0xc0||hi===0xd0)?0:u8[q++];
+      if(hi===0x90 && d2>0) ev.push({tick,on:d1,vel:d2}); else if(hi===0x80 || hi===0x90) ev.push({tick,off:d1});
+    }
+    tracks.push({name,ev}); p=end;
+  }
+  return {ppq,tracks};
+}
+/* MIDI から 歌メロ（Vocal トラック）・歌詞・セクションの区切り・埋め込み設定を読む */
+function readSongMidi(u8){
+  const M=parseSMF(u8), info=M.tracks[0]||{ev:[]};
+  const set=info.ev.find(e=>e.meta===0x01 && /^OCC-JPOP /.test(e.text));
+  const markers=info.ev.filter(e=>e.meta===0x06 && !/^Key Change/.test(e.text)).map(e=>({t:e.tick/M.ppq,name:e.text}));
+  const vt=M.tracks.find(t=>/^Vocal/.test(t.name) && !/Harmony/.test(t.name));
+  if(!vt) throw new Error("Vocal トラックが見つかりません");
+  const notes=[], open={}, lyr={}, line={};
+  vt.ev.forEach(e=>{
+    if(e.meta===0x05) lyr[e.tick]=e.text;
+    else if(e.meta===0x01 && /^OCC-LINE /.test(e.text)) line[e.tick]=e.text.slice(9);
+    else if(e.on!=null) (open[e.on]=open[e.on]||[]).push(e);
+    else if(e.off!=null && open[e.off] && open[e.off].length){ const s=open[e.off].shift(); notes.push({t:s.tick/M.ppq,dur:(e.tick-s.tick)/M.ppq,midi:e.off,vel:s.vel,lyric:lyr[s.tick],line:line[s.tick]}); }
+  });
+  notes.sort((a,b)=>a.t-b.t);
+  let ph=-1, k=0;                                                            // フレーズ（0.45拍以上の休み・セクションの区切りで分ける）。息継ぎ・ハモリ・歌詞の行に使う
+  notes.forEach((n,i)=>{ const pv=notes[i-1]; const brk=!pv || n.t-(pv.t+pv.dur)>=0.45 || markers.some(m=>m.t>pv.t+1e-6 && m.t<=n.t+1e-6); if(brk){ ph++; k=0; } n.ph=ph; n.k=k++; });
+  if(!notes.length) throw new Error("Vocal トラックに音がありません");
+  return {setting:set?set.text.slice(9):null, markers, vocal:notes};
+}
+/* 設定から作る構成（セクションの位置）がファイルの区切りと一致するか確かめ、LOCK を作る（「すぐ A メロ」で詰めた曲は 1 小節ずらす） */
+function lockFromMidi(R,P){
+  const TL=buildTimeline(P.ext||"none",P.introCut,P.odd), secs=TL.secs.map(x=>({t:x.t0}));
+  const same=a=>a.length===R.markers.length && a.every((x,i)=>Math.abs(x.t-R.markers[i].t)<1e-3);
+  if(same(secs)) return {vocal:R.vocal, off:0};
+  if(P.introCut==2 && TL.secs[0].cut){ const L=TL.secs[0].t1; if(same(secs.slice(1).map(x=>({t:x.t-L})))) return {vocal:R.vocal, off:L}; }
+  return null;
+}
+/* 読み込んだ歌メロを、元の構成のセクションごとに「セクションの頭からの位置・転調前の高さ」で持つ（構成やキーを変えても置き直せるように）。
+   歌詞の行もセクションごとにまとめておく（歌メロを作り直したときに割り当て直す） */
+function lockSecs(R,P,off){
+  const TL=buildTimeline(P.ext||"none",P.introCut,P.odd), plan=modPlanFor(TL,PACKS[P.pack],P);
+  const shiftAt=t=>{ for(const q of plan) if(t>=q.t0-1e-6 && t<q.t1-1e-6) return q.shift; return 0; };
+  const secs=TL.secs.map(x=>({id:x.id, role:x.role, len:x.t1-x.t0, sec:x, notes:[]}));
+  R.vocal.forEach(v=>{ const t=v.t+off; let i=TL.secs.findIndex(x=>t>=x.t0-1e-6 && t<x.t1-1e-6); if(i<0) i=secs.length-1;
+    secs[i].notes.push({...v, rel:t-TL.secs[i].t0, midi:v.midi-shiftAt(t)}); });
+  const fake={TL, lang:P.lang==="ja"?"ja":"en", parts:{Vocal:secs.flatMap(x=>x.notes.map(n=>({...n, t:x.sec.t0+n.rel, sec:x.id})))}};
+  lockLyrics(fake);
+  return {secs, lines:fake.lyrics};
+}
+/* 設定の埋め込みのない古いファイル: ファイル名（YYYY-MM-DD_JPOP_キー_P..-A..-B..-C.._タグ…_JA|EN_テーマ_BPM.._seed..）から戻す */
+function settingsFromName(name){
+  const base=name.replace(/\.(mid|midi)$/i,"").replace(/^\d{4}-\d{2}-\d{2}_/,"");
+  const m=base.match(/^JPOP_([A-G][#b]?m?)_P(\d+)-A(\d+)-B(\d+)-C(\d+)(.*)_(JA|EN)_([A-Za-z0-9]+)_BPM(\d+)_seed(\d+)(?:_ReArr)?$/);
+  if(!m) return null;
+  const tag=t=>new RegExp("_"+t+"(?=_|$)").test(m[6]);
+  const root=m[1].replace(/m$/,""), key=Math.max(SHARP.indexOf(root),FLAT.indexOf(root)), lang=m[7]==="JA"?"ja":"en";
+  return { pack:+m[2]-1, a:+m[3]-1, b:+m[4]-1, c:+m[5]-1, key, bpm:+m[9], seed:+m[10], lang,
+    theme:lyrSet(lang).L.findIndex(x=>x.en.replace(/\s+/g,"")===m[8]),
+    ext:tag("LastChorus")?"last":tag("Dmelo")?"dmelo":tag("3min30")?"half":tag("3min")?"full":"none",
+    cut:tag("NoIntro")?2:tag("IntroCut")?1:0, fade:tag("FadeOut"), hotei:tag("Hotei"), jersey:tag("Jersey")?"all":tag("JerseyChorus")?"chorus":"off",
+    flags:{optU2:tag("U2break"),optBDBreak:tag("BDbreak"),optBDGroove:tag("BDgroove"),optEdge:tag("Edge"),optMM:tag("MM"),optMarr:tag("Marr"),optRourke:tag("Rourke"),
+      optJamerson:tag("Jamerson"),optCopeland:tag("Copeland"),optOdd:tag("Odd"),optRecycle:tag("ET"),optPop:tag("Pop"),optSynth:tag("Synth"),optBigStop:tag("Stop"),optMod:tag("KeyUp"),optPfRiff:tag("PfRiff")} };
+}
+function applyNameSettings(o){
+  $("sel_pack").value=o.pack; const band=PACKS[o.pack].band||"oasis";
+  Object.entries(BAND_PRESET[band]||{}).forEach(([id,v])=>{ const el=$(id); if(!el) return; if(el.tagName==="SELECT") el.value=v; else el.checked=!!v; });
+  $("sel_a").value=o.a; $("sel_b").value=o.b; $("sel_c").value=o.c; $("key").value=o.key; $("bpm").value=o.bpm; $("seed").value=o.seed;
+  Object.entries(o.flags).forEach(([id,v])=>{ const el=$(id); if(el) el.checked=v; });
+  $("optHotei").checked=o.hotei||band==="hotei"; $("optJersey").value=o.jersey; $("optExt").value=o.ext; $("optCut").value=String(o.cut); $("optEnd").value=o.fade?"fade":"ring";
+  $("optLang").value=o.lang; fillThemes(); if(o.theme>=0) $("optTheme").value=String(o.theme);
+  SLOTS.forEach(s=>$("sel_"+s.id).onchange());
+}
+/* 読み込んだあとは全部の設定を変えられる。「読み込んだまま」にした要素に効かない設定だけ止める（歌メロ固定→歌メロの型、歌詞固定→言語・テーマ） */
+const LOCK_MEL_IDS=["sel_a","sel_b","sel_c","optRecycle"], LOCK_LYR_IDS=["optLang","optTheme","themeDice","themeDice2","lyrReroll"];
+function setLockUI(on,name){
+  const bar=$("lockBar"); bar.style.display=on?"":"none"; if(on){ $("lockName").textContent=name; $("lockMel").value="keep"; $("lockLyr").value="keep"; }
+  updLockUI();
+}
+function updLockUI(){
+  const on=!!LOCKED, km=on && $("lockMel").value==="keep", kl=on && $("lockLyr").value==="keep";
+  LOCK_MEL_IDS.forEach(id=>{ const el=$(id); if(el) el.disabled=km; }); LOCK_LYR_IDS.forEach(id=>{ const el=$(id); if(el) el.disabled=kl; });
+  if(!on) return;
+  let t= km&&kl ? "歌メロ・歌詞はそのまま。キー・進行・構成・伴奏を変えて ✨ Generate（キーを変えると歌メロも移調、進行や小節の長さを変えると歌メロをコードに合わせて少し直す）"
+       : km ? "歌メロはそのまま、歌詞をテーマ・言語から作り直す（キー・進行・構成・伴奏も変えられる）"
+       : kl ? "歌メロを A・B・サビの型と seed から作り直し、読み込んだ歌詞を新しい歌メロに割り当て直す（語数に合わせて言い回しを足し引き）"
+       : "読み込んだ曲の設定から、ふつうに作り直す（全部の設定を変えられる）";
+  const R=SONG && SONG.relocked;
+  if(km && R){ if(R.moved) t+=`　／　今回: コードに合わせて ${R.moved} 音を直した`; if(R.gen.length) t+=`　／　元の曲にない ${R.gen.join("・")} の歌メロは新しく作った`; }
+  $("lockNote").textContent=t;
+}
+async function loadSongFile(file){
+  try{
+    const u8=new Uint8Array(await file.arrayBuffer()), R=readSongMidi(u8);
+    if(R.setting) loadHash(R.setting);
+    else { const o=settingsFromName(file.name); if(!o) throw new Error("設定が埋め込まれておらず、ファイル名からも読めません（J-POP アプリで書き出した MIDI を選んでください）"); applyNameSettings(o); }
+    curBand=PACKS[+$("sel_pack").value].band||"oasis"; lastPack=+$("sel_pack").value;
+    const P=readParams(), L=lockFromMidi(R,P);
+    if(!L) throw new Error("曲の構成（小節・セクションの位置）がファイルと合いません。このアプリの別の版で書き出したファイルかもしれません");
+    const S0=generateSong(P);                                               // 元の曲のテーマ（おまかせのときは生成で決まる）を確かめる
+    LOCKED={...L, ...lockSecs(R,P,L.off||0), P0:P, themeIdx:S0.themeIdx, lang:S0.lang, name:file.name}; setLockUI(true,file.name.replace(/\.(mid|midi)$/i,""));
+    doGenerate();
+  }catch(e){ alert("読み込めませんでした: "+e.message); }
+}
 function doGenerate(){
   stopAudio();
   const P=readParams(); saveHash(P);
-  SONG=generateSong(P);
+  const mel=$("lockMel").value, lyr=$("lockLyr").value;
+  SONG=generateSong(P, LOCKED && (mel==="keep"||lyr==="keep") ? {...LOCKED, mel, lyr} : null);   // LOCKED＝読み込んだ曲（歌メロ・歌詞を読み込んだまま使うか、作り直すか）
+  updLockUI();
   const S=SONG, spb=60/S.bpm, c1=S.TL.secs.find(s=>s.id==="C1");
   const chorusAt=c1.t0*spb, rate=S.check.rate*100;
   const susN=S.chords.filter(c=>c.removed.length).length;
@@ -3586,9 +4098,9 @@ function doGenerate(){
     `<span>サビ前 <b>${P.drums?(P.pop?({stop:"最後の1拍を無音に（Max Martin）",line:"スネアのドラムライン（Shake It Off）",tom80:"80s のタム回し（Blinding Lights）"}[POP_KITS[S.popKit||"never"].preFill]+(P.halfDrop?"＋半拍抜き":"")):P.bdBreak?`Beautiful Day ブレイク ×${S.bdCount}`:P.u2?`U2ブレイク ×${S.u2Count}`:P.copeland?(P.halfDrop?"止めて半拍抜き（Copeland × Max Martin）":"止める（Copeland）"):P.halfDrop?"タム回し＋半拍抜き":P.build?"スネア連打ビルドアップ":"タム回し"):"—"}${P.drums&&P.u2&&S.u2Count&&P.bdBreak?` ／ 間奏明け・歌い出し前は U2ブレイク ×${S.u2Count}`:""}${P.drums&&P.bdGroove?" ／ 全編 Beautiful Day グルーヴ":""}${P.introCut?" ／ 頭は U2ブレイク1小節で即スタート":""}</b></span>`+
     `<span>U2 <b>${[P.edge&&`Edge E${pad2(S.edgeIdx)}`,P.larry&&"Larry",P.pedal&&"Adamペダル"].filter(Boolean).join(" / ")||"—"}</b></span>`+
     `<span>Melodic Math <b>${P.mm?mmLabel(S):"off"}</b></span>`+
-    `<span>Smiths <b>${[P.marr&&`Marr R${pad2(S.riffIdx)}`,P.rourke&&"Rourke ベース"].filter(Boolean).join(" / ")||"—"}</b></span>`+
+    `<span>Smiths／布袋 <b>${[P.marr&&`Marr R${pad2(S.riffIdx)}`,P.rourke&&"Rourke ベース",P.hotei&&S.pack.band!=="hotei"&&`布袋のギター（リフ ${S.hoteiRiff}）`].filter(Boolean).join(" / ")||"—"}</b></span>`+
     `<span>Second <b>${[P.jamerson&&"Jamerson",P.copeland&&"Copeland",P.odd&&`2/4 ×${S.TL.bars.filter(b=>b.beats===2).length}`,P.recycle&&"E.T.方式",S.pack.band==="bacharach"&&"女声の音域"].filter(Boolean).join(" / ")||"—"}</b></span>`+
-    `<span>J-POP <b>${[["yoasobi","YOASOBI"],["yonezu","米津玄師"],["kessoku","結束バンド"],["jersey","Jersey club"]].filter(([b])=>S.pack.band===b).map(([,n])=>/Creepy Nuts/.test(S.pack.name)?"Creepy Nuts（Jersey club × ラップ）":n).concat([S.jersey&&S.jersey!=="off"&&`Jersey club ${S.jersey==="all"?"全編":"サビだけ"}（${S.jerseyBars}小節：キック5発・3拍目クラップ・3連ハット・ベッドのきしみ・チョップ）`, P.pfRiff&&"ピアノ・リフ", S.mods&&S.mods.length&&("最後のサビで転調 "+S.mods.map(m=>(m.shift>0?"+":"")+m.shift+"（"+(S.TL.bars.findIndex(b=>Math.abs(b.t-m.t0)<1e-6)+1)+"小節目〜）").join(" → ")), "歌詞："+(S.lang==="ja"?"日本語（SynthV 日本語）":"英語")]).filter(Boolean).join(" / ")}</b></span>`+
+    `<span>J-POP <b>${[["yoasobi","YOASOBI"],["yonezu","米津玄師"],["kessoku","結束バンド"],["hotei","BOØWY／COMPLEX／布袋寅泰（布袋のリフ・ギター）"],["oudou","王道進行のバリエーション"],["jersey","Jersey club"]].filter(([b])=>S.pack.band===b).map(([,n])=>/Creepy Nuts/.test(S.pack.name)?"Creepy Nuts（Jersey club × ラップ）":n).concat([S.jersey&&S.jersey!=="off"&&`Jersey club ${S.jersey==="all"?"全編":"サビだけ"}（${S.jerseyBars}小節：キック5発・3拍目クラップ・3連ハット・ベッドのきしみ・チョップ）`, P.pfRiff&&"ピアノ・リフ", S.mods&&S.mods.length&&("最後のサビで転調 "+S.mods.map(m=>(m.shift>0?"+":"")+m.shift+"（"+(S.TL.bars.findIndex(b=>Math.abs(b.t-m.t0)<1e-6)+1)+"小節目〜）").join(" → ")), "歌詞："+(S.lang==="ja"?"日本語（SynthV 日本語）":"英語")]).filter(Boolean).join(" / ")}</b></span>`+
     `<span>Taylor／Weeknd <b>${[P.pop&&P.drums&&`ドラム ${POP_KITS[S.popKit||"never"].name}`,P.pop&&`ベース ${S.pack.bass||"eight"}`,P.clap&&P.pop&&"クラップ",P.synth&&S.synthName,S.stopBar&&`ラスサビ前ブレイク（${S.TL.bars.indexOf(S.stopBar)+1}小節目）`].filter(Boolean).join(" / ")||"—"}</b></span>`;
   const box=$("sections"); box.innerHTML="";
   S.TL.secs.forEach(sec=>{
@@ -3597,7 +4109,7 @@ function doGenerate(){
     sec.bars.forEach(b=>{
       const chs=S.chords.filter(c=>c.t>=b.t-1e-6 && c.t<b.t+b.beats-1e-6);
       const c=document.createElement("span"); c.className="chip"+(b.beats!==4?" odd":"");
-      c.textContent=sec.cut?"ドラムのみ（U2ブレイク）":chs.map(x=>x.name+(x.removed.length?"→sus":"")).join(" ")+(b.beats!==4?` [${b.beats}/4]`:""); row.appendChild(c);
+      c.textContent=sec.cut?(sec.noDrums?"歌の入り（弱起）":"ドラムのみ（U2ブレイク）"):chs.map(x=>x.name+(x.removed.length?"→sus":"")).join(" ")+(b.beats!==4?` [${b.beats}/4]`:""); row.appendChild(c);
     });
     if(S.phrases[sec.id]){ const sy=document.createElement("span"); sy.className="chip syl"; sy.textContent="音節 "+S.phrases[sec.id].map(p=>p.length).join("-"); row.appendChild(sy); }
     box.appendChild(row);
@@ -3660,9 +4172,11 @@ function renderLegend(){
 }
 /* MIDI と .svp は同じ名前・同じ小節1拍目起点・同じテンポ／拍子で出す（Logic 上で並べるとそのまま揃う） */
 const IN_APP=!!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.bundle);
+/* 書き出すファイル名の先頭に作った日付（YYYY-MM-DD_）を付けて、いつ作ったか分かるようにする（2026-10-19） */
+function datePrefix(){ const d=new Date(), z=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}_`; }
 function fileBase(S){
   const P=S.P;
-  return `JPOP_${keyName(P)}_${comboCode(P)}${P.ext==='last'?'_LastChorus':P.ext==='dmelo'?'_Dmelo':P.ext==='full'?'_3min':P.ext==='half'?'_3min30':''}${P.introCut?'_IntroCut':''}${P.u2?'_U2break':''}${P.bdBreak?'_BDbreak':''}${P.bdGroove?'_BDgroove':''}${P.edge?'_Edge':''}${P.mm?'_MM':''}${P.marr?'_Marr':''}${P.rourke?'_Rourke':''}${P.jamerson?'_Jamerson':''}${P.copeland?'_Copeland':''}${P.odd?'_Odd':''}${P.recycle?'_ET':''}${P.pop?'_Pop':''}${P.synth?'_Synth':''}${P.bigStop?'_Stop':''}${P.mod&&S.mods&&S.mods.length?'_KeyUp':''}${P.pfRiff?'_PfRiff':''}${P.jersey==='all'?'_Jersey':P.jersey==='chorus'?'_JerseyChorus':''}_${S.lang==="ja"?"JA":"EN"}_${lyrSet(S.lang).L[S.themeIdx].en.replace(/\s+/g,'')}_BPM${S.bpm}_seed${P.seed}`;
+  return datePrefix()+`JPOP_${keyName(P)}_${comboCode(P)}${P.ext==='last'?'_LastChorus':P.ext==='dmelo'?'_Dmelo':P.ext==='full'?'_3min':P.ext==='half'?'_3min30':''}${P.introCut==2?'_NoIntro':P.introCut?'_IntroCut':''}${P.fade?'_FadeOut':''}${P.u2?'_U2break':''}${P.bdBreak?'_BDbreak':''}${P.bdGroove?'_BDgroove':''}${P.edge?'_Edge':''}${P.mm?'_MM':''}${P.marr?'_Marr':''}${P.hotei&&PACKS[P.pack].band!=='hotei'?'_Hotei':''}${P.rourke?'_Rourke':''}${P.jamerson?'_Jamerson':''}${P.copeland?'_Copeland':''}${P.odd?'_Odd':''}${P.recycle?'_ET':''}${P.pop?'_Pop':''}${P.synth?'_Synth':''}${P.bigStop?'_Stop':''}${P.mod&&S.mods&&S.mods.length?'_KeyUp':''}${P.pfRiff?'_PfRiff':''}${P.jersey==='all'?'_Jersey':P.jersey==='chorus'?'_JerseyChorus':''}_${S.lang==="ja"?"JA":"EN"}_${lyrSet(S.lang).L[S.themeIdx].en.replace(/\s+/g,'')}_BPM${S.bpm}_seed${P.seed}${S.locked?'_ReArr':''}`;
 }
 /* MODO BASS 2 の付属プリセットから、選んだ進行・ベース奏法に近いものを選ぶ（Legacy フォルダはプリセット一覧の Legacy 内） */
 function modoPreset(S){
@@ -3673,6 +4187,7 @@ function modoPreset(S){
   if(bs==="funk")   return ["Finger > Hitlist - Punchy Funk","指弾きのファンク（感電・LOSER・Can't Feel My Face の跳ねるライン向き）"];
   if(bs==="ballad") return ["Finger > Pop Ballad - Classic Ballad","指弾きのバラード（Lemon・馬と鹿の伸ばすベース向き）"];
   if(bs==="dnb"||bs==="blank") return ["Finger > Girl - Feel The Lows","低域を太く（Biri-Biri・Blank Space の伸ばすサブベース向き）"];
+  if(band==="hotei") return ["Pick > Cali - Rock Drive","ピックの8分ダウン（松井常松のほぼ動かないルート弾き向き）。Muting を少し上げて粒をそろえる"];
   if(band==="kessoku") return ["Finger > Star - Edgy Pop","Punk Bass モデルの指弾き（リョウの動くライン向き。好みで Pick > Cali - Rock Drive も）"];
   if(band==="yoasobi"||bs==="pulse"||bs==="yoru") return ["Finger > Guilty - Pop Session","タイトなポップ（YOASOBI・Weeknd の打ち込み寄りの8分向き）"];
   if(bs==="shake") return ["Pick > Cali - Horn Drive","ピックのホーン系（Shake It Off のサックス風リフ向き）"];
@@ -3688,6 +4203,7 @@ function ad2Kit(S){
   const tight="Black Velvet（タイトなヴィンテージ）";
   if(jersey) return `${tight}。Kick は Edit の Envelope で Decay を短く・硬く、Snare も短く。Jersey らしい打ち込みの音が足りなければ Drums だけ Logic の Drum Machine Designer に替える手もある（クラップ・きしみは Perc トラック）`;
   if(band==="yoasobi"||band==="weeknd"||kit==="yoru"||kit==="blinding"||kit==="dnb"||kit==="disco"||kit==="halftime") return `${tight}。打ち込みらしく聞かせるため、Kick と Snare の Decay を短く、Room を絞り、Snare にコンプ強め（AD2 は生ドラムなので、機械的な質感は Logic 側の EQ・コンプで寄せる）`;
+  if(band==="hotei") return `${tight}。高橋まことのタイトな8ビートに。Snare は短いゲート・リバーブ（80s のビートロック）、OH・Room は少し広め`;
   if(band==="kessoku"||kit==="rock8"||kit==="kickback"||band==="oasis"||!band||/（U2）/.test(S.pack.name)) return "Blue Oyster（太いロック・キット）。疾走8ビートとサビの4つ打ちに。OH・Room を広めに";
   return `${tight}。${P.copeland?"Copeland のハット・リム主体に向く。Velocity にムラを残す":kit==="funk"?"感電のシャッフルとゴースト・ノートに向く":kit==="ballad"?"バラードのハーフタイムに。Snare は少し長めのリバーブ":"タイトに"}`;
 }
@@ -3696,10 +4212,12 @@ function instSteps(S){
 `5. Drums トラックの音源を Addictive Drums 2、Bass を MODO BASS 2、Piano を Steinway Grand、`,
 `   Strings を Studio Strings に差し替え（※ GM 配列で書き出している。AD2 で鳴らすときは「MIDI の音源想定」を AD2 にして書き出し直す）`,
 `   ・Bass は実際に鳴る高さ（4弦の開放 E＝E0 〜 A#2、Logic 表記）で書き出している。MODO BASS 2 で鳴らすときは「MIDI の音源想定」を AD2／MODO にして書き出し直す（MODO は1オクターブ上の E1〜 で受けるため）`];
-  const [pre,why]=modoPreset(S), tamb=S.parts.Drums.some(n=>AD2_MAP[n.midi]==null);
+  const [pre,why]=modoPreset(S), tamb=S.parts.Drums.some(n=>ad2Note(n)==null);
   return [
 `5. Drums (Addictive Drums 2) トラック: 音源を [AU 音源] > [XLN Audio] > [Addictive Drums 2] に差し替える`,
-`   ・ノートは AD2 の標準キーマップで書き出してある（ハット=C#2/D2・スネア=D1・キック=C1・サイドスティック=F#1）。AD2 の MIDI Mapping は標準のままでよい`,
+(drumMap()==="gm"
+  ? `   ・ノートは GM の番号で書き出してある（キック=C1・スネア=D1・ハット=F#1／A#1・クラッシュ=C#2）。AD2 の Map は General MIDI のままでよい（AD2 標準マップにしている AD2 では「ドラムの MIDI マップ」を AD2 標準にして書き出し直す）`
+  : `   ・ノートは AD2 の標準キーマップで書き出してある（ハット=C#2/D2・スネア=D1・キック=C1・サイドスティック=F#1）。AD2 の MIDI Mapping は標準のままでよい`),
 `   ・マルチアウトにするときは Addictive Drums 2 の「Multi Output」版を選び、チャンネルストリップの「+」で Kick / Snare / HiHat / Toms / OH / Room の Aux を足す`,
 `   ・キット: ${ad2Kit(S)}`,
 `   ・OH・Room は広めに。ドラムの音量バランス・パン・EQ・コンプは AD2 内部のミキサー、バス処理は Logic 側`,
@@ -3728,14 +4246,16 @@ function logicSteps(S){
 `   ${S.harmonies&&S.harmonies.length?`.svp には主旋律「Vocal」とサビだけのハモリ ${S.harmonies.map(h=>`「${h.name}」（${h.gain}dB${h.pan?`・パン ${h.pan>0?"R":"L"}${Math.round(Math.abs(h.pan)*100)}`:""}）`).join("・")} が入っている（${HARM_LABEL[S.P.harm]}）。`:"（ハモリなし）"}${S.obbN?`／MIDI の Lead トラックにリードギターのオブリガード（${S.P.obb==="gaps"?"歌の休みだけ":"休み＋長い音の下"}・${S.obbN}音）。クランチ〜歪みのギター＋1/8 ディレイで`:""}`,
 `   ${S.harmony.length?"ハモリを別トラックで処理したいときは、SynthV プラグインを2つ立てて片方は Harmony だけをソロにすると Logic 側で個別に EQ・パンができる":""}`,
 ...instSteps(S),
-`6. Guitar トラックを複製（⌘D）して L-70 / R+70 に振り、片方を 5〜10ms 後ろにずらしてダブルトラックにする`,
+((S.pack.band==="hotei"||S.P.hotei)
+  ? `6. Guitar (Hotei) は1本で中央〜少し左に。Amp Designer（British 系のアンプ・Gain 5〜6）＋Compressor＋Stereo Delay（1/8・Mix 15% 前後）＋Chorus 薄め。サビだけトラックを複製（⌘D）して R+60 に重ねると布袋のダブリングになる`
+  : `6. Guitar トラックを複製（⌘D）して L-70 / R+70 に振り、片方を 5〜10ms 後ろにずらしてダブルトラックにする`),
 `${S.P.marr?"   Marr トラック: クリーンアンプ＋Compressor 強め（4:1 前後）＋Chorus 薄め＋短いリバーブ。12弦風にするなら複製して +12 を薄く重ねる":""}`,
 `${S.P.edge?"   Edge トラックには Delay Designer（または Tape Delay）: Time 1/8 付点・Feedback 35〜45%・Mix 35%。音色はクリーン＋軽いコンプ":""}`,
 `${S.parts.Synth.length?(S.synthKind==="brass"?"   Brass トラック: Studio Horns（Logic 内蔵）か Alchemy の Brass 系。短いスタブなのでアタック速め・リリース短め":"   Synth トラック: Retro Synth（Analog・Saw）＋ Chorus ＋ 長めのリバーブ。80s らしくするなら Tape Delay を 1/8 で薄く足す"):""}`,
 `${chopNotes(S).length?`   ボーカル・チョップ: ${fileBase(S)}_VocalChop.svp（${chopNotes(S).length}音・歌詞付き${S.lang==="ja"?"・日本語":"・英語"}）を2つ目の SynthV プラグインに読み込む。歌詞は${S.parts.Synth.some(n=>n.chop==="jersey")?"フック「"+S.theme[1]+"」を1音ずつ刻んだもの（小節の最後はフックの最後の音を伸ばす）":"「え／あ」の短い合いの手"}。SynthV で鳴らすときは MIDI の Synth（Vocal Chop）トラックはミュート。チョップらしくするなら Logic で短いゲート・ピッチを細かく変える・リバーブ控えめ`:""}`,
 `${S.jersey&&S.jersey!=="off"?"   Jersey club: Bass と Synth（チョップ）に Compressor を挿し、［Side Chain］にキック（AD2 の Kick 出力）を指定して Ratio 4:1・Attack 1ms・Release 80ms 前後でキックに道を空ける。キックは短く硬く（AD2 で Kick の Decay を短めに）、808 は短く。チョップのリバーブは控えめ。きしみ（Squeak）は Perc トラックの GM 音色（Open Cuica）で代用しているので、好みのベッド・スクイーク素材に差し替えてよい":""}`,
 `   → アンプは Amp Designer の British 系・ゲイン中程度。Lead は Pedalboard でファズ＋リバーブ`,
-`7. ${S.P.oct?".svp は MIDI の Vocal より1オクターブ上（女声ボイス用）。男声ボイスで歌わせるときは SynthV 側で全ノートを -12":".svp は MIDI の Vocal と同じ音域（Liam の実音域）"}`,
+`7. ${S.P.oct?`.svp は Mai 2 が歌いやすい G3〜D5 に合わせてある（この曲は MIDI の Vocal ${S.svShift>0?"より1オクターブ上":S.svShift<0?"より1オクターブ下":"と同じ高さ"}。ハモリも E3〜D5）。高さを変えたいときは SynthV で全ノートを選んで ±12`:".svp は MIDI の Vocal と同じ高さ"}`,
 ``,
 `※ 小節1の開始位置・テンポを動かさないこと（動かすと SynthV とずれる）。テンポを変えるときは Logic 側だけ変えれば SynthV も追従する。`,
 `※ 歌詞を Logic 側で直したいときは、SynthV の ARA プラグイン（Synthesizer V Studio 2 ARA Plugin）を使う方法もある。`
@@ -3786,7 +4306,7 @@ window.addEventListener("DOMContentLoaded",()=>{
   [...A_TPL,...B_TPL,...C_TPL].forEach(T=>{ [...T.cells,T.end].forEach(c=>{ if(c.length!==16) console.warn("cell length",T.name,c); });
     if(T.phrases.reduce((a,b)=>a+b,0)!==8) console.warn("phrases != 8",T.name); });
   $("key").innerHTML=SHARP.map((n,i)=>`<option value="${i}">${n}${FLAT[i]!==n?" / "+FLAT[i]:""}</option>`).join("");
-  $("key").value="4";
+  $("key").value="0";                                                   // キーの既定は C
   $("optExt").innerHTML=Object.entries(EXT_LABEL).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
   $("optExt").value="half";                                          // 既定は3分半構成
   renderSlots();
@@ -3796,6 +4316,12 @@ window.addEventListener("DOMContentLoaded",()=>{
   loadHash(); updCombo();
   ["key","bpm","seed"].forEach(id=>$(id).addEventListener("input",updCombo));
   $("genBtn").onclick=doGenerate;
+  $("loadBtn").onclick=()=>$("loadFile").click();
+  $("loadFile").onchange=e=>{ const f=e.target.files[0]; if(f) loadSongFile(f); e.target.value=""; };
+  $("lockOff").onclick=()=>{ LOCKED=null; setLockUI(false); };
+  $("lockMel").onchange=$("lockLyr").onchange=()=>{ updLockUI(); doGenerate(); };
+  document.addEventListener("dragover",e=>{ if(e.dataTransfer && [...e.dataTransfer.types].includes("Files")) e.preventDefault(); });
+  document.addEventListener("drop",e=>{ const f=e.dataTransfer && e.dataTransfer.files[0]; if(f && /\.midi?$/i.test(f.name)){ e.preventDefault(); loadSongFile(f); } });
   $("playBtn").onclick=()=>SONG&&playSong(SONG);
   $("stopBtn").onclick=stopAudio;
   $("diceBtn").onclick=()=>{ $("seed").value=Math.floor(Math.random()*99999); updCombo(); doGenerate(); };
@@ -3825,6 +4351,7 @@ window.addEventListener("DOMContentLoaded",()=>{
   $("optObb").onchange=()=>{ if(!SONG) return;                    // 生成し直さずにオブリガードだけ付け替える
     SONG.P.obb=$("optObb").value; makeObbligato(SONG,SONG.P.obb); saveHash(SONG.P); drawRoll(SONG); renderLegend();
     const eo=document.getElementById("obbMeta"); if(eo) eo.textContent=obbLabel(SONG); };
+  $("optBreath").onchange=()=>{ if(SONG){ SONG.P.breath=$("optBreath").checked; saveHash(SONG.P); } };   // 息継ぎは .svp を書き出すときに反映（作り直し不要）
   $("optHarm").onchange=()=>{ if(!SONG) return;                    // 生成し直さずにハモリだけ付け替える
     SONG.P.harm=$("optHarm").value; makeHarmony(SONG,SONG.P.harm); makeObbligato(SONG,SONG.P.obb||"off"); saveHash(SONG.P); drawRoll(SONG); renderLegend();
     const eo=document.getElementById("obbMeta"); if(eo) eo.textContent=obbLabel(SONG);
