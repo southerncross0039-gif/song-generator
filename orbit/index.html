@@ -147,6 +147,8 @@ kbd{font-family:var(--mono); background:#10131d; border:1px solid var(--line2); 
         <option value="all">すべて</option><option value="bright">☀ 明るい（長調）だけ</option><option value="dark">🌙 暗い（短調）だけ</option></select></div>
       <div><label class="f" for="optInst">MIDI の音源想定</label><select id="optInst">
         <option value="ad">Drums＝Addictive Drums 2 ／ エレキベースは MODO BASS 2</option><option value="gm">GM（Logic 標準音源・他の DAW 用）</option></select></div>
+      <div><label class="f" for="optDrumMap">ドラムの MIDI マップ</label><select id="optDrumMap" title="Logic の AD2 の画面右上 Map で選んでいるマップに合わせる。今の Logic プロジェクトの AD2 はすべて General MIDI">
+        <option value="gm">AD2 の Map＝General MIDI（今の設定）</option><option value="ad2">AD2 の Map＝AD2 標準（初期設定）</option></select></div>
     </div>
 
     <div class="opts">
@@ -1587,6 +1589,11 @@ const SPACE_LVL={ std:{ir:3,rev:1,dly:.6,cc:.75}, wide:{ir:4.5,rev:1.35,dly:1,cc
 const SPACE_CC={ Theme:[70,10,64], Double:[80,40,34], Harmony:[95,30,96], VoxLow:[75,20,64], Choir:[110,50,64], Strings:[100,20,40], Keys:[70,30,88],
   Ostinato:[80,10,100], Brass:[60,0,76], Counter:[90,20,48], Guitar:[50,20,26], Bass:[8,0,64], Drums:[40,0,64], Timpani:[60,0,54] };
 const AD2_MAP={ 35:36, 36:36, 38:38, 40:40, 37:42, 42:49, 44:48, 46:55, 49:77, 57:79, 52:81, 55:81, 51:60, 59:60, 53:61, 50:71, 48:71, 47:69, 45:69, 43:67, 41:67 };
+/* AD2 の MIDI マップ（2026-10-21）: ユーザーの Logic プロジェクトの AD2 はすべて Map＝General MIDI 型（ProjectData の MidiFilterMap_MAP_KeyMap を読んで確認）。
+   既定は GM の番号のまま書き出す（gm）。AD2 を初期設定（標準マップ）で使うときだけ AD2 標準の番号に変換する（ad2）。
+   AD2_GM_OK＝GM 型マップで AD2 の打ち分けが割り当てられている番号。ここにない音（39 クラップ・54 タンバリン・79 きしみ など）は鳴らない */
+const drumMap=()=>{ const e=typeof document!=="undefined" && $("optDrumMap"); return e&&e.value==="ad2"?"ad2":"gm"; };
+const AD2_GM_OK=new Set([31,35,36,37,38,40,41,42,43,44,45,46,47,48,49,50,51,52,53,55,56,57,59]);
 const instMode=()=>{ const e=$("optInst"); return e?e.value:"ad"; };
 function trackName(song,p){ const nm=(song.pack.names||{})[p]||song.st.names[p]; return nm && nm!=="—" ? `${p} (${nm})` : p; }
 function midiParts(song,inst){
@@ -1594,7 +1601,7 @@ function midiParts(song,inst){
   const out=PARTS.map(p=>({p, name:trackName(song,p), notes:song.parts[p], ch:CH[p], prog:p==="Drums"?null:((song.pack.prog||{})[p]??st.prog[p])}));
   if(inst!=="ad") return out;
   const dr=out.find(x=>x.p==="Drums");
-  dr.notes=song.parts.Drums.map(n=>({...n,midi:(n.midi===42&&n.vel>=80)?50:(AD2_MAP[n.midi]??n.midi)}));
+  dr.notes=song.parts.Drums.map(n=>({...n,midi: drumMap()==="gm" ? n.midi : ((n.midi===42&&n.vel>=80)?50:(AD2_MAP[n.midi]??n.midi))}));   // GM 型マップの AD2 には GM の番号のまま
   dr.name="Drums (Addictive Drums 2)";
   if(st.modo){                                                                 // エレキベースのスタイルは MODO BASS 2 向けに単音・1オクターブ上（E1〜D4 だけが鳴る）・PC なし
     const bs=out.find(x=>x.p==="Bass");
@@ -1919,7 +1926,7 @@ function keyName(P,shift=0){ const pk=PACKS[P.pack], k=(P.key+shift)%12; return 
 function updCombo(){ if(!$("sel_btype")) return; const P=readParams(); $("combo").innerHTML=`<b>${comboCode(P)}</b> · ${keyName(P)} · ${P.bpm} · s${P.seed}`; }
 function fmt(sec){ const m=Math.floor(sec/60), s=Math.round(sec%60); return `${m}:${String(s).padStart(2,"0")}`; }
 const HASH_FLAGS=[["mu","optMut"],["hi","optHint"],["co","optCounter"],["os","optOst"],["ch","optChoir"],["pe","optPerc"],["ri","optRit"],["pt","optPent"],["ml","optMelisma"],["db","optDouble"],["hm","optHarm"],["lo","optLow"]];
-function saveHash(P){ try{ history.replaceState(null,"",`#s=${P.pack}&m=${P.motif}&f=${P.tform}&b=${P.btype}&k=${P.key}&bpm=${P.bpm}&sd=${P.seed}&fm=${P.form}&lf=${P.lift}&in=${P.inst}&sp=${P.space}&cp=${P.chop}&`+HASH_FLAGS.map(([k,id])=>`${k}=${+$(id).checked}`).join("&")+`&vol=${VOL_KEYS.map(k=>VOL[k]).join(".")}`); }catch(e){} }
+function saveHash(P){ try{ history.replaceState(null,"",`#s=${P.pack}&m=${P.motif}&f=${P.tform}&b=${P.btype}&k=${P.key}&bpm=${P.bpm}&sd=${P.seed}&fm=${P.form}&lf=${P.lift}&in=${P.inst}&dm=${drumMap()}&sp=${P.space}&cp=${P.chop}&&dm=${drumMap()}`+HASH_FLAGS.map(([k,id])=>`${k}=${+$(id).checked}`).join("&")+`&vol=${VOL_KEYS.map(k=>VOL[k]).join(".")}`); }catch(e){} }
 function loadHash(){
   try{
     const h=new URLSearchParams(location.hash.slice(1)); if(!h.has("s")) return false;
@@ -1929,6 +1936,7 @@ function loadHash(){
     if(h.has("fm") && FORM_LABEL[h.get("fm")]) $("optForm").value=h.get("fm");
     if(h.has("lf")) $("optLift").value=h.get("lf");
     if(h.has("in")) $("optInst").value=h.get("in");
+    if(h.has("dm") && ["gm","ad2"].includes(h.get("dm"))) $("optDrumMap").value=h.get("dm");
     if(h.has("sp") && SPACE_LVL[h.get("sp")]) $("optSpace").value=h.get("sp");
     if(h.has("cp")) $("optChop").value=h.get("cp");
     HASH_FLAGS.forEach(([k,id])=>{ if(h.has(k)) $(id).checked=h.get(k)==="1"; });
@@ -2010,9 +2018,11 @@ function renderLegend(){
 
 /* ============================ 書き出し ============================ */
 const IN_APP=!!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.bundle);
+/* 書き出すファイル名の先頭に作った日付（YYYY-MM-DD_）を付けて、いつ作ったか分かるようにする（2026-10-19） */
+function datePrefix(){ const d=new Date(), z=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}_`; }
 function fileBase(S){
   const P=S.P;
-  return `Orbit_${S.pack.tag}_${keyName(P)}_${comboCode(P)}_${S.form}${S.lift?`_lift${S.lift}`:""}_BPM${S.bpm}_seed${P.seed}`;
+  return datePrefix()+`Orbit_${S.pack.tag}_${keyName(P)}_${comboCode(P)}_${S.form}${S.lift?`_lift${S.lift}`:""}_BPM${S.bpm}_seed${P.seed}`;
 }
 function logicSteps(S){
   const base=fileBase(S), st=S.st, parts=midiParts(S,instMode()).filter(x=>x.notes.length);
@@ -2032,7 +2042,7 @@ function logicSteps(S){
 `2. 歌のないインストの型: Theme（${(S.pack.names||{}).Theme||st.names.Theme}）が主旋律、Double（${(S.pack.names||{}).Double||st.names.Double}）が1オクターブ下で同じ節を重ねる`]),
 `3. 各トラックの音源（名前は目安。版によってパッチ名は異なるので近いものでよい）`,
 ...parts.filter(x=>x.p!=="Drums"&&!(vox&&["Theme","Double","Harmony","VoxLow"].includes(x.p))).map(x=>`   ・${x.name}: ${(st.logic[x.p])||"GM のままでも可"}`),
-...(S.parts.Drums.length?[ad?`   ・Drums (Addictive Drums 2): [AU 音源] > [XLN Audio] > [Addictive Drums 2]。ノートは AD2 標準キーマップ。ブレイクはタイトなキット＋Room 少なめ、AD2 内部で Snare に軽いコンプ`:`   ・Drums: GM 配列（Drum Kit Designer などで鳴る）`]:[]),
+...(S.parts.Drums.length?[ad?`   ・Drums (Addictive Drums 2): [AU 音源] > [XLN Audio] > [Addictive Drums 2]。${drumMap()==="gm"?"ノートは GM の番号（AD2 の Map は General MIDI のまま）。":"ノートは AD2 標準キーマップ。"}ブレイクはタイトなキット＋Room 少なめ、AD2 内部で Snare に軽いコンプ`:`   ・Drums: GM 配列（Drum Kit Designer などで鳴る）`]:[]),
 ...(st.modo&&ad?[`   ・Bass (MODO BASS 2): プログラムチェンジは入れていない。ノートは MODO が鳴らせる E1〜D4（Logic 表記）に収めてある（MODO は E1 を4弦の開放 E として鳴らす）。リフの形を崩さないよう、Muting を少し上げて音の長さをそろえる`]:[]),
 `4. ブレイクビーツをさらに刻むとき`,
 `   ・Drums に Beat Breaker（または Remix FX の Repeater／Reverse）を挿し、イントロと間奏だけオートメーションで掛ける`,
