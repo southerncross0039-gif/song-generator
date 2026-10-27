@@ -121,7 +121,7 @@ header details summary{cursor:pointer; color:var(--faint); font-size:12px}
   <header>
     <h1>ワンクリック作曲<span class="dot">.</span> Third <small title="Oasis × The Smiths × U2 × Taylor Swift × The Weeknd × Max Martin モジュール作曲システム">Jangle &amp; Anthem</small></h1>
     <p class="lead">進行・Aメロ・Bメロ・サビの型を選んで ✨ Generate。MIDI・SynthV・MP3 を書き出せます。</p>
-    <details data-fold="about"><summary>このアプリについて</summary><p style="margin:6px 0 0">コード進行50（Oasis 11＋U2 7＋The Smiths 11＋Bacharach／Second 13＋Taylor Swift 4＋The Weeknd 4）× Aメロ24 × Bメロ22 × サビ22 ＝ 580,800通り（× 12キー × seed）。ワンクリック作曲 Second を取り込んだ統合版です。The Smiths の曲を選ぶと Marr＋Rourke、Bacharach（Second）の曲を選ぶと Second の鳴らし方、Taylor Swift／The Weeknd の曲を選ぶと Max Martin のポップ（クラップ・ホーン／80s シンセ・パルスベース・サビ前の無音）に自動で切り替わります。</p></details>
+    <details data-fold="about"><summary>このアプリについて</summary><p style="margin:6px 0 0">コード進行55（Oasis 11＋U2 7＋The Smiths 11＋Bacharach／Second 13＋Taylor Swift 4＋The Weeknd 4＋王道進行の変形 5）× Aメロ24 × Bメロ22 × サビ22 ＝ 580,800通り（× 12キー × seed）。ワンクリック作曲 Second を取り込んだ統合版です。The Smiths の曲を選ぶと Marr＋Rourke、Bacharach（Second）の曲を選ぶと Second の鳴らし方、Taylor Swift／The Weeknd の曲を選ぶと Max Martin のポップ（クラップ・ホーン／80s シンセ・パルスベース・サビ前の無音）に自動で切り替わります。</p></details>
   </header>
 
   <details class="card fold" data-fold="roles">
@@ -209,8 +209,10 @@ header details summary{cursor:pointer; color:var(--faint); font-size:12px}
       <label><input type="checkbox" id="optClap"> ハンドクラップ 2・4拍（Taylor。AD2 書き出しでは GM の別トラック）</label>
       <label><input type="checkbox" id="optSynth"> Synth トラック（Weeknd の80sシンセ・リフ／Shake It Off のホーン・スタブ／シンセのプラック）</label>
       <label><input type="checkbox" id="optBigStop"> ラスサビ前の1小節ブレイク（We Are Never Ever の「Like, ever」型：歌だけ残して全楽器を止める）</label>
-      <label><input type="checkbox" id="optSvpOct" checked> SynthV(.svp) は1オクターブ上げる（Mai 2 など女声ボイス用。MIDI の Vocal は Liam の実音域）</label>
+      <label><input type="checkbox" id="optSvpOct" checked> SynthV(.svp) の高さを歌える範囲（G3〜D5）に自動で合わせる（Mai 2 用。曲ごとにオクターブを選び、ハモリも E3〜D5。オフ＝MIDI の Vocal と同じ高さ）</label>
       <label>MIDI の音源想定<select id="optInst" style="width:auto; padding:5px 9px; margin-left:4px"><option value="ad">Drums＝Addictive Drums 2 ／ Bass＝MODO BASS 2</option><option value="gm">GM（Logic 標準音源・他の DAW 用）</option></select></label>
+      <label>ドラムの MIDI マップ<select style="width:auto; padding:5px 9px; margin-left:4px" id="optDrumMap" title="Logic の AD2 の画面右上 Map で選んでいるマップに合わせる。今の Logic プロジェクトの AD2 はすべて General MIDI">
+        <option value="gm">AD2 の Map＝General MIDI（今の設定）</option><option value="ad2">AD2 の Map＝AD2 標準（初期設定）</option></select></label>
     </div>
     </details>
 
@@ -851,7 +853,33 @@ const PACKS=[
     A:"bVII | bVI | Im | Im | bVII | bVI | Im | Im", B:"bIII | bVII | bVI | Im | bIII | bVII | bVI | Im", C:"bVII | bVI | Im | Im | bVII | bVI | Im | Im" },
   { name:"Starboy 型（Weeknd）", bpm:186, band:"weeknd", mode:"minor", drum:"blank", bass:"blank", synth:"riff", noGtr:true,
     desc:"主音 A のペダル上で bVII→bVI→bVII（Am なら Am-G/A-F/A-G/A。原曲 186 BPM）。ハーフタイムの重いビート（サビは原曲の採譜に基づく型、Aメロは記憶ベース）",
-    A:"Im | bIII | IVm | bVI | Im | bIII | IVm | bVI", B:"bVI | bVII | Im | Im | bVI | bVII | IVm | V7sus4", C:"Im | bVII/I | bVI/I | bVII/I | Im | bVII/I | bVI/I | bVII/I" }
+    A:"Im | bIII | IVm | bVI | Im | bIII | IVm | bVI", B:"bVI | bVII | Im | Im | bVI | bVII | IVm | V7sus4", C:"Im | bVII/I | bVI/I | bVII/I | Im | bVII/I | bVI/I | bVII/I" },
+  /* ---- 王道進行（IV–V–IIIm–VIm、4536）のバリエーション（2026-10-22）。特定の曲の採譜ではない汎用の型。どれもサビの最後は I で落ち着かせる ---- */
+  { name:"王道進行・基本（4536）", bpm:128, band:"oudou", mode:"major", drum:"never", bass:"eight",
+    desc:"サビは IVmaj7→V7→IIIm7→VIm7 を2回し、IIm7→V7→I で解決（C なら FM7-G7-Em7-Am7 ／ Dm7-G7-C）。Aメロはカノン進行風 I→V/VII→VIm→IIIm/V",
+    A:"I | V/VII | VIm | IIIm/V | IV | I/III | IIm7 | V7",
+    B:"IIm7 | IIIm7 | IVmaj7 | V | IIm7 | IIIm7 | IVmaj7 | V7sus4 V7",
+    C:"IVmaj7 V7 | IIIm7 VIm7 | IVmaj7 V7 | IIIm7 VIm7 | IVmaj7 V7 | IIIm7 VIm7 | IIm7 V7 | Iadd9" },
+  { name:"王道進行→解決（4536-251）", bpm:120, band:"oudou", mode:"major", drum:"never", bass:"eight",
+    desc:"1小節1コードの王道のあと IIm7→V7→Isus4→I でしっかり解決（C なら FM7-G7-Em7-Am7-Dm7-G7-Csus4-C）。Aメロは I→IIIm7→VIm7→I7→IVmaj7→IVm6 のサブドミナント・マイナー",
+    A:"I | IIIm7 | VIm7 | I7 | IVmaj7 | IVm6 | IIIm7 VIm7 | IIm7 V7",
+    B:"IVmaj7 | V | IIIm7 | VIm | IIm7 | IIIm7 | IVmaj7 | V7sus4",
+    C:"IVmaj7 | V7 | IIIm7 | VIm7 | IIm7 | V7 | Isus4 | I" },
+  { name:"王道進行・分数コード（IV–V/IV–IIIm7–VIm7）", bpm:96, band:"oudou", mode:"major", drum:"never", bass:"eight",
+    desc:"V をベース IV の上で鳴らす V/IV にして、ベースが IV→IV→III→VI と下りる（C なら FM7-G/F-Em7-Am7）。Aメロは Imaj7→Imaj7/III→IVmaj7→IVm6 のベース上行",
+    A:"Imaj7 | Imaj7/III | IVmaj7 | IVm6 | IIIm7 | VIm7 | IIm7 | V7sus4",
+    B:"IVmaj7 V/IV | IIIm7 VIm7 | IIm7 IIIm7 | IVmaj7 V/IV | IIIm7 VIm7 | IIm7 | IVmaj7 | IV/V",
+    C:"IVmaj7 | V/IV | IIIm7 | VIm7 | IIm7 V/IV | IIIm7 VIm7 | IIm7 V7 | I" },
+  { name:"王道進行×丸サ（4536 ／ 4-3-6）", bpm:132, band:"oudou", mode:"major", drum:"never", bass:"eight",
+    desc:"王道 IVmaj7→V→IIIm7→VIm と丸サ IVmaj7→III7→VIm→I7 を交互に（C なら FM7-G-Em7-Am ／ FM7-E7-Am-C7）。Aメロは VIm7 始まりの切ないループ",
+    A:"VIm7 | VIm7/V | IVmaj7 | V7sus4 V7 | VIm7 | VIm7/V | IVmaj7 | V7",
+    B:"IVmaj7 III7 | VIm7 Vm7 I7 | IVmaj7 III7 | VIm7 | IIm7 | IIIm7 | IVmaj7 | V7sus4 V7",
+    C:"IVmaj7 V | IIIm7 VIm | IVmaj7 III7 | VIm I7 | IVmaj7 V | IIIm7 VIm | IIm7 V7 | I" },
+  { name:"王道進行・sus4 の浮遊（IV–Vsus4–IIIm7–VIm7）", bpm:140, band:"oudou", mode:"major", drum:"never", bass:"eight",
+    desc:"V を sus4 のままにして解決を引き延ばし、最後だけ Iadd9 で明るく着地（C なら FM7-Gsus4-Em7-Am7 ／ Dm7-Gsus4-Cadd9）。Aメロは add9 と分数の淡い響き",
+    A:"Iadd9 | Vsus4/VII | VIm7 | IIIm7 | IVmaj7 | Iadd9/III | IIm7 | Vsus4",
+    B:"IIm7 | Iadd9/III | IVmaj7 | Vsus4 V | IIm7 | Iadd9/III | IVmaj7 | Vsus4",
+    C:"IVmaj7 Vsus4 | IIIm7 VIm7 | IVmaj7 Vsus4 | IIIm7 VIm7 | IVmaj7 Vsus4 | IIIm7 VIm7 | IIm7 Vsus4 | Iadd9" }
 ];
 
 /* ============================ モジュール: メロディ 各10種（Liam Gallagher 型） ============================
@@ -1117,6 +1145,13 @@ const INTRO_BARS={ half:8 };                                        // それ以
 /* アウトロは最後の主和音を2小節鳴らしっぱなしにして終わる（最終小節は叩き直さない）ので、どの長さも +1 小節 */
 const OUTRO_BARS={ none:5, last:5, dmelo:5, full:9, half:13 };
 const EXT_LABEL={ none:"標準（61小節）", last:"ラスサビ追加（サビ×2回し / 77小節）", dmelo:"Dメロ＋落ちサビ＋ラスサビ（85小節）", full:"3分構成：Dメロ＋落ちサビ＋ラスサビ×2＋アウトロ9（97小節・BPM128で約3:02）", half:"3分半構成：イントロ8＋ギターソロ8＋Dメロ＋落ちサビ＋ラスサビ×2＋アウトロ13（113小節・BPM128で約3:32）" };
+/* SynthV（Mai 2）で無理なく歌える高さ G3〜D5（推定。公式の推奨音域は未確認）。.svp は曲ごとに歌メロがこの範囲に一番よく収まる
+   オクターブ（0／+12／−12）を選び（svShiftFor）、ハモリもこの上限を超えないように作る（2026-10-17） */
+const SV_RANGE=[55,74];
+function svShiftFor(notes){ let best=0, bs=1e9;
+  for(const sh of [0,12,-12]){ let sc=0; for(const n of notes){ const m=n.midi+sh; if(m>SV_RANGE[1]) sc+=(m-SV_RANGE[1])*2; else if(m<SV_RANGE[0]) sc+=SV_RANGE[0]-m; }   // 高すぎる方を重く見る
+    if(sc<bs-1e-9){ bs=sc; best=sh; } }
+  return best; }
 const VOCAL_RANGE={ A:[50,62], B:[52,65], C:[55,69], D:[52,65] };   // Liam の実音域（D3〜A4）。サビで上に開く
 /* Dメロ: 1フレーズ8音（歌詞1行＝8語前後にぴったり）。英語の「弱・強」に合わせ、偶数番目の音（強）を長くする:
    弱1・強2・弱1 | 強2・弱1・強(1＋タイ1) | 弱1・強(2＋タイ3) … 最後の1拍で息継ぎ。
@@ -1187,10 +1222,14 @@ function generateSong(P){
       if(ending && i===sec.bars.length-1){ song.chords[song.chords.length-1].dur+=bar.beats; return; }
       const bt=ending ? (mode==="minor"?["Im7"]:["Iadd9"]) : toks[i%toks.length];
       const use=bar.beats<4 ? bt.slice(0,1).concat(bt.length>1?[bt[1]]:[]) : bt;
-      const seg=bar.beats/use.length;
+      /* 1小節の割り方: 2・4コードは均等。3コードは 2拍＋1拍＋1拍（2/4 は 1＋半＋半）、5コード以上は8分の格子で配る。
+         均等に3分割すると切り替わりが 1.33拍 になり、コードの頭から刻むベースがキックとずれる（2026-10-19 修正） */
+      const lens=(()=>{ const n=use.length, B=bar.beats; if(n===1||n===2||n===4) return Array(n).fill(B/n); if(n===3) return [B/2,B/4,B/4];
+        const u=Math.round(B*2), base=Math.floor(u/n); let rem=u-base*n; return Array.from({length:n},()=>{ const x=base+(rem>0?1:0); rem--; return Math.max(1,x)/2; }); })();
+      let pos=bar.t;
       use.forEach((tok,j)=>{
         const ch=parseChord(tok,tonic,flatKey);
-        ch.t=bar.t+j*seg; ch.dur=seg; ch.sec=sec.id; ch.role=sec.role; ch.n=sec.n||1; ch.drop=!!sec.drop;
+        ch.t=pos; ch.dur=lens[j]; pos+=lens[j]; ch.sec=sec.id; ch.role=sec.role; ch.n=sec.n||1; ch.drop=!!sec.drop;
         ch.mScale=chordScale(ch,keyPcs);
         song.chords.push(ch);
       });
@@ -1848,6 +1887,9 @@ function generateSong(P){
   const autoTheme=Math.floor(r()*THEMES.length);
   song.themeIdx=P.theme>=0?P.theme:autoTheme; song.theme=THEMES[song.themeIdx];
   makeLyrics(song,P.lyricSeed||0);
+  song.svShift=svShiftFor(song.parts.Vocal);                                 // .svp の高さ（歌える範囲に合わせる）
+  song.harmMax=Math.min(song.harmMax, SV_RANGE[1]-song.svShift);              // ハモリは .svp で D5 まで（超えそうな所は下にハモる）
+  song.harmMin=SV_RANGE[0]-3-song.svShift;                                    // 下は .svp で E3 まで（6度下・下ハモが低くなりすぎない）
   makeHarmony(song,P.harm,P.harmScope);
   song.hookLift=hookLift;
   return song;
@@ -2659,12 +2701,12 @@ function makeHarmony(song, mode, scope){
       let prevH=null;
       for(const n of V){
         const ch=song.chordAt(n.t), strong=n.dur>=0.9 || Math.abs(n.t-Math.round(n.t))<1e-6;
-        const pool=strong?ch.tonesMel:ch.mScale, hi=(song.harmMax||HARM_MAX)+(L.oct?12:0);
+        const pool=strong?ch.tonesMel:ch.mScale, hi=Math.min((song.harmMax||HARM_MAX)+(L.oct?12:0), song.svShift!=null?SV_RANGE[1]-song.svShift:99);   // オクターブ上でも .svp で D5 まで
         let best=null, bs=1e9;
         for(const dir of [L.dir,-L.dir]){
           for(const iv of Object.keys(L.pref).map(Number)){
             const m=n.midi+dir*iv;
-            if(m>hi || m<(L.lo||HARM_MIN) || !pool.includes(pcOf(m)) || sc.clash(m,n.t,n.dur)) continue;
+            if(m>hi || m<Math.max(L.lo||HARM_MIN, song.harmMin||0) || !pool.includes(pcOf(m)) || sc.clash(m,n.t,n.dur)) continue;
             const sco=L.pref[iv]+(dir===L.dir?0:6)+(prevH!=null?Math.abs(m-prevH)*0.2:0);
             if(sco<bs){ bs=sco; best=m; }
           }
@@ -2703,7 +2745,7 @@ function withBreaths(ns,bpm){
   return out;
 }
 function buildSVP(song, breath, oct){
-  const V=[...song.parts.Vocal].sort((a,b)=>a.t-b.t), up=oct?12:0;   // Liam の実音域を女声ボイス用に1オクターブ上げる
+  const V=[...song.parts.Vocal].sort((a,b)=>a.t-b.t), up=oct?(song.svShift??12):0;   // 歌える範囲（SV_RANGE）に合わせたオクターブ。オフなら MIDI の Vocal と同じ高さ
   const note=(t,dur,pitch,lyric)=>({ musicalType:"singing", onset:Math.round(t*BLICK), duration:Math.round(dur*BLICK),
     lyrics:lyric, phonemes:"", accent:"", pitch, detune:0, instantMode:false,
     attributes:{dF0Left:0.0, dF0Right:0.0, dF0Vbr:0.0, evenSyllableDuration:true} });
@@ -2764,8 +2806,13 @@ const AD2_MAP={ 35:36, 36:36,                          // キック
   49:77, 57:79, 52:81, 55:81,                           // クラッシュ → Cymbal 1 / 2 / 3
   51:60, 59:60, 53:61,                                  // ライド Ride 1 Tip ／ Bell
   50:71, 48:71, 47:69, 45:69, 43:67, 41:67 };           // タム → Tom 1 / 2 / 3（3タムのキットでも鳴るように Tom 4 は使わない）
+/* AD2 の MIDI マップ（2026-10-21）: ユーザーの Logic プロジェクトの AD2 はすべて Map＝General MIDI 型（ProjectData の MidiFilterMap_MAP_KeyMap を読んで確認）。
+   既定は GM の番号のまま書き出す（gm）。AD2 を初期設定（標準マップ）で使うときだけ AD2 標準の番号に変換する（ad2）。
+   AD2_GM_OK＝GM 型マップで AD2 の打ち分けが割り当てられている番号。ここにない音（39 クラップ・54 タンバリン・79 きしみ など）は鳴らない */
+const drumMap=()=>{ const e=typeof document!=="undefined" && $("optDrumMap"); return e&&e.value==="ad2"?"ad2":"gm"; };
+const AD2_GM_OK=new Set([31,35,36,37,38,40,41,42,43,44,45,46,47,48,49,50,51,52,53,55,56,57,59]);
 const instMode=()=>{ const e=$("optInst"); return e?e.value:"ad"; };
-function ad2Note(n){ return n.midi===42 && n.vel>=80 ? 50 : AD2_MAP[n.midi]; }    // アクセントのクローズドハット（上位1割ほど）はシャフト（Closed 1 Shaft）で太く
+function ad2Note(n){ if(drumMap()==="gm") return AD2_GM_OK.has(n.midi)?n.midi:undefined; return n.midi===42 && n.vel>=80 ? 50 : AD2_MAP[n.midi]; }   // GM 型マップなら番号はそのまま（割り当てのない音は Perc へ）    // アクセントのクローズドハット（上位1割ほど）はシャフト（Closed 1 Shaft）で太く
 function midiParts(song,inst){
   const out=PARTS.map(p=>({p, name:p==="Synth"?(song.synthName||"Synth"):p, notes:song.parts[p]||[], ch:CH[p], prog:(song.prog&&song.prog[p]!=null)?song.prog[p]:PROG[p]}));
   /* ハモリ（SynthV と同じ音）を仮歌の別トラックとして入れる。ch12・13、Voice Oohs */
@@ -3003,9 +3050,10 @@ let curBand="oasis", lastPack=0;                                                
 const BAND_PRESET={
   oasis:    {optDrone:1,optEdge:1,optLarry:1,optPedal:1,optU2:1,optBDBreak:1,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:0,optOdd:0,optSvpOct:1,optTamb:1,optPop:0,optClap:0,optSynth:0,optBigStop:0},
   smiths:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:1,optRourke:1,optJamerson:0,optCopeland:0,optHalfDrop:0,optOdd:0,optSvpOct:1,optTamb:1,optPop:0,optClap:0,optSynth:0,optBigStop:0},
-  bacharach:{optDrone:0,optEdge:1,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:1,optRourke:0,optJamerson:1,optCopeland:1,optHalfDrop:1,optOdd:1,optSvpOct:0,optTamb:0,optPop:0,optClap:0,optSynth:0,optBigStop:0},
-  taylor:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:0,optTamb:0,optPop:1,optClap:1,optSynth:1,optBigStop:1},
-  weeknd:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:0,optTamb:0,optPop:1,optClap:0,optSynth:1,optBigStop:0}
+  bacharach:{optDrone:0,optEdge:1,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:1,optRourke:0,optJamerson:1,optCopeland:1,optHalfDrop:1,optOdd:1,optSvpOct:1,optTamb:0,optPop:0,optClap:0,optSynth:0,optBigStop:0},
+  taylor:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:1,optTamb:0,optPop:1,optClap:1,optSynth:1,optBigStop:1},
+  oudou:    {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:1,optTamb:0,optPop:1,optClap:0,optSynth:0,optBigStop:0},   // 王道進行のバリエーション: ポップのドラム＋8分ルート
+  weeknd:   {optDrone:0,optEdge:0,optLarry:0,optPedal:0,optU2:0,optBDBreak:0,optBDGroove:0,optMarr:0,optRourke:0,optJamerson:0,optCopeland:0,optHalfDrop:1,optOdd:0,optSvpOct:1,optTamb:0,optPop:1,optClap:0,optSynth:1,optBigStop:0}
 };
 let SONG=null;
 const $=id=>document.getElementById(id);
@@ -3072,7 +3120,7 @@ function initFolds(){
 }
 function updCombo(){ updOptCount(); if(!$("sel_c")) return; const P=readParams(); $("combo").innerHTML=`<b>${comboCode(P)}</b> · ${keyName(P)} · ${P.bpm} · s${P.seed}`; }
 function fmt(sec){ const m=Math.floor(sec/60), s=Math.round(sec%60); return `${m}:${String(s).padStart(2,"0")}`; }
-function saveHash(P){ try{ history.replaceState(null,"",`#p=${P.pack}&a=${P.a}&b=${P.b}&c=${P.c}&k=${P.key}&bpm=${P.bpm}&s=${P.seed}&dn=${+P.drone}&dr=${+P.drums}&tb=${+P.tamb}&bu=${+P.build}&oc=${+P.oct}&u2=${+P.u2}&ed=${+P.edge}&lm=${+P.larry}&pd=${+P.pedal}&bb=${+P.bdBreak}&bg=${+P.bdGroove}&cut=${+P.introCut}&mr=${+P.marr}&mm=${+P.mm}&rk=${+P.rourke}&jm=${+P.jamerson}&cp=${+P.copeland}&hd=${+P.halfDrop}&od=${+P.odd}&rc=${+P.recycle}&pp=${+P.pop}&cl=${+P.clap}&sy=${+P.synth}&bs=${+P.bigStop}&hm=${P.harm}&hs=${P.harmScope}&in=${P.inst}&th=${P.theme}&ls=${P.lyricSeed}&ext=${P.ext}&vol=${VOL_KEYS.map(k=>VOL[k]).join(".")}`); }catch(e){} }
+function saveHash(P){ try{ history.replaceState(null,"",`#p=${P.pack}&a=${P.a}&b=${P.b}&c=${P.c}&k=${P.key}&bpm=${P.bpm}&s=${P.seed}&dn=${+P.drone}&dr=${+P.drums}&tb=${+P.tamb}&bu=${+P.build}&oc=${+P.oct}&u2=${+P.u2}&ed=${+P.edge}&lm=${+P.larry}&pd=${+P.pedal}&bb=${+P.bdBreak}&bg=${+P.bdGroove}&cut=${+P.introCut}&mr=${+P.marr}&mm=${+P.mm}&rk=${+P.rourke}&jm=${+P.jamerson}&cp=${+P.copeland}&hd=${+P.halfDrop}&od=${+P.odd}&rc=${+P.recycle}&pp=${+P.pop}&cl=${+P.clap}&sy=${+P.synth}&bs=${+P.bigStop}&hm=${P.harm}&hs=${P.harmScope}&in=${P.inst}&dm=${drumMap()}&th=${P.theme}&ls=${P.lyricSeed}&ext=${P.ext}&vol=${VOL_KEYS.map(k=>VOL[k]).join(".")}`); }catch(e){} }
 function loadHash(){
   try{
     const h=new URLSearchParams(location.hash.slice(1)); if(!h.has("p")) return;
@@ -3083,6 +3131,7 @@ function loadHash(){
     if(h.has("hs") && HARM_SCOPE[h.get("hs")]) $("optHarmScope").value=h.get("hs");
     [["dn","optDrone"],["dr","optDrums"],["tb","optTamb"],["bu","optBuild"],["oc","optSvpOct"],["u2","optU2"],["ed","optEdge"],["lm","optLarry"],["pd","optPedal"],["bb","optBDBreak"],["bg","optBDGroove"],["cut","optCut"],["mr","optMarr"],["mm","optMM"],["rk","optRourke"],["jm","optJamerson"],["cp","optCopeland"],["hd","optHalfDrop"],["od","optOdd"],["rc","optRecycle"],["pp","optPop"],["cl","optClap"],["sy","optSynth"],["bs","optBigStop"]].forEach(([k,id])=>{ if(h.has(k)) $(id).checked=h.get(k)==="1"; });
     if(h.has("in") && ["ad","gm"].includes(h.get("in"))) $("optInst").value=h.get("in");
+    if(h.has("dm") && ["gm","ad2"].includes(h.get("dm"))) $("optDrumMap").value=h.get("dm");
     if(h.has("th")) $("optTheme").value=h.get("th");
     if(h.has("ls")) $("optTheme").dataset.lseed=h.get("ls");
     if(h.has("vol")){ h.get("vol").split(".").forEach((v,i)=>{ if(VOL_KEYS[i] && v!=="") VOL[VOL_KEYS[i]]=Math.max(0,Math.min(127,+v)); }); renderVols(); }
@@ -3182,9 +3231,11 @@ function renderLegend(){
 }
 /* MIDI と .svp は同じ名前・同じ小節1拍目起点・同じテンポ／拍子で出す（Logic 上で並べるとそのまま揃う） */
 const IN_APP=!!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.bundle);
+/* 書き出すファイル名の先頭に作った日付（YYYY-MM-DD_）を付けて、いつ作ったか分かるようにする（2026-10-19） */
+function datePrefix(){ const d=new Date(), z=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}_`; }
 function fileBase(S){
   const P=S.P;
-  return `Third_${keyName(P)}_${comboCode(P)}${P.ext==='last'?'_LastChorus':P.ext==='dmelo'?'_Dmelo':P.ext==='full'?'_3min':P.ext==='half'?'_3min30':''}${P.introCut?'_IntroCut':''}${P.u2?'_U2break':''}${P.bdBreak?'_BDbreak':''}${P.bdGroove?'_BDgroove':''}${P.edge?'_Edge':''}${P.mm?'_MM':''}${P.marr?'_Marr':''}${P.rourke?'_Rourke':''}${P.jamerson?'_Jamerson':''}${P.copeland?'_Copeland':''}${P.odd?'_Odd':''}${P.recycle?'_ET':''}${P.pop?'_Pop':''}${P.synth?'_Synth':''}${P.bigStop?'_Stop':''}_${LYR[S.themeIdx].en.replace(/\s+/g,'')}_BPM${S.bpm}_seed${P.seed}`;
+  return datePrefix()+`Third_${keyName(P)}_${comboCode(P)}${P.ext==='last'?'_LastChorus':P.ext==='dmelo'?'_Dmelo':P.ext==='full'?'_3min':P.ext==='half'?'_3min30':''}${P.introCut?'_IntroCut':''}${P.u2?'_U2break':''}${P.bdBreak?'_BDbreak':''}${P.bdGroove?'_BDgroove':''}${P.edge?'_Edge':''}${P.mm?'_MM':''}${P.marr?'_Marr':''}${P.rourke?'_Rourke':''}${P.jamerson?'_Jamerson':''}${P.copeland?'_Copeland':''}${P.odd?'_Odd':''}${P.recycle?'_ET':''}${P.pop?'_Pop':''}${P.synth?'_Synth':''}${P.bigStop?'_Stop':''}_${LYR[S.themeIdx].en.replace(/\s+/g,'')}_BPM${S.bpm}_seed${P.seed}`;
 }
 /* MODO BASS 2 の付属プリセットから、選んだ進行・ベース奏法に近いものを選ぶ（Legacy フォルダはプリセット一覧の Legacy 内） */
 function modoPreset(S){
@@ -3199,10 +3250,12 @@ function instSteps(S){
 `5. Drums トラックの音源を Addictive Drums 2、Bass を MODO BASS 2、Piano を Steinway Grand、`,
 `   Strings を Studio Strings に差し替え（※ GM 配列で書き出している。AD2 で鳴らすときは「MIDI の音源想定」を AD2 にして書き出し直す）`,
 `   ・Bass は実際に鳴る高さ（4弦の開放 E＝E0 〜 A#2、Logic 表記）で書き出している。MODO BASS 2 で鳴らすときは「MIDI の音源想定」を AD2／MODO にして書き出し直す（MODO は1オクターブ上の E1〜 で受けるため）`];
-  const [pre,why]=modoPreset(S), tamb=S.parts.Drums.some(n=>AD2_MAP[n.midi]==null);
+  const [pre,why]=modoPreset(S), tamb=S.parts.Drums.some(n=>ad2Note(n)==null);
   return [
 `5. Drums (Addictive Drums 2) トラック: 音源を [AU 音源] > [XLN Audio] > [Addictive Drums 2] に差し替える`,
-`   ・ノートは AD2 の標準キーマップで書き出してある（ハット=C#2/D2・スネア=D1・キック=C1・サイドスティック=F#1）。AD2 の MIDI Mapping は標準のままでよい`,
+(drumMap()==="gm"
+  ? `   ・ノートは GM の番号で書き出してある（キック=C1・スネア=D1・ハット=F#1／A#1・クラッシュ=C#2）。AD2 の Map は General MIDI のままでよい（AD2 標準マップにしている AD2 では「ドラムの MIDI マップ」を AD2 標準にして書き出し直す）`
+  : `   ・ノートは AD2 の標準キーマップで書き出してある（ハット=C#2/D2・スネア=D1・キック=C1・サイドスティック=F#1）。AD2 の MIDI Mapping は標準のままでよい`),
 `   ・マルチアウトにするときは Addictive Drums 2 の「Multi Output」版を選び、チャンネルストリップの「+」で Kick / Snare / HiHat / Toms / OH / Room の Aux を足す`,
 `   ・キットはタイトなもの＋OH・Room を広めに。ドラムの音量バランス・パン・EQ・コンプは AD2 内部のミキサー、バス処理は Logic 側`,
 `   ・タムは Tom 1〜3 だけを使う。フロアタムが Tom 4 にあるキットでは、Tom 3（G3）のノートを Tom 4（F3）に移す`,
@@ -3235,7 +3288,7 @@ function logicSteps(S){
 `${S.P.edge?"   Edge トラックには Delay Designer（または Tape Delay）: Time 1/8 付点・Feedback 35〜45%・Mix 35%。音色はクリーン＋軽いコンプ":""}`,
 `${S.parts.Synth.length?(S.synthKind==="brass"?"   Brass トラック: Studio Horns（Logic 内蔵）か Alchemy の Brass 系。短いスタブなのでアタック速め・リリース短め":"   Synth トラック: Retro Synth（Analog・Saw）＋ Chorus ＋ 長めのリバーブ。80s らしくするなら Tape Delay を 1/8 で薄く足す"):""}`,
 `   → アンプは Amp Designer の British 系・ゲイン中程度。Lead は Pedalboard でファズ＋リバーブ`,
-`7. ${S.P.oct?".svp は MIDI の Vocal より1オクターブ上（女声ボイス用）。男声ボイスで歌わせるときは SynthV 側で全ノートを -12":".svp は MIDI の Vocal と同じ音域（Liam の実音域）"}`,
+`7. ${S.P.oct?`.svp は Mai 2 が歌いやすい G3〜D5 に合わせてある（この曲は MIDI の Vocal ${S.svShift>0?"より1オクターブ上":S.svShift<0?"より1オクターブ下":"と同じ高さ"}。ハモリも E3〜D5）。高さを変えたいときは SynthV で全ノートを選んで ±12`:".svp は MIDI の Vocal と同じ高さ"}`,
 ``,
 `※ 小節1の開始位置・テンポを動かさないこと（動かすと SynthV とずれる）。テンポを変えるときは Logic 側だけ変えれば SynthV も追従する。`,
 `※ 歌詞を Logic 側で直したいときは、SynthV の ARA プラグイン（Synthesizer V Studio 2 ARA Plugin）を使う方法もある。`
@@ -3283,7 +3336,7 @@ window.addEventListener("DOMContentLoaded",()=>{
   [...A_TPL,...B_TPL,...C_TPL].forEach(T=>{ [...T.cells,T.end].forEach(c=>{ if(c.length!==16) console.warn("cell length",T.name,c); });
     if(T.phrases.reduce((a,b)=>a+b,0)!==8) console.warn("phrases != 8",T.name); });
   $("key").innerHTML=SHARP.map((n,i)=>`<option value="${i}">${n}${FLAT[i]!==n?" / "+FLAT[i]:""}</option>`).join("");
-  $("key").value="4";
+  $("key").value="0";                                                   // キーの既定は C
   $("optExt").innerHTML=Object.entries(EXT_LABEL).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
   $("optExt").value="half";                                          // 既定は3分半構成
   renderSlots();
