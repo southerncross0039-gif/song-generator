@@ -14,3 +14,5 @@
 | Orbit — Break & Voices | [開く](https://southerncross0039-gif.github.io/song-generator/orbit/) | ブレイクビーツ × 低域の反復 × 広い空間 × ボーカル多重 |
 
 歌詞・音楽はすべてアプリ内でオリジナルに生成しています。
+
+- `blues/index.html` … **ブルース・バックトラック**（ギター練習用の伴奏。12キー × 7リズム × 8進行、Cream／Hendrix／Zeppelin風プリセット、英詞の仮歌と SynthV 書き出し付き。基本 3分30秒）
