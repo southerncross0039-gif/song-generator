@@ -2127,7 +2127,8 @@ function generateSong(P,LOCK=null){
   song.lang=P.lang==="ja"?"ja":"en";                                        // 歌詞の言語（en＝英語・全単語1音節／ja＝日本語・1音符＝1音）
   const keepLyr=!!(LOCK && LOCK.lyr!=="new");                               // リアレンジ: 歌詞を読み込んだまま使うか
   if(keepLyr && LOCK.lang) song.lang=LOCK.lang;
-  const LSET=lyrSet(song.lang).L, autoTheme=Math.floor(r()*LSET.length);
+  const LSET=lyrSet(song.lang).L, odyIx=LSET.map((x,i)=>x.ody?i:-1).filter(i=>i>=0), rTh=r();   // Odyssean（ody:true）は 🛏 Bedroom Pop のときだけ自動で選ぶ。それ以外は従来どおり（既存 seed の曲を変えない）
+  const autoTheme=(P.bedroom && odyIx.length) ? odyIx[Math.floor(rTh*odyIx.length)] : Math.floor(rTh*(LSET.length-odyIx.length));
   song.themeIdx=(keepLyr && LOCK.themeIdx!=null) ? LOCK.themeIdx : (P.theme>=0 && P.theme<LSET.length)?P.theme:autoTheme; song.theme=[LSET[song.themeIdx].t, LSET[song.themeIdx].hook];
   if(keepLyr && keepMel){                                                    // 歌メロも歌詞も読み込んだまま
     const gen=song.relocked.gen;
@@ -2910,6 +2911,49 @@ const LYR_JA=[
     B2:["もし 夜の中で あなたの名前を呼ぶ声が 聞こえたら","お願い あの夜 出会った場所に 戻ってきて","そうすれば もう一度 あなたを抱き寄せて 胸に鼓動を感じられる","あなたがいれば ライトが目に刺さることは もうない","お願い 帰ってきて","僕は ここにいる"],
     D:["夜明けに 道の上に 最初の光が差すとき","車の中で ライトをつけたまま まだ あなたを待ってる"] }
 ];
+/* ---- ODYSSEAN BEDROOM POP（2026-11-15）: 長い旅と帰る場所・誘惑・待つこと・失われた時間を、都市の小さな日常に置き換えたテーマ。
+   神話の固有名詞は使わない。ody:true のテーマは 🛏 Bedroom Pop オン＋「seed で自動」のときだけ自動で選ばれる（既存の seed の曲は変わらない） ---- */
+LYR.push(
+  { t:"Odyssean｜いつもの鍵で開けるドア", en:"Same Old Key", hook:"same old key", ody:true,
+    A1:["(so) I walk home (late) from the (last) train (with my head down) (in the cold)","(and) a (thin) bag from the store (just) bumps (on) my knee (with each step)","(and) I count the (same) (old) stairs (one by one) (like I've done for years)","(and) there's mail (in the box) for a name (that) I don't know (at all)","(and) my hand finds the keys (deep) (down) in my coat (with the gum and the change)","(and) the lock (still) turns"],
+    B1:["(and) my cup (from this dawn) (still) sits in the sink (where I left it) (half full)","(and) the room's the same (as it was when I left)","(but) the guy in the glass looks (a bit) worn (and) (thin) (round the eyes)","(and) the shirts on the line (out back) (still) sway (in the wind) (all week)","(hey) (now) I'm home","(but) no one's there"],
+    C:["same old key (same old key) (turns in the) (same old door)","(oh) (I drift so far) (from here) (but) I wash up (back) here (once more)","(and) I eat cold rice (from the box) (by the light of the fridge)","(and) (at dawn) (I'll take) the same old key (back out) (once more)"],
+    A2:["(oh) there's (still) half a jug of soap (that I bought back in March)","(and) I don't watch the show (that we liked) (on the couch) (late at night)","(so) I let the clips roll (on and on) (on my phone) (till my eyes close)","(and) the charge on my phone (has) (now) turned red (in my hand)","(and) the old me (back then) would call you (at two) (with no shame)","(but) I don't"],
+    B2:["(and) I said I'd let you go (for good) (back in the spring)","(but) my thumb knows the way (to your page) (in the dark) (on its own)","(and) you smile (in a pic) from a town I don't know (by the sea)","(so) I lock the screen and put it face down (on the sheets) (by the bed)","(and) the blinds go gray","(so) I pull them up"],
+    D:["(and) one day I'll give this key back (to the man) (and move on)","(but) (for now) I'll (just) live here (in these same four walls) (day by day)"] },
+  { t:"Odyssean｜消さない灯り", en:"Still Up", hook:"I'm still up", ody:true,
+    A1:["(oh) the news is done (and the screen goes blue) (in the dark)","(and) I keep your plate (warm) (with a lid) (on the stove)","(and) my text (from five) (still) sits there (on the screen) (not read)","(so) I check the time (on my phone) (once more) (then once more)","(and) I fold the clothes (from the wash) (yours and mine) (on the bed)","(so) where are you"],
+    B1:["(and) I hear steps (in the hall) (on the stairs) (near the door)","(but) it's just the guy next door (with his dog) (back from a walk)","(so) I turn the sound (of the show) (way) down low","(and) the last bus goes by (in the rain) (down the street) (with no one on)","(so) I leave the lamp on","(so) you'll find the way"],
+    C:["I'm still up (I'm still up) (oh) (with the light on) (for you)","(oh) (so) you'll see my light (from the end of the street) (in the dark)","(and) I heat my cup (of brew) (once more) (and then once more)","(so) (I can say) hey you're home (when you walk in) (and I'm still up)"],
+    A2:["(oh) my phone lights up (on the sheets) (at two) (in the dark)","(but) it's not you (at all) it's (just) the rain (on its way)","(so) I play the film (that) we (both) watched (back in May)","(and) I know each line (of it) (word for word) (by now)","(and) I've learned (a few) (new) ways (to cook) (that) you don't know","(so) will you see"],
+    B2:["(then) at dawn I hear your key (in the lock) (by the door)","(and) you say hey I'm home (with a voice that's worn thin)","(and) I take your coat (and) (I) don't ask (a thing)","(and) your back looks (so) thin (in the gray light) (by the door)","(and) I (just) say hi","(and) that's all I say"],
+    D:["(and) (by your face) the blinds turn white (while you sleep)","(so) (I guess) I can turn the light off (now)"] },
+  { t:"Odyssean｜聞こえないふり", en:"Sit On My Hands", hook:"sit on my hands", ody:true,
+    A1:["(oh) the week's done (and) I'm out (through the gates) (in the rush) (at eight)","(and) the old group chat wakes up (with a ping) (once more)","(and) your name pops up and it says come out (we're down at the bar)","(so) I push my buds (in deep) and turn the world down (low)","(but) the (whole) town hums (sweet and low) (through the shop doors) (as I pass)","(no) I don't hear"],
+    B1:["(and) I know it's fun (once you're there) (with the lights and the noise)","(and) I know (just) who I'd be (by twelve) (if I go)","(so) I pull my hands (up) in my sleeves (to the tips) (as I walk)","(and) the walk sign blinks (at me) (go go go) (in the rain)","(and) I don't text back","(so) I walk home"],
+    C:["sit on my hands (sit on my hands) (and just let it ring) (all night)","(oh) (but) I hear it all (so) loud (in my chest) (like a drum)","(so) I duck in (the store) (on the way) (for the glow of the lights)","(and) I hold hot tea (in a can) (tight) (in both hands) (all the way home)"],
+    A2:["(oh) I ride the lift (up) (on my own) (with my eyes half shut)","(and) I mute the group (at last) (with a tap of my thumb)","(but) your face is (still) there (at the top of the list) (in a small round frame)","(and) I can't hit block (on you) (just yet)","(so) I let the hot spray drown it out (till the glass fogs up)","(and) it's (so) still"],
+    B2:["(then) at three my phone shakes (on the shelf) (by the bed)","(and) it's a pic (of you) (with them) (at the bar) (in the warm red light)","(and) the booth's (still) full (and loud) (with no space for me)","(so) I don't tap the heart (on it) and I shut my eyes","(then) the dawn comes up","(and) the wash spins"],
+    D:["(and) one day (when) I can laugh (at this night) (with you)","(then) I'll call you first (just to say hi) (out of the blue)"] });
+LYR_JA.push(
+  { A1:["終電を降りて 寒い中 うつむいて 遅く歩いて帰る","店の薄いレジ袋が 一歩ごとに 膝に当たる","何年もそうしてきたように 同じ古い階段を ひとつずつ数える","ポストには まったく知らない名前宛ての郵便","コートの奥で ガムや小銭と一緒に 手が鍵を探り当てる","鍵は まだ回る"],
+    B1:["今朝のカップが 置いたまま 半分残して シンクにある","部屋は 出ていったときと 何も変わらない","でも 鏡の中の男は 目のまわりが 少しやつれて痩せた","裏のベランダのシャツが 一週間ずっと 風に揺れている","ねえ ただいま","でも 誰もいない"],
+    C:["いつもの鍵 いつもの鍵が いつものドアで回る","ここから遠くへ流されても 結局また ここに打ち上げられる","冷蔵庫の灯りで 容器のまま 冷たいご飯を食べる","夜が明けたら また いつもの鍵を持って 出ていく"],
+    A2:["3月に買った洗剤が まだ半分残ってる","夜遅く ソファでふたりで好きだった番組は もう観ない","目が閉じるまで スマホで動画を延々と流しておく","手の中で スマホの充電が 赤くなった","昔の自分なら 2時に恥ずかしげもなく 君に電話してた","でも しない"],
+    B2:["春に 君のことは もう終わりにすると言った","なのに 親指は 暗闇でも ひとりでに 君のページへの道を覚えてる","知らない海辺の町の写真で 君が笑ってる","だから 画面をロックして ベッドのシーツに 伏せて置く","ブラインドが 灰色になる","だから 引き上げる"],
+    D:["いつか この鍵を大家さんに返して 次へ進む","でも 今は この同じ四つの壁の中で 一日ずつ ただ暮らしていく"] },
+  { A1:["ニュースが終わって 暗闇で 画面が青くなる","コンロの上で ふたをして 君の皿を温めておく","5時に送ったメッセージは 画面の上で 既読にならないまま","スマホで時間を確かめる もう一度 さらにもう一度","洗濯した服を 君のも僕のも ベッドの上で畳む","どこにいるの"],
+    B1:["廊下に 階段に ドアの近くに 足音が聞こえる","でも 散歩帰りの 犬を連れた隣の人だった","観ている番組の音を ぐっと小さくする","最終バスが 雨の中 誰も乗せずに 通りを過ぎていく","だから 灯りはつけたまま","君が道を見つけられるように"],
+    C:["まだ起きてる まだ起きてるよ 君のために 灯りをつけたまま","通りの端から 暗闇に 僕の灯りが見えるはず","コーヒーのカップを また温め直す 何度も 何度も","君が帰ってきたとき『おかえり』って言えるように まだ起きてる"],
+    A2:["夜中の2時 暗闇で シーツの上のスマホが光る","でも 君じゃない ただの雨の予報","5月にふたりで観た映画を流す","もう 台詞を一言一句 全部覚えてる","君の知らない 新しい料理を いくつか覚えた","気づくかな"],
+    B2:["夜明けに ドアの鍵穴で 君の鍵の音がする","すり減った声で 君が『ただいま』と言う","コートを受け取って 何も聞かない","ドアのそばの灰色の光の中で 君の背中が とても痩せて見える","ただ『おかえり』とだけ言う","それだけしか 言わない"],
+    D:["君が眠るあいだ 顔のそばで ブラインドが白くなる","たぶん これでやっと 灯りを消せる"] },
+  { A1:["一週間が終わって 8時のラッシュの中 改札を抜けて外へ","昔のグループチャットが 通知音とともに また動きだす","君の名前が表示されて『来なよ、いつものバーにいる』","イヤホンを深く押し込んで 世界の音を低く絞る","でも 通り過ぎる店のドアから 街が甘く低くハミングしてる","聞こえない"],
+    B1:["行けば 灯りと騒ぎの中で 楽しいのは分かってる","行けば 12時には自分がどうなってるかも 分かってる","歩きながら 指先まで 袖の中に手を引っ込める","雨の中 歩行者信号が 進め進めと点滅する","返信はしない","そのまま帰る"],
+    C:["手を出さずに 手を出さずに 一晩中 鳴らしておく","でも 胸の中では 太鼓みたいに 全部大きく聞こえてる","帰り道 灯りに誘われて コンビニに寄り道する","帰り道ずっと 温かいお茶の缶を 両手でぎゅっと握る"],
+    A2:["ひとりでエレベーターに乗る 目は半分閉じたまま","親指で タップして ついにグループをミュートする","でも リストの一番上 小さな丸い枠の中に 君の顔がまだある","君をブロックすることは まだ できない","だから 熱いシャワーでかき消す ガラスが曇るまで","静かだ"],
+    B2:["夜中の3時 ベッド脇の棚で スマホが震える","君の写真 バーでみんなと 暖かい赤い光の中","ボックス席は 今も満員で騒がしい 僕の席なんかなくても","ハートは押さずに 目を閉じる","夜が明ける","洗濯機が回る"],
+    D:["いつか 君と一緒に この夜を笑える日が来たら","そのときは 僕から 突然 ただ『やあ』って電話するよ"] });
 const LYR_SPARE_JA=["それが本当だって 分かってる","ここに いて","しがみついていて","夜は 続いていく"];
 const THEMES=LYR.map(x=>[x.t, x.hook]);
 
@@ -2980,6 +3024,29 @@ LYR_JP.push(
     A2:["(ちいさな まちの かたすみで) ゆめを みた","(だれも しんじない) ゆめを まもりぬく","(きずだらけの てで) (なんども) たちあがる","(まけた ひの くやしさも) ちからに かえる","(ビートに あわせ) (ことばを) うちこめ","(ほら) ならせ"],
     B2:["(だれかの まねじゃ ない) ぼくの やりかたで","(つよがりも) (いつか) ほんとうに なる","(ステージの まんなかで) (おおきく) さけべ","(こえが かれる まで) うたいつづけろ","(さあ) くるぞ","(いまだ) いけ"],
     D:["(まほうの ない せかいでも) (ぼくは) いきてく","(この からだ ひとつで) (ぜんぶ) くつがえす"] });
+/* ---- ODYSSEAN BEDROOM POP（日本語・2026-11-15）: 英語版の訳ではない独立した歌詞。ひらがな／カタカナのみ・「っ／ッ」なし ---- */
+LYR_JP.push(
+  { t:"Odyssean｜いつもの鍵で", en:"Same Old Key", hook:"いつもの かぎで", ody:true,
+    A1:["(しゅうでんの あとの) (しずかな) みちを あるく","(コンビニの) ふくろが (ひざで) かさかさ なる","(なんねんも) (おなじ) かいだんを (かぞえて) のぼる","(ポストには) (しらない ひとの) チラシが ささる","(コートの) (いちばん おくで) かぎが ゆびに ふれる","(かちり と) まわる"],
+    B1:["(でかけた ときの まま) マグが (シンクに) のこる","(この へやは) (なにも) かわらない (のに)","(かがみの なかの) (ぼくだけ) (すこし) としを とる","(ベランダに) (ほした ままの) シャツが (かぜに) ゆれる","(ねえ) ただいま","へんじは (まだ) ない"],
+    C:["いつもの かぎで (いつもの かぎで) (ドアを あける)","(どこを さまよい) (さいごは) (この) へやに かえる","(れいぞうこの) (あかりで) (つめたい) ごはんを たべる","(あしたも) (たぶん) (この) かぎで でかける"],
+    A2:["(はるに かいだめした) せんざいが (まだ) (はんぶん) ある","(むかし すきな) (ドラマの) つづきは (もう) みない","(なんとなく) (どうがを) (ねるまで) ながして いる","(スマホの) でんちが (あかく) ひかる","(むかしの ぼくなら) (すぐ) (きみに) でんわ した (はず)","(いまは) しない"],
+    B2:["(もう) (れんらく しないと きめた) きみの なまえ","(きづけば) (また) (きみの) ページを ひらいて いる","(しらない まちで) (わらう) きみの しゃしん","(ゆびを とめて) (そのまま) がめんを とじる","(まどの) そとは (もう) あさ","(また) まどを あける"],
+    D:["(いつか) (この へやの) かぎを (だれかに) かえす (ひも くる)","(それまで) (ここで) (ふつうに) くらして いく"] },
+  { t:"Odyssean｜消さない灯り", en:"Still Up", hook:"まだ おきてるよ", ody:true,
+    A1:["(くじの) ニュースが (いつのまにか) おわる","(ふたりぶんの) (おかずに) ふたを して おく","(ゆうがたの) (ラインに) (まだ) きどくが つかない","(じかんを) (なんども) (スマホで) たしかめて しまう","(せんたくものは) (きみの ぶんまで) たたんで おいた","(ねえ) まだ かな"],
+    B1:["(ドアの) (むこうで) (だれかの) あしおとが する","(となりの) (へやの) ひとだと (すぐ) わかる","(テレビの) おとを (すこし) ちいさく する","(まどの) (そとを) (さいごの) バスが すぎて いく","(へやの) (あかりは) けさない","(ここが) めじるし"],
+    C:["まだ おきてるよ (まだ おきてるよ) (きみが かえる まで)","(あかりの) (ともる) まどを (とおくから) みつけて","(さめた) コーヒーを (また) のむ","(おかえりを) (いうために) (まだ) おきてるよ"],
+    A2:["(よなかの) (ふとんで) スマホが ひかる","(きみ じゃなくて) (あしたの) あめの つうち","(むかし) (ふたりで) (みた) えいがを (また) ながす","(セリフを) (ひとつ) (のこらず) おぼえて いる","(きみが) しらない くせが (ひとつ) ふえた","(ねえ) きづく (かな)"],
+    B2:["(あけがたに) (げんかんで) かぎの おとが する","(つかれた こえで) (きみが) ただいまと いう","(なにも) (きかずに) コートを うけとる","(すこし) (やせた) せなかに なにも いえない","(ねえ) おかえり","それだけ いえた"],
+    D:["(ねむる きみの よこで) まどが しろむ","(あしたも) (たぶん) (また) (ぼくが) あかりを けす"] },
+  { t:"Odyssean｜聞こえないふり", en:"Noise Cancel", hook:"きこえない ふりを", ody:true,
+    A1:["(きんようの) (よるの) かいさつを ぬける","(むかしの) (なかまの) グループが (また) うごきだす","(いまから こないかと) (きみの) なまえが ひかる","イヤホンを (ふかく) (みみに) おしこんで (あるく)","(まちの) ネオンが (ひくい こえで) うたう (みたいだ)","(ねえ) きこえない"],
+    B1:["(いけば) たのしいのは わかる (けど)","(あの ころの ぼくに) (また) もどりそうで","(りょうてを) (そでの なかに) かくして あるく","(しんごうの) あおが (なんども) (ぼくを) せかす","(まだ) へんじは しない","(このまま) かえる"],
+    C:["きこえない ふりを (きこえない ふりを) (して あるく)","(ほんとうは) (ぜんぶ) きこえて いる (のに)","(コンビニの あかりに) (すこしだけ) よりみち して","(あたたかい) おちゃを (りょうてで) にぎり しめる"],
+    A2:["(エレベーターの) (かがみに) (つかれた) かおが うつる","(グループの) つうちを (しずかに) オフに する","(きみの) アイコンが (まだ) (いちばん) うえに いる","けすことも (いまは) (まだ) できない","(シャワーの) (おとで) (ぜんぶ) かきけして (しまおう)","(ほら) しずかだ"],
+    B2:["(よなかの) (さんじに) スマホが ふるえる","(とどいた しゃしんの なかで) きみが わらう","(ぼくの いない) テーブルは (いつもどおり) にぎやかで","(いいねは) おさずに (そのまま) めを とじる","(ほら) あさが くる","(また) いちにち"],
+    D:["(いつか) (この よるも) わらいばなしに (なる かな)","(そのときは) (ぼくから) (きみに) こえを かけるよ"] });
 const LYR_SPARE_JP=["(ねえ) (いまも) おぼえてる","(ほら) ここに いて","(どうか) はなさないで","(よるは) つづいて いく","(さあ) いこう","(ねえ) きこえる","(まだ) とまらない","(きっと) とどく"];   // 短いフレーズ用（3〜4音）も入れる
 /* かなを音（モーラ）に分ける。小書きの ゃゅょぁぃぅぇぉ は前の音に付け、「ー」は前の音を伸ばす "-" */
 const SMALL_KANA="ゃゅょぁぃぅぇぉゎャュョァィゥェォヮ";
